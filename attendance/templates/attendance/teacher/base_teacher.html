@@ -1,0 +1,12 @@
+{% extends "attendance/base.html" %}
+
+{% block sidebar_nav %}
+<span class="sidebar-section">Main</span>
+<a href="{% url 'teacher_dashboard' %}"><i class="bi bi-speedometer2"></i> Dashboard</a>
+
+<span class="sidebar-section">Attendance</span>
+<a href="{% url 'my_attendance_records' %}"><i class="bi bi-journal-check"></i> My Records</a>
+
+<span class="sidebar-section">Account</span>
+<a href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a>
+{% endblock %}

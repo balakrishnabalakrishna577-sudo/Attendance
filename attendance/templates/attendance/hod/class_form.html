@@ -1,0 +1,34 @@
+{% extends "attendance/hod/base_hod.html" %}
+{% block title %}{{ action }} Class{% endblock %}
+{% block page_title %}{{ action }} Class{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>{{ action }} Class</h1>
+  <a href="{% url 'class_list' %}" class="btn-primary-custom" style="background:#64748b;">
+    <i class="bi bi-arrow-left"></i> Back
+  </a>
+</div>
+
+<div class="form-card">
+  <form method="post" novalidate>
+    {% csrf_token %}
+    <div class="mb-3">
+      <label class="form-label-custom">Class Name <span class="text-danger">*</span></label>
+      <input type="text" name="name" class="form-control-custom"
+             value="{{ cls.name|default:'' }}" required placeholder="e.g. MCA 1st Year">
+    </div>
+    <div class="mb-4">
+      <label class="form-label-custom">Description</label>
+      <textarea name="description" class="form-control-custom" rows="3"
+                placeholder="Optional description">{{ cls.description|default:'' }}</textarea>
+    </div>
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn-primary-custom">
+        <i class="bi bi-check-lg"></i> {{ action }} Class
+      </button>
+      <a href="{% url 'class_list' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Attendance System{% endblock %}</title>
+
+  <!-- Bootstrap 5 CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Custom CSS -->
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<!-- Toast notifications -->
+{% if messages %}
+<div class="alert-container" id="alert-container">
+  {% for message in messages %}
+    <div class="toast-alert toast-{% if message.tags == 'error' %}error{% elif message.tags == 'warning' %}warning{% elif message.tags == 'success' %}success{% else %}info{% endif %}">
+      <i class="bi bi-{% if message.tags == 'error' %}x-circle{% elif message.tags == 'warning' %}exclamation-triangle{% elif message.tags == 'success' %}check-circle{% else %}info-circle{% endif %}"></i>
+      {{ message }}
+      <button class="toast-close" aria-label="Close">×</button>
+    </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<div class="app-wrapper">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+
+    <div class="sidebar-brand">
+      <div class="brand-icon"><i class="bi bi-mortarboard-fill"></i></div>
+      <div class="brand-text">
+        Attendance
+        <span>Management</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      {% block sidebar_nav %}{% endblock %}
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar">{{ request.session.name|first|upper }}</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name">{{ request.session.name }}</div>
+          <div class="sidebar-user-role">{{ request.session.role|capfirst }}</div>
+        </div>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- Mobile overlay -->
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <!-- Main content -->
+  <div class="main-content">
+
+    <!-- Top bar -->
+    <header class="topbar">
+      <button class="topbar-toggle" id="sidebar-toggle" aria-label="Toggle menu">
+        <i class="bi bi-list"></i>
+      </button>
+      <div class="topbar-title">{% block page_title %}Dashboard{% endblock %}</div>
+      <div class="topbar-date"></div>
+      <a href="{% url 'logout' %}" class="btn-primary-custom" style="padding:.4rem .85rem;font-size:.8rem;">
+        <i class="bi bi-box-arrow-right"></i> Logout
+      </a>
+    </header>
+
+    <!-- Page body -->
+    <main class="page-content">
+      {% block content %}{% endblock %}
+    </main>
+
+  </div><!-- /main-content -->
+</div><!-- /app-wrapper -->
+
+<!-- Bootstrap 5 JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Custom JS -->
+<script src="{% static 'js/app.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

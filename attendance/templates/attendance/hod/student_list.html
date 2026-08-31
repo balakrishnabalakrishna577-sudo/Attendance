@@ -1,0 +1,89 @@
+{% extends "attendance/hod/base_hod.html" %}
+{% block title %}Students{% endblock %}
+{% block page_title %}Students{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1><i class="bi bi-people me-2"></i>Students</h1>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="{% url 'student_import' %}" class="btn-primary-custom" style="background:#06b6d4;">
+      <i class="bi bi-upload"></i> Import CSV
+    </a>
+    <a href="{% url 'student_add' %}" class="btn-primary-custom">
+      <i class="bi bi-plus-lg"></i> Add Student
+    </a>
+  </div>
+</div>
+
+<!-- Filters -->
+<div class="card mb-3">
+  <div class="p-3">
+    <form method="get" class="row g-2 align-items-end">
+      <div class="col-sm-5">
+        <label class="form-label-custom">Search</label>
+        <input type="text" name="q" value="{{ query }}" class="form-control-custom"
+               placeholder="Name or roll number…">
+      </div>
+      <div class="col-sm-4">
+        <label class="form-label-custom">Filter by Class</label>
+        <select name="class_id" class="form-control-custom form-select-custom">
+          <option value="">All Classes</option>
+          {% for cls in classes %}
+          <option value="{{ cls.id }}" {% if filter_class == cls.id %}selected{% endif %}>
+            {{ cls.name }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-sm-3 d-flex gap-2">
+        <button type="submit" class="btn-primary-custom flex-fill justify-content-center">
+          <i class="bi bi-search"></i> Filter
+        </button>
+        <a href="{% url 'student_list' %}" class="btn btn-secondary">Reset</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header-custom">
+    <h5>Students ({{ students|length }})</h5>
+    <input type="text" id="table-search" class="form-control-custom"
+           placeholder="Quick search…" style="max-width:200px;">
+  </div>
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr><th>#</th><th>Roll No</th><th>Name</th><th>Class</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        {% for student in students %}
+        <tr class="searchable-row">
+          <td class="text-muted-custom">{{ forloop.counter }}</td>
+          <td><code>{{ student.roll_number }}</code></td>
+          <td class="fw-700">{{ student.name }}</td>
+          <td>{{ student.class_name }}</td>
+          <td>
+            <div class="d-flex gap-1">
+              <a href="{% url 'student_edit' student.id %}" class="btn-sm-icon btn-edit" title="Edit">
+                <i class="bi bi-pencil"></i>
+              </a>
+              <a href="{% url 'student_delete' student.id %}" class="btn-sm-icon btn-delete" title="Delete">
+                <i class="bi bi-trash"></i>
+              </a>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5" class="text-center py-4 text-muted-custom">
+            No students found. <a href="{% url 'student_add' %}">Add one</a> or
+            <a href="{% url 'student_import' %}">import CSV</a>.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

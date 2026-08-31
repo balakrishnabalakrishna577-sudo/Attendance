@@ -1,0 +1,39 @@
+{% extends "attendance/hod/base_hod.html" %}
+{% block title %}{{ action }} Subject{% endblock %}
+{% block page_title %}{{ action }} Subject{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>{{ action }} Subject</h1>
+  <a href="{% url 'subject_list' %}" class="btn-primary-custom" style="background:#64748b;">
+    <i class="bi bi-arrow-left"></i> Back
+  </a>
+</div>
+
+<div class="form-card">
+  <form method="post" novalidate>
+    {% csrf_token %}
+    <div class="mb-3">
+      <label class="form-label-custom">Subject Name <span class="text-danger">*</span></label>
+      <input type="text" name="name" class="form-control-custom"
+             value="{{ subject.name|default:'' }}" required placeholder="e.g. Python Programming">
+    </div>
+    <div class="mb-3">
+      <label class="form-label-custom">Subject Code <span class="text-danger">*</span></label>
+      <input type="text" name="code" class="form-control-custom"
+             value="{{ subject.code|default:'' }}" required placeholder="e.g. MCA101">
+    </div>
+    <div class="mb-4">
+      <label class="form-label-custom">Description</label>
+      <textarea name="description" class="form-control-custom" rows="3"
+                placeholder="Optional description">{{ subject.description|default:'' }}</textarea>
+    </div>
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn-primary-custom">
+        <i class="bi bi-check-lg"></i> {{ action }} Subject
+      </button>
+      <a href="{% url 'subject_list' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "attendance/hod/base_hod.html" %}
+{% block title %}Teacher Assignments{% endblock %}
+{% block page_title %}Teacher Assignments{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1><i class="bi bi-diagram-3 me-2"></i>Teacher Assignments</h1>
+  <a href="{% url 'assignment_add' %}" class="btn-primary-custom">
+    <i class="bi bi-plus-lg"></i> New Assignment
+  </a>
+</div>
+
+<div class="card">
+  <div class="card-header-custom">
+    <h5>All Assignments ({{ assignments|length }})</h5>
+    <input type="text" id="table-search" class="form-control-custom"
+           placeholder="Search…" style="max-width:220px;">
+  </div>
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Teacher</th>
+          <th>Class</th>
+          <th>Subject</th>
+          <th>Code</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in assignments %}
+        <tr class="searchable-row">
+          <td class="text-muted-custom">{{ forloop.counter }}</td>
+          <td class="fw-700"><i class="bi bi-person-badge me-1 text-muted-custom"></i>{{ a.teacher }}</td>
+          <td>
+            <span style="background:#ede9fe;color:#5b21b6;padding:.2rem .6rem;border-radius:.4rem;font-size:.8rem;font-weight:600;">
+              {{ a.class_name }}
+            </span>
+          </td>
+          <td>{{ a.subject }}</td>
+          <td><code>{{ a.subject_code }}</code></td>
+          <td>
+            <a href="{% url 'assignment_delete' a.id %}" class="btn-sm-icon btn-delete" title="Remove">
+              <i class="bi bi-trash"></i>
+            </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" class="text-center py-4 text-muted-custom">
+            No assignments yet. <a href="{% url 'assignment_add' %}">Assign a teacher</a>.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "attendance/base.html" %}
+
+{% block sidebar_nav %}
+<span class="sidebar-section">Main</span>
+<a href="{% url 'hod_dashboard' %}"><i class="bi bi-speedometer2"></i> Dashboard</a>
+
+<span class="sidebar-section">Manage</span>
+<a href="{% url 'teacher_list' %}"><i class="bi bi-person-badge"></i> Teachers</a>
+<a href="{% url 'class_list' %}"><i class="bi bi-building"></i> Classes</a>
+<a href="{% url 'subject_list' %}"><i class="bi bi-book"></i> Subjects</a>
+<a href="{% url 'student_list' %}"><i class="bi bi-people"></i> Students</a>
+
+<span class="sidebar-section">Assignments</span>
+<a href="{% url 'assignment_list' %}"><i class="bi bi-diagram-3"></i> Teacher Assignments</a>
+
+<span class="sidebar-section">Reports</span>
+<a href="{% url 'attendance_report' %}"><i class="bi bi-bar-chart-line"></i> Attendance Reports</a>
+
+<span class="sidebar-section">Account</span>
+<a href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a>
+{% endblock %}

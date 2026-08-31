@@ -1,0 +1,147 @@
+{% extends "attendance/hod/base_hod.html" %}
+{% block title %}Attendance Reports{% endblock %}
+{% block page_title %}Attendance Reports{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1><i class="bi bi-bar-chart-line me-2"></i>Attendance Reports</h1>
+  <a href="?{% if f_date %}date={{ f_date }}&{% endif %}{% if f_teacher %}teacher_id={{ f_teacher }}&{% endif %}{% if f_class %}class_id={{ f_class }}&{% endif %}{% if f_subject %}subject_id={{ f_subject }}&{% endif %}{% if f_student %}student_id={{ f_student }}&{% endif %}export=csv"
+     class="btn-primary-custom" style="background:#10b981;">
+    <i class="bi bi-download"></i> Export CSV
+  </a>
+</div>
+
+<!-- Filter Panel -->
+<div class="card mb-4">
+  <div class="card-header-custom">
+    <h5><i class="bi bi-funnel me-2"></i>Filters</h5>
+  </div>
+  <div class="p-3">
+    <form method="get" class="row g-2">
+      <div class="col-sm-6 col-md-4 col-lg-2">
+        <label class="form-label-custom">Date</label>
+        <input type="date" name="date" value="{{ f_date }}" class="form-control-custom">
+      </div>
+      <div class="col-sm-6 col-md-4 col-lg-2">
+        <label class="form-label-custom">Teacher</label>
+        <select name="teacher_id" class="form-control-custom form-select-custom">
+          <option value="">All</option>
+          {% for t in teachers %}
+          <option value="{{ t.id }}" {% if f_teacher == t.id %}selected{% endif %}>{{ t.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-sm-6 col-md-4 col-lg-2">
+        <label class="form-label-custom">Class</label>
+        <select name="class_id" class="form-control-custom form-select-custom">
+          <option value="">All</option>
+          {% for cls in classes %}
+          <option value="{{ cls.id }}" {% if f_class == cls.id %}selected{% endif %}>{{ cls.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-sm-6 col-md-4 col-lg-2">
+        <label class="form-label-custom">Subject</label>
+        <select name="subject_id" class="form-control-custom form-select-custom">
+          <option value="">All</option>
+          {% for s in subjects %}
+          <option value="{{ s.id }}" {% if f_subject == s.id %}selected{% endif %}>{{ s.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-sm-6 col-md-4 col-lg-2">
+        <label class="form-label-custom">Student</label>
+        <select name="student_id" class="form-control-custom form-select-custom">
+          <option value="">All</option>
+          {% for st in students %}
+          <option value="{{ st.id }}" {% if f_student == st.id %}selected{% endif %}>{{ st.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-sm-6 col-md-4 col-lg-2 d-flex align-items-end gap-2">
+        <button type="submit" class="btn-primary-custom flex-fill justify-content-center">
+          <i class="bi bi-search"></i> Apply
+        </button>
+        <a href="{% url 'attendance_report' %}" class="btn btn-secondary">Reset</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Summary -->
+{% if report_rows %}
+<div class="row g-3 mb-3">
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="stat-icon green"><i class="bi bi-people"></i></div>
+      <div class="stat-info">
+        <div class="stat-value">{{ report_rows|length }}</div>
+        <div class="stat-label">Records</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Report Table -->
+<div class="card">
+  <div class="card-header-custom">
+    <h5>Report ({{ report_rows|length }} records)</h5>
+  </div>
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Student</th>
+          <th>Roll No</th>
+          <th>Class</th>
+          <th>Subject</th>
+          <th>Teacher</th>
+          <th class="text-center">Present</th>
+          <th class="text-center">Absent</th>
+          <th class="text-center">Total</th>
+          <th style="min-width:140px;">Attendance %</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in report_rows %}
+        <tr>
+          <td class="text-muted-custom">{{ forloop.counter }}</td>
+          <td class="fw-700">{{ row.student_name }}</td>
+          <td><code>{{ row.roll_number }}</code></td>
+          <td>{{ row.class_name }}</td>
+          <td>{{ row.subject_name }}</td>
+          <td>{{ row.teacher_name }}</td>
+          <td class="text-center">
+            <span class="badge-present">{{ row.present }}</span>
+          </td>
+          <td class="text-center">
+            <span class="badge-absent">{{ row.absent }}</span>
+          </td>
+          <td class="text-center fw-700">{{ row.total }}</td>
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              <div class="pct-bar flex-grow-1">
+                <div class="pct-fill" data-pct="{{ row.percentage }}"></div>
+              </div>
+              <span style="font-size:.8rem;font-weight:700;min-width:40px;text-align:right;
+                {% if row.percentage >= 75 %}color:#10b981;{% elif row.percentage >= 50 %}color:#f59e0b;{% else %}color:#ef4444;{% endif %}">
+                {{ row.percentage }}%
+              </span>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="10" class="text-center py-5 text-muted-custom">
+            <i class="bi bi-inbox" style="font-size:2rem;display:block;margin-bottom:.5rem;"></i>
+            No attendance data found for the selected filters.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

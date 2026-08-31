@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Django
+*.log
+local_settings.py
+staticfiles/
+media/
+
+# Sessions (contain user session data — do not commit)
+sessions/
+
+# Data files (contain real user data — do not commit to public repos)
+# Remove the lines below if you want to include sample data
+data/users.json
+data/attendance.json
+
+# Environment
+.env
+.venv
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini

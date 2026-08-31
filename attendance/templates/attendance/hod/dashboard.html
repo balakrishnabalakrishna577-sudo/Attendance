@@ -1,0 +1,133 @@
+{% extends "attendance/hod/base_hod.html" %}
+{% block title %}HOD Dashboard{% endblock %}
+{% block page_title %}HOD Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Welcome back, {{ request.session.name }} 👋</h1>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item active">Dashboard</li>
+      </ol>
+    </nav>
+  </div>
+  <span class="badge-role"><i class="bi bi-shield-check me-1"></i>HOD</span>
+</div>
+
+<!-- Stat Cards -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-lg-4 col-xl-2-4">
+    <div class="stat-card">
+      <div class="stat-icon purple"><i class="bi bi-person-badge"></i></div>
+      <div class="stat-info">
+        <div class="stat-value">{{ total_teachers }}</div>
+        <div class="stat-label">Teachers</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-4 col-xl-2-4">
+    <div class="stat-card">
+      <div class="stat-icon cyan"><i class="bi bi-building"></i></div>
+      <div class="stat-info">
+        <div class="stat-value">{{ total_classes }}</div>
+        <div class="stat-label">Classes</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-4 col-xl-2-4">
+    <div class="stat-card">
+      <div class="stat-icon yellow"><i class="bi bi-book"></i></div>
+      <div class="stat-info">
+        <div class="stat-value">{{ total_subjects }}</div>
+        <div class="stat-label">Subjects</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-4 col-xl-2-4">
+    <div class="stat-card">
+      <div class="stat-icon green"><i class="bi bi-people"></i></div>
+      <div class="stat-info">
+        <div class="stat-value">{{ total_students }}</div>
+        <div class="stat-label">Students</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-4 col-xl-2-4">
+    <div class="stat-card">
+      <div class="stat-icon red"><i class="bi bi-calendar-check"></i></div>
+      <div class="stat-info">
+        <div class="stat-value">{{ today_attendance }}</div>
+        <div class="stat-label">Today's Marks</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row g-3">
+  <div class="col-12 col-md-6 col-lg-4">
+    <div class="card h-100">
+      <div class="card-header-custom">
+        <h5><i class="bi bi-lightning-charge text-warning me-2"></i>Quick Actions</h5>
+      </div>
+      <div class="p-3 d-flex flex-column gap-2">
+        <a href="{% url 'teacher_add' %}" class="btn-primary-custom">
+          <i class="bi bi-person-plus"></i> Add Teacher
+        </a>
+        <a href="{% url 'class_add' %}" class="btn-primary-custom" style="background:#06b6d4;">
+          <i class="bi bi-plus-circle"></i> Add Class
+        </a>
+        <a href="{% url 'subject_add' %}" class="btn-primary-custom" style="background:#f59e0b;">
+          <i class="bi bi-book"></i> Add Subject
+        </a>
+        <a href="{% url 'assignment_add' %}" class="btn-primary-custom" style="background:#10b981;">
+          <i class="bi bi-diagram-3"></i> Assign Teacher
+        </a>
+        <a href="{% url 'student_add' %}" class="btn-primary-custom" style="background:#8b5cf6;">
+          <i class="bi bi-person-plus"></i> Add Student
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-md-6 col-lg-8">
+    <div class="card h-100">
+      <div class="card-header-custom">
+        <h5><i class="bi bi-info-circle text-primary me-2"></i>System Summary</h5>
+        <a href="{% url 'attendance_report' %}" class="btn-primary-custom" style="font-size:.78rem;padding:.35rem .75rem;">
+          View Reports
+        </a>
+      </div>
+      <div class="p-3">
+        <div class="row g-3">
+          <div class="col-6">
+            <div class="p-3 rounded" style="background:#f8fafc;border:1px solid #e2e8f0;">
+              <div class="fw-700" style="font-size:1.4rem;color:#4f46e5;">{{ total_teachers }}</div>
+              <div class="text-muted-custom">Active Teachers</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="p-3 rounded" style="background:#f8fafc;border:1px solid #e2e8f0;">
+              <div class="fw-700" style="font-size:1.4rem;color:#10b981;">{{ total_students }}</div>
+              <div class="text-muted-custom">Enrolled Students</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="p-3 rounded" style="background:#f8fafc;border:1px solid #e2e8f0;">
+              <div class="fw-700" style="font-size:1.4rem;color:#f59e0b;">{{ total_classes }}</div>
+              <div class="text-muted-custom">Total Classes</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="p-3 rounded" style="background:#f8fafc;border:1px solid #e2e8f0;">
+              <div class="fw-700" style="font-size:1.4rem;color:#06b6d4;">{{ today_attendance }}</div>
+              <div class="text-muted-custom">Marked Today ({{ today }})</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
