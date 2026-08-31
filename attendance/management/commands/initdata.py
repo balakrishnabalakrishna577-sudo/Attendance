@@ -32,9 +32,9 @@ class Command(BaseCommand):
         db.init_data_files()
 
         # ── HOD account ────────────────────────────────────────
-        if not db.get_user_by_username('admin'):
-            db.create_hod('admin', 'admin123', 'Head of Department')
-            self.stdout.write(self.style.SUCCESS('✓ HOD account created: admin / admin123'))
+        if not db.get_user_by_username('Naveen'):
+            db.create_hod('Naveen', 'Naveen@2006', 'Naveen')
+            self.stdout.write(self.style.SUCCESS('✓ HOD account created: Naveen / Naveen@2006'))
         else:
             self.stdout.write('  HOD account already exists.')
 
@@ -132,7 +132,7 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS('Setup complete! You can now run the server.'))
         self.stdout.write(self.style.SUCCESS('=' * 50))
         self.stdout.write('')
-        self.stdout.write('  HOD Login     → username: admin       password: admin123')
+        self.stdout.write('  HOD Login     → username: Naveen      password: Naveen@2006')
         self.stdout.write('  Teacher Login → username: teacher1    password: teacher123')
         self.stdout.write('  Teacher Login → username: teacher2    password: teacher123')
         self.stdout.write('')
