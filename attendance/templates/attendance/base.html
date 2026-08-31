@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#1e1b4b">
   <title>{% block title %}Attendance System{% endblock %}</title>
 
   <!-- Bootstrap 5 CSS -->
@@ -24,8 +25,8 @@
 <div class="alert-container" id="alert-container">
   {% for message in messages %}
     <div class="toast-alert toast-{% if message.tags == 'error' %}error{% elif message.tags == 'warning' %}warning{% elif message.tags == 'success' %}success{% else %}info{% endif %}">
-      <i class="bi bi-{% if message.tags == 'error' %}x-circle{% elif message.tags == 'warning' %}exclamation-triangle{% elif message.tags == 'success' %}check-circle{% else %}info-circle{% endif %}"></i>
-      {{ message }}
+      <i class="bi bi-{% if message.tags == 'error' %}x-circle-fill{% elif message.tags == 'warning' %}exclamation-triangle-fill{% elif message.tags == 'success' %}check-circle-fill{% else %}info-circle-fill{% endif %}"></i>
+      <span>{{ message }}</span>
       <button class="toast-close" aria-label="Close">×</button>
     </div>
   {% endfor %}
@@ -35,13 +36,12 @@
 <div class="app-wrapper">
 
   <!-- Sidebar -->
-  <aside class="sidebar" id="sidebar">
-
+  <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
     <div class="sidebar-brand">
       <div class="brand-icon"><i class="bi bi-mortarboard-fill"></i></div>
       <div class="brand-text">
         Attendance
-        <span>Management</span>
+        <span>Management System</span>
       </div>
     </div>
 
@@ -58,29 +58,29 @@
         </div>
       </div>
     </div>
-
   </aside>
 
   <!-- Mobile overlay -->
-  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <div class="sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
 
   <!-- Main content -->
   <div class="main-content">
 
     <!-- Top bar -->
-    <header class="topbar">
-      <button class="topbar-toggle" id="sidebar-toggle" aria-label="Toggle menu">
+    <header class="topbar" role="banner">
+      <button class="topbar-toggle" id="sidebar-toggle" aria-label="Open navigation menu" aria-expanded="false" aria-controls="sidebar">
         <i class="bi bi-list"></i>
       </button>
       <div class="topbar-title">{% block page_title %}Dashboard{% endblock %}</div>
-      <div class="topbar-date"></div>
-      <a href="{% url 'logout' %}" class="btn-primary-custom" style="padding:.4rem .85rem;font-size:.8rem;">
-        <i class="bi bi-box-arrow-right"></i> Logout
+      <div class="topbar-date" aria-live="polite"></div>
+      <a href="{% url 'logout' %}" class="btn-primary-custom" style="padding:.38rem .8rem;font-size:.8rem;" aria-label="Logout">
+        <i class="bi bi-box-arrow-right"></i>
+        <span class="logout-text">Logout</span>
       </a>
     </header>
 
     <!-- Page body -->
-    <main class="page-content">
+    <main class="page-content" role="main">
       {% block content %}{% endblock %}
     </main>
 

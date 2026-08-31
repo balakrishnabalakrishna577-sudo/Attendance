@@ -7,9 +7,7 @@
   <div>
     <h1>Welcome, {{ teacher.name }} 👋</h1>
     <nav aria-label="breadcrumb">
-      <ol class="breadcrumb mb-0">
-        <li class="breadcrumb-item active">Dashboard</li>
-      </ol>
+      <ol class="breadcrumb mb-0"><li class="breadcrumb-item active">Dashboard</li></ol>
     </nav>
   </div>
   <span class="badge-role" style="background:#d1fae5;color:#065f46;">
@@ -20,7 +18,7 @@
 <!-- Stat Cards -->
 <div class="row g-3 mb-4">
   <div class="col-6 col-md-3">
-    <div class="stat-card">
+    <div class="stat-card h-100">
       <div class="stat-icon purple"><i class="bi bi-diagram-3"></i></div>
       <div class="stat-info">
         <div class="stat-value">{{ assignments|length }}</div>
@@ -29,7 +27,7 @@
     </div>
   </div>
   <div class="col-6 col-md-3">
-    <div class="stat-card">
+    <div class="stat-card h-100">
       <div class="stat-icon green"><i class="bi bi-calendar-check"></i></div>
       <div class="stat-info">
         <div class="stat-value">{{ today_count }}</div>
@@ -38,7 +36,7 @@
     </div>
   </div>
   <div class="col-6 col-md-3">
-    <div class="stat-card">
+    <div class="stat-card h-100">
       <div class="stat-icon cyan"><i class="bi bi-people"></i></div>
       <div class="stat-info">
         <div class="stat-value">{{ total_records }}</div>
@@ -47,18 +45,18 @@
     </div>
   </div>
   <div class="col-6 col-md-3">
-    <div class="stat-card">
+    <div class="stat-card h-100">
       <div class="stat-icon yellow"><i class="bi bi-percent"></i></div>
       <div class="stat-info">
         <div class="stat-value">{{ overall_pct }}%</div>
-        <div class="stat-label">Overall Attendance</div>
+        <div class="stat-label">Attendance %</div>
       </div>
     </div>
   </div>
 </div>
 
 <!-- Assigned Classes -->
-<div class="page-header mb-3">
+<div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
   <h5 class="mb-0 fw-700">My Assigned Classes &amp; Subjects</h5>
   <a href="{% url 'my_attendance_records' %}" class="btn-primary-custom" style="font-size:.8rem;padding:.4rem .85rem;">
     <i class="bi bi-journal-check"></i> View My Records
@@ -70,13 +68,11 @@
   {% for a in assignments %}
   <div class="col-12 col-sm-6 col-lg-4">
     <div class="assignment-card">
-      <div class="class-badge">
-        <i class="bi bi-building me-1"></i>{{ a.class_name }}
-      </div>
+      <div class="class-badge"><i class="bi bi-building me-1"></i>{{ a.class_name }}</div>
       <div class="subject-name">{{ a.subject_name }}</div>
-      <div class="subject-code mb-3"><code>{{ a.subject_code }}</code></div>
+      <div class="subject-code"><code>{{ a.subject_code }}</code></div>
       <a href="{% url 'mark_attendance' a.class_id a.subject_id %}?date={{ today }}"
-         class="btn-primary-custom w-100 justify-content-center">
+         class="btn-primary-custom w-100 justify-content-center mt-auto">
         <i class="bi bi-pencil-square"></i> Mark Attendance
       </a>
     </div>
@@ -85,7 +81,7 @@
 </div>
 {% else %}
 <div class="card p-5 text-center">
-  <i class="bi bi-inbox" style="font-size:2.5rem;color:#cbd5e1;margin-bottom:.75rem;display:block;"></i>
+  <i class="bi bi-inbox" style="font-size:2.5rem;color:#cbd5e1;display:block;margin-bottom:.75rem;"></i>
   <p class="text-muted-custom mb-0">No assignments yet. Contact the HOD to get assigned to a class.</p>
 </div>
 {% endif %}

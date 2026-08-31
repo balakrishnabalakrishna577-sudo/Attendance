@@ -7,57 +7,94 @@
 // ── Auto-dismiss toasts ────────────────────────────────
 function initToasts() {
   document.querySelectorAll('.toast-alert').forEach(function (el) {
-    // Close button
     var btn = el.querySelector('.toast-close');
-    if (btn) {
-      btn.addEventListener('click', function () {
-        dismissToast(el);
-      });
-    }
-    // Auto dismiss after 4 seconds
-    setTimeout(function () {
-      dismissToast(el);
-    }, 4000);
+    if (btn) btn.addEventListener('click', function () { dismissToast(el); });
+    setTimeout(function () { dismissToast(el); }, 4500);
   });
 }
 
 function dismissToast(el) {
+  if (!el.parentNode) return;
   el.style.transition = 'opacity .3s, transform .3s';
   el.style.opacity = '0';
-  el.style.transform = 'translateX(100%)';
-  setTimeout(function () { el.remove(); }, 320);
+  el.style.transform = 'translateX(110%)';
+  setTimeout(function () { if (el.parentNode) el.remove(); }, 320);
 }
 
 // ── Sidebar toggle (mobile) ────────────────────────────
 function initSidebar() {
-  var toggle = document.querySelector('.topbar-toggle');
-  var sidebar = document.querySelector('.sidebar');
-  var overlay = document.querySelector('.sidebar-overlay');
+  var toggle  = document.getElementById('sidebar-toggle');
+  var sidebar = document.getElementById('sidebar');
+  var overlay = document.getElementById('sidebar-overlay');
 
   if (!toggle || !sidebar) return;
 
+  function openSidebar() {
+    sidebar.classList.add('open');
+    if (overlay) { overlay.classList.add('show'); overlay.removeAttribute('aria-hidden'); }
+    toggle.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden'; // prevent background scroll
+  }
+
+  function closeSidebar() {
+    sidebar.classList.remove('open');
+    if (overlay) { overlay.classList.remove('show'); overlay.setAttribute('aria-hidden', 'true'); }
+    toggle.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  }
+
   toggle.addEventListener('click', function () {
-    sidebar.classList.toggle('open');
-    if (overlay) overlay.classList.toggle('show');
+    sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
   });
 
-  if (overlay) {
-    overlay.addEventListener('click', function () {
-      sidebar.classList.remove('open');
-      overlay.classList.remove('show');
+  if (overlay) overlay.addEventListener('click', closeSidebar);
+
+  // Close on Escape key
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && sidebar.classList.contains('open')) closeSidebar();
+  });
+
+  // Close sidebar when a nav link is clicked on mobile
+  sidebar.querySelectorAll('a').forEach(function (a) {
+    a.addEventListener('click', function () {
+      if (window.innerWidth <= 768) closeSidebar();
     });
-  }
+  });
+
+  // Restore overflow on resize to desktop
+  window.addEventListener('resize', function () {
+    if (window.innerWidth > 768) {
+      sidebar.classList.remove('open');
+      if (overlay) { overlay.classList.remove('show'); overlay.setAttribute('aria-hidden', 'true'); }
+      document.body.style.overflow = '';
+    }
+  });
 }
 
-// ── Confirm delete dialogs ─────────────────────────────
+// ── Active sidebar link ────────────────────────────────
+function initActiveNav() {
+  var path = window.location.pathname;
+  var links = document.querySelectorAll('.sidebar-nav a');
+  var bestMatch = null;
+  var bestLen = 0;
+
+  links.forEach(function (a) {
+    var href = a.getAttribute('href');
+    if (href && href !== '/' && path.startsWith(href) && href.length > bestLen) {
+      bestLen = href.length;
+      bestMatch = a;
+    }
+  });
+
+  if (bestMatch) bestMatch.classList.add('active');
+}
+
+// ── Confirm delete ─────────────────────────────────────
 function initConfirmDelete() {
   document.querySelectorAll('[data-confirm]').forEach(function (el) {
     el.addEventListener('click', function (e) {
       var msg = el.getAttribute('data-confirm') || 'Are you sure you want to delete this?';
-      if (!confirm(msg)) {
-        e.preventDefault();
-        return false;
-      }
+      if (!confirm(msg)) e.preventDefault();
     });
   });
 }
@@ -70,8 +107,7 @@ function initAttendanceBulk() {
   if (presentAll) {
     presentAll.addEventListener('click', function () {
       document.querySelectorAll('.att-radio-present').forEach(function (r) {
-        r.checked = true;
-        updateRowHighlight(r);
+        r.checked = true; updateRowHighlight(r);
       });
     });
   }
@@ -79,17 +115,13 @@ function initAttendanceBulk() {
   if (absentAll) {
     absentAll.addEventListener('click', function () {
       document.querySelectorAll('.att-radio-absent').forEach(function (r) {
-        r.checked = true;
-        updateRowHighlight(r);
+        r.checked = true; updateRowHighlight(r);
       });
     });
   }
 
-  // Row highlight on toggle change
   document.querySelectorAll('.att-radio-present, .att-radio-absent').forEach(function (r) {
-    r.addEventListener('change', function () {
-      updateRowHighlight(r);
-    });
+    r.addEventListener('change', function () { updateRowHighlight(r); });
   });
 }
 
@@ -97,40 +129,35 @@ function updateRowHighlight(radio) {
   var row = radio.closest('tr');
   if (!row) return;
   row.classList.remove('att-row-present', 'att-row-absent');
-  if (radio.value === 'Present' && radio.checked) {
-    row.classList.add('att-row-present');
-  } else if (radio.value === 'Absent' && radio.checked) {
-    row.classList.add('att-row-absent');
+  if (radio.checked) {
+    row.classList.add(radio.value === 'Present' ? 'att-row-present' : 'att-row-absent');
   }
 }
 
-// ── Live search for tables ─────────────────────────────
+// ── Live table search ──────────────────────────────────
 function initTableSearch() {
-  var searchInput = document.getElementById('table-search');
-  if (!searchInput) return;
-
-  searchInput.addEventListener('input', function () {
-    var query = this.value.toLowerCase();
-    var rows  = document.querySelectorAll('.searchable-row');
-    rows.forEach(function (row) {
-      var text = row.textContent.toLowerCase();
-      row.style.display = text.includes(query) ? '' : 'none';
+  var input = document.getElementById('table-search');
+  if (!input) return;
+  input.addEventListener('input', function () {
+    var q = this.value.toLowerCase().trim();
+    document.querySelectorAll('.searchable-row').forEach(function (row) {
+      row.style.display = (!q || row.textContent.toLowerCase().includes(q)) ? '' : 'none';
     });
   });
 }
 
-// ── Percentage bar colour ──────────────────────────────
+// ── Percentage bar fill ────────────────────────────────
 function initPctBars() {
   document.querySelectorAll('.pct-fill').forEach(function (bar) {
     var pct = parseFloat(bar.getAttribute('data-pct') || '0');
-    bar.style.width = Math.min(pct, 100) + '%';
+    bar.style.width = Math.min(Math.max(pct, 0), 100) + '%';
     bar.classList.remove('low', 'medium');
     if (pct < 50) bar.classList.add('low');
     else if (pct < 75) bar.classList.add('medium');
   });
 }
 
-// ── Set current date as default for date pickers ──────
+// ── Set today as default on date inputs ────────────────
 function initDateDefaults() {
   var today = new Date().toISOString().split('T')[0];
   document.querySelectorAll('input[type="date"][data-today]').forEach(function (el) {
@@ -138,34 +165,20 @@ function initDateDefaults() {
   });
 }
 
-// ── Topbar: live date display ──────────────────────────
+// ── Topbar live date ───────────────────────────────────
 function initTopbarDate() {
   var el = document.querySelector('.topbar-date');
   if (!el) return;
   var d = new Date();
-  var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-  el.textContent = d.toLocaleDateString('en-IN', options);
+  el.textContent = d.toLocaleDateString('en-IN', {
+    weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
+  });
 }
 
-// ── Attendance row initial highlight ──────────────────
+// ── Initial row highlights (attendance page) ───────────
 function initRowHighlights() {
-  document.querySelectorAll('.att-radio-present:checked').forEach(function (r) {
-    var row = r.closest('tr');
-    if (row) row.classList.add('att-row-present');
-  });
-  document.querySelectorAll('.att-radio-absent:checked').forEach(function (r) {
-    var row = r.closest('tr');
-    if (row) row.classList.add('att-row-absent');
-  });
-}
-
-// ── Active sidebar link ────────────────────────────────
-function initActiveNav() {
-  var path = window.location.pathname;
-  document.querySelectorAll('.sidebar-nav a').forEach(function (a) {
-    if (a.getAttribute('href') && path.startsWith(a.getAttribute('href'))) {
-      a.classList.add('active');
-    }
+  document.querySelectorAll('.att-radio-present:checked, .att-radio-absent:checked').forEach(function (r) {
+    updateRowHighlight(r);
   });
 }
 
@@ -173,6 +186,7 @@ function initActiveNav() {
 document.addEventListener('DOMContentLoaded', function () {
   initToasts();
   initSidebar();
+  initActiveNav();
   initConfirmDelete();
   initAttendanceBulk();
   initTableSearch();
@@ -180,5 +194,4 @@ document.addEventListener('DOMContentLoaded', function () {
   initDateDefaults();
   initTopbarDate();
   initRowHighlights();
-  initActiveNav();
 });

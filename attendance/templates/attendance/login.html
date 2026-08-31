@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#1e1b4b">
   <title>Login — Attendance System</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -12,13 +13,12 @@
 </head>
 <body>
 
-<!-- Toast notifications -->
 {% if messages %}
 <div class="alert-container">
   {% for message in messages %}
     <div class="toast-alert toast-{% if message.tags == 'error' %}error{% elif message.tags == 'success' %}success{% elif message.tags == 'warning' %}warning{% else %}info{% endif %}">
-      <i class="bi bi-{% if message.tags == 'error' %}x-circle{% elif message.tags == 'success' %}check-circle{% else %}info-circle{% endif %}"></i>
-      {{ message }}
+      <i class="bi bi-{% if message.tags == 'error' %}x-circle-fill{% elif message.tags == 'success' %}check-circle-fill{% else %}info-circle-fill{% endif %}"></i>
+      <span>{{ message }}</span>
       <button class="toast-close">×</button>
     </div>
   {% endfor %}
@@ -28,13 +28,13 @@
 <div class="login-page">
   <div class="login-card">
 
-    <div class="login-logo">
+    <div class="login-logo" aria-hidden="true">
       <i class="bi bi-mortarboard-fill"></i>
     </div>
 
     <div class="login-title">
       <h1>Attendance System</h1>
-      <p>Sign in to your account to continue</p>
+      <p>Sign in to continue</p>
     </div>
 
     <form method="post" novalidate>
@@ -44,15 +44,12 @@
         <label class="form-label-custom" for="username">
           <i class="bi bi-person me-1"></i> Username
         </label>
-        <input
-          type="text"
-          id="username"
-          name="username"
-          class="form-control-custom"
-          placeholder="Enter your username"
-          autocomplete="username"
-          required
-        >
+        <input type="text" id="username" name="username"
+               class="form-control-custom"
+               placeholder="Enter your username"
+               autocomplete="username"
+               autocapitalize="none"
+               required>
       </div>
 
       <div class="mb-4">
@@ -60,18 +57,15 @@
           <i class="bi bi-lock me-1"></i> Password
         </label>
         <div style="position:relative;">
-          <input
-            type="password"
-            id="password"
-            name="password"
-            class="form-control-custom"
-            placeholder="Enter your password"
-            autocomplete="current-password"
-            required
-            style="padding-right:2.75rem;"
-          >
-          <button type="button" id="pwd-toggle"
-            style="position:absolute;right:.7rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#64748b;">
+          <input type="password" id="password" name="password"
+                 class="form-control-custom"
+                 placeholder="Enter your password"
+                 autocomplete="current-password"
+                 required
+                 style="padding-right:2.75rem;">
+          <button type="button" id="pwd-toggle" aria-label="Toggle password visibility"
+                  style="position:absolute;right:.7rem;top:50%;transform:translateY(-50%);
+                         background:none;border:none;cursor:pointer;color:#64748b;padding:.2rem;">
             <i class="bi bi-eye" id="pwd-icon"></i>
           </button>
         </div>
@@ -82,8 +76,6 @@
       </button>
     </form>
 
-
-
   </div>
 </div>
 
@@ -91,17 +83,11 @@
 {% load static %}
 <script src="{% static 'js/app.js' %}"></script>
 <script>
-  // Password visibility toggle
   document.getElementById('pwd-toggle').addEventListener('click', function () {
     var inp  = document.getElementById('password');
     var icon = document.getElementById('pwd-icon');
-    if (inp.type === 'password') {
-      inp.type = 'text';
-      icon.className = 'bi bi-eye-slash';
-    } else {
-      inp.type = 'password';
-      icon.className = 'bi bi-eye';
-    }
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+    icon.className = inp.type === 'password' ? 'bi bi-eye' : 'bi bi-eye-slash';
   });
 </script>
 </body>

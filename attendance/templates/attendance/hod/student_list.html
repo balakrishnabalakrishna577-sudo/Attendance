@@ -7,10 +7,10 @@
   <h1><i class="bi bi-people me-2"></i>Students</h1>
   <div class="d-flex gap-2 flex-wrap">
     <a href="{% url 'student_import' %}" class="btn-primary-custom" style="background:#06b6d4;">
-      <i class="bi bi-upload"></i> Import CSV
+      <i class="bi bi-upload"></i> <span class="d-none d-sm-inline">Import</span> CSV
     </a>
     <a href="{% url 'student_add' %}" class="btn-primary-custom">
-      <i class="bi bi-plus-lg"></i> Add Student
+      <i class="bi bi-plus-lg"></i> <span class="d-none d-sm-inline">Add</span> Student
     </a>
   </div>
 </div>
@@ -18,28 +18,25 @@
 <!-- Filters -->
 <div class="card mb-3">
   <div class="p-3">
-    <form method="get" class="row g-2 align-items-end">
-      <div class="col-sm-5">
+    <form method="get" class="row g-2 filter-row">
+      <div class="col-12 col-sm-5">
         <label class="form-label-custom">Search</label>
-        <input type="text" name="q" value="{{ query }}" class="form-control-custom"
-               placeholder="Name or roll number…">
+        <input type="text" name="q" value="{{ query }}" class="form-control-custom" placeholder="Name or roll number…">
       </div>
-      <div class="col-sm-4">
-        <label class="form-label-custom">Filter by Class</label>
+      <div class="col-12 col-sm-4">
+        <label class="form-label-custom">Class</label>
         <select name="class_id" class="form-control-custom form-select-custom">
           <option value="">All Classes</option>
           {% for cls in classes %}
-          <option value="{{ cls.id }}" {% if filter_class == cls.id %}selected{% endif %}>
-            {{ cls.name }}
-          </option>
+          <option value="{{ cls.id }}" {% if filter_class == cls.id %}selected{% endif %}>{{ cls.name }}</option>
           {% endfor %}
         </select>
       </div>
-      <div class="col-sm-3 d-flex gap-2">
+      <div class="col-12 col-sm-3 d-flex align-items-end gap-2">
         <button type="submit" class="btn-primary-custom flex-fill justify-content-center">
           <i class="bi bi-search"></i> Filter
         </button>
-        <a href="{% url 'student_list' %}" class="btn btn-secondary">Reset</a>
+        <a href="{% url 'student_list' %}" class="btn btn-secondary px-3">✕</a>
       </div>
     </form>
   </div>
@@ -54,15 +51,24 @@
   <div class="table-container">
     <table class="data-table">
       <thead>
-        <tr><th>#</th><th>Roll No</th><th>Name</th><th>Class</th><th>Actions</th></tr>
+        <tr>
+          <th>#</th>
+          <th>Roll No</th>
+          <th>Name</th>
+          <th class="hide-mobile">Class</th>
+          <th>Actions</th>
+        </tr>
       </thead>
       <tbody>
         {% for student in students %}
         <tr class="searchable-row">
           <td class="text-muted-custom">{{ forloop.counter }}</td>
           <td><code>{{ student.roll_number }}</code></td>
-          <td class="fw-700">{{ student.name }}</td>
-          <td>{{ student.class_name }}</td>
+          <td>
+            <div class="fw-700">{{ student.name }}</div>
+            <div class="text-muted-custom d-sm-none" style="font-size:.75rem;">{{ student.class_name }}</div>
+          </td>
+          <td class="hide-mobile">{{ student.class_name }}</td>
           <td>
             <div class="d-flex gap-1">
               <a href="{% url 'student_edit' student.id %}" class="btn-sm-icon btn-edit" title="Edit">
@@ -77,8 +83,7 @@
         {% empty %}
         <tr>
           <td colspan="5" class="text-center py-4 text-muted-custom">
-            No students found. <a href="{% url 'student_add' %}">Add one</a> or
-            <a href="{% url 'student_import' %}">import CSV</a>.
+            No students found. <a href="{% url 'student_add' %}">Add one</a> or <a href="{% url 'student_import' %}">import CSV</a>.
           </td>
         </tr>
         {% endfor %}

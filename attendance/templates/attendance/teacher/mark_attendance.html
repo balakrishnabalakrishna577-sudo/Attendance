@@ -5,7 +5,7 @@
 {% block content %}
 <div class="page-header">
   <div>
-    <h1>{{ cls.name }} — {{ subject.name }}</h1>
+    <h1 style="font-size:1.1rem;">{{ cls.name }} — {{ subject.name }}</h1>
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb mb-0">
         <li class="breadcrumb-item"><a href="{% url 'teacher_dashboard' %}">Dashboard</a></li>
@@ -14,15 +14,14 @@
     </nav>
   </div>
   <a href="{% url 'teacher_dashboard' %}" class="btn-primary-custom" style="background:#64748b;">
-    <i class="bi bi-arrow-left"></i> Back
+    <i class="bi bi-arrow-left"></i> <span class="d-none d-sm-inline">Back</span>
   </a>
 </div>
 
 {% if is_edit %}
-<div class="mb-3 p-3 rounded d-flex align-items-center gap-2"
-     style="background:#fef3c7;border:1px solid #fde68a;">
-  <i class="bi bi-pencil-square text-warning"></i>
-  <span style="font-size:.875rem;">
+<div class="mb-3 p-3 rounded d-flex align-items-start gap-2" style="background:#fef3c7;border:1px solid #fde68a;">
+  <i class="bi bi-pencil-square text-warning mt-1" style="flex-shrink:0;"></i>
+  <span style="font-size:.845rem;">
     <strong>Editing existing attendance</strong> for {{ selected_date }}.
     Changes will overwrite the previous record.
   </span>
@@ -31,17 +30,17 @@
 
 <!-- Date Selector -->
 <div class="card mb-3 p-3">
-  <div class="d-flex align-items-center gap-3 flex-wrap">
+  <div class="d-flex align-items-center gap-2 flex-wrap">
     <label class="form-label-custom mb-0" style="white-space:nowrap;">
-      <i class="bi bi-calendar3 me-1"></i> Attendance Date:
+      <i class="bi bi-calendar3 me-1"></i> Date:
     </label>
     <input type="date" id="date-picker" value="{{ selected_date }}" max="{{ today }}"
-           class="form-control-custom" style="max-width:200px;">
-    <button id="go-date" class="btn-primary-custom" style="padding:.45rem 1rem;">
+           class="form-control-custom" style="max-width:180px;min-width:140px;">
+    <button id="go-date" class="btn-primary-custom">
       <i class="bi bi-arrow-right"></i> Go
     </button>
-    <span class="text-muted-custom ms-auto" style="font-size:.8rem;">
-      {{ students|length }} students
+    <span class="text-muted-custom ms-auto" style="font-size:.78rem;">
+      {{ students|length }} student{{ students|length|pluralize }}
     </span>
   </div>
 </div>
@@ -53,62 +52,47 @@
   <div class="card mb-3">
     <!-- Bulk Actions -->
     <div class="card-header-custom">
-      <h5>Student Attendance</h5>
-      <div class="d-flex gap-2">
+      <h5 class="mb-0">Student Attendance</h5>
+      <div class="d-flex gap-2 att-bulk-row flex-wrap">
         <button type="button" id="btn-present-all"
-                class="btn-primary-custom" style="background:#10b981;font-size:.8rem;padding:.4rem .85rem;">
+                class="btn-primary-custom" style="background:#10b981;font-size:.8rem;padding:.38rem .8rem;">
           <i class="bi bi-check-all"></i> Present All
         </button>
         <button type="button" id="btn-absent-all"
-                class="btn-primary-custom" style="background:#ef4444;font-size:.8rem;padding:.4rem .85rem;">
+                class="btn-primary-custom" style="background:#ef4444;font-size:.8rem;padding:.38rem .8rem;">
           <i class="bi bi-x-circle"></i> Absent All
         </button>
       </div>
     </div>
 
-    <div class="table-container">
+    <!-- Desktop table -->
+    <div class="table-container d-none d-sm-block">
       <table class="data-table">
         <thead>
           <tr>
-            <th style="width:60px;">#</th>
-            <th style="width:100px;">Roll No</th>
+            <th style="width:50px;">#</th>
+            <th style="width:90px;">Roll No</th>
             <th>Student Name</th>
-            <th style="width:180px;">Status</th>
+            <th style="width:170px;">Status</th>
           </tr>
         </thead>
         <tbody>
           {% for student in students %}
-          {% with current=existing_map|default:{} %}
-          {% with status=existing_map|default:"Absent" %}
           <tr id="row-{{ student.id }}">
             <td class="text-muted-custom">{{ forloop.counter }}</td>
             <td><code>{{ student.roll_number }}</code></td>
             <td class="fw-700">{{ student.name }}</td>
             <td>
               <div class="att-toggle">
-                <input type="radio"
-                       name="status_{{ student.id }}"
-                       id="p_{{ student.id }}"
-                       value="Present"
-                       class="att-radio-present"
-                       {% if existing_map and existing_map|default:'' != '' %}
-                         {% with st_status=existing_map %}{% endwith %}
-                       {% endif %}
-                       >
+                <input type="radio" name="status_{{ student.id }}" id="p_{{ student.id }}"
+                       value="Present" class="att-radio-present">
                 <label for="p_{{ student.id }}">Present</label>
-
-                <input type="radio"
-                       name="status_{{ student.id }}"
-                       id="a_{{ student.id }}"
-                       value="Absent"
-                       class="att-radio-absent"
-                       >
+                <input type="radio" name="status_{{ student.id }}" id="a_{{ student.id }}"
+                       value="Absent" class="att-radio-absent">
                 <label for="a_{{ student.id }}">Absent</label>
               </div>
             </td>
           </tr>
-          {% endwith %}
-          {% endwith %}
           {% empty %}
           <tr>
             <td colspan="4" class="text-center py-4 text-muted-custom">
@@ -119,18 +103,42 @@
         </tbody>
       </table>
     </div>
+
+    <!-- Mobile card list (shown only on small screens) -->
+    <div class="d-sm-none p-2" id="mobile-att-list">
+      {% for student in students %}
+      <div class="d-flex align-items-center justify-content-between p-2 mb-1 rounded"
+           id="mob-row-{{ student.id }}"
+           style="border:1px solid #e2e8f0;gap:.5rem;">
+        <div style="min-width:0;">
+          <div class="fw-700" style="font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+            {{ student.name }}
+          </div>
+          <div class="text-muted-custom">Roll: {{ student.roll_number }}</div>
+        </div>
+        <div class="att-toggle" style="flex-shrink:0;">
+          <input type="radio" name="status_{{ student.id }}" id="mp_{{ student.id }}"
+                 value="Present" class="att-radio-present">
+          <label for="mp_{{ student.id }}">P</label>
+          <input type="radio" name="status_{{ student.id }}" id="ma_{{ student.id }}"
+                 value="Absent" class="att-radio-absent">
+          <label for="ma_{{ student.id }}">A</label>
+        </div>
+      </div>
+      {% empty %}
+      <p class="text-center text-muted-custom p-3">No students in this class.</p>
+      {% endfor %}
+    </div>
   </div>
 
   {% if students %}
-  <div class="d-flex gap-2 align-items-center">
-    <button type="submit" class="btn-primary-custom" style="padding:.65rem 1.5rem;font-size:.95rem;">
+  <div class="d-flex flex-wrap gap-2 align-items-center">
+    <button type="submit" class="btn-primary-custom" style="padding:.6rem 1.4rem;">
       <i class="bi bi-save"></i> Save Attendance
     </button>
     <a href="{% url 'teacher_dashboard' %}" class="btn btn-secondary">Cancel</a>
-    <span class="text-muted-custom ms-2" style="font-size:.8rem;">
-      Date: <strong>{{ selected_date }}</strong> &nbsp;|&nbsp;
-      Class: <strong>{{ cls.name }}</strong> &nbsp;|&nbsp;
-      Subject: <strong>{{ subject.name }}</strong>
+    <span class="text-muted-custom d-none d-md-inline" style="font-size:.78rem;margin-left:.5rem;">
+      {{ cls.name }} &nbsp;|&nbsp; {{ subject.name }} &nbsp;|&nbsp; {{ selected_date }}
     </span>
   </div>
   {% endif %}
@@ -139,49 +147,61 @@
 
 {% block extra_js %}
 <script>
-// Pre-fill existing attendance statuses
 var existingMap = {{ existing_map_json|default:"{}" }};
 
 document.addEventListener('DOMContentLoaded', function () {
-  // Set statuses from existing map
-  Object.keys(existingMap).forEach(function (studentId) {
-    var status = existingMap[studentId];
-    var radioId = status === 'Present' ? 'p_' : 'a_';
-    var radio = document.getElementById(radioId + studentId);
-    if (radio) {
-      radio.checked = true;
-      var row = radio.closest('tr');
-      if (row) row.classList.add('att-row-' + status.toLowerCase());
-    }
+  // Apply existing statuses (desktop radio: p_/a_, mobile: mp_/ma_)
+  Object.keys(existingMap).forEach(function (sid) {
+    var status = existingMap[sid];
+    var prefix = status === 'Present' ? 'p_' : 'a_';
+    var mPrefix = status === 'Present' ? 'mp_' : 'ma_';
+    [prefix + sid, mPrefix + sid].forEach(function (id) {
+      var r = document.getElementById(id);
+      if (r) { r.checked = true; updateRowHighlight(r); }
+    });
   });
 
   // Default unset to Absent
-  document.querySelectorAll('.att-radio-absent').forEach(function (r) {
-    var name = r.getAttribute('name');
-    var group = document.querySelectorAll('[name="' + name + '"]');
-    var anyChecked = Array.from(group).some(function (rb) { return rb.checked; });
-    if (!anyChecked) {
-      r.checked = true;
-      var row = r.closest('tr');
-      if (row) row.classList.add('att-row-absent');
-    }
+  ['p_', 'a_', 'mp_', 'ma_'].forEach(function () {}); // no-op placeholder
+  document.querySelectorAll('input[type="radio"][name^="status_"]').forEach(function (r) {
+    // group check
   });
+  // Set Absent for any unanswered students
+  {% for student in students %}
+  (function () {
+    var name = 'status_{{ student.id }}';
+    var radios = document.querySelectorAll('[name="' + name + '"]');
+    var any = Array.from(radios).some(function (r) { return r.checked; });
+    if (!any) {
+      document.querySelectorAll('[name="' + name + '"][value="Absent"]').forEach(function (r) {
+        r.checked = true; updateRowHighlight(r);
+      });
+    }
+  })();
+  {% endfor %}
 
   // Date picker → redirect
   document.getElementById('go-date').addEventListener('click', function () {
     var d = document.getElementById('date-picker').value;
-    if (d) {
-      window.location.href = window.location.pathname + '?date=' + d;
-    }
+    if (d) window.location.href = window.location.pathname + '?date=' + d;
   });
   document.getElementById('date-picker').addEventListener('keydown', function (e) {
     if (e.key === 'Enter') document.getElementById('go-date').click();
   });
-
-  // Sync hidden date input with picker
   document.getElementById('date-picker').addEventListener('change', function () {
     document.getElementById('form-date').value = this.value;
   });
+
+  // Sync desktop ↔ mobile radios (same name so browser handles it natively)
 });
+
+function updateRowHighlight(radio) {
+  var row = radio.closest('tr') || radio.closest('[id^="mob-row-"]');
+  if (!row) return;
+  row.classList.remove('att-row-present', 'att-row-absent');
+  if (radio.checked) {
+    row.classList.add(radio.value === 'Present' ? 'att-row-present' : 'att-row-absent');
+  }
+}
 </script>
 {% endblock %}

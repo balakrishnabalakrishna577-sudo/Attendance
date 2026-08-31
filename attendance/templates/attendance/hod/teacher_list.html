@@ -6,7 +6,7 @@
 <div class="page-header">
   <h1><i class="bi bi-person-badge me-2"></i>Teachers</h1>
   <a href="{% url 'teacher_add' %}" class="btn-primary-custom">
-    <i class="bi bi-plus-lg"></i> Add Teacher
+    <i class="bi bi-plus-lg"></i> <span class="d-none d-sm-inline">Add</span> Teacher
   </a>
 </div>
 
@@ -14,7 +14,7 @@
   <div class="card-header-custom">
     <h5>All Teachers ({{ teachers|length }})</h5>
     <input type="text" id="table-search" class="form-control-custom"
-           placeholder="Search teachers…" style="max-width:220px;">
+           placeholder="Search…" style="max-width:200px;">
   </div>
   <div class="table-container">
     <table class="data-table">
@@ -22,10 +22,9 @@
         <tr>
           <th>#</th>
           <th>Name</th>
-          <th>Username</th>
-          <th>Department</th>
-          <th>Email</th>
-          <th>Phone</th>
+          <th class="hide-mobile">Username</th>
+          <th class="hide-mobile">Department</th>
+          <th class="hide-mobile">Email</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -33,11 +32,15 @@
         {% for teacher in teachers %}
         <tr class="searchable-row">
           <td class="text-muted-custom">{{ forloop.counter }}</td>
-          <td class="fw-700">{{ teacher.name }}</td>
-          <td><code>{{ teacher.username }}</code></td>
-          <td>{{ teacher.department|default:"—" }}</td>
-          <td>{{ teacher.email|default:"—" }}</td>
-          <td>{{ teacher.phone|default:"—" }}</td>
+          <td>
+            <div class="fw-700">{{ teacher.name }}</div>
+            <div class="text-muted-custom d-sm-none" style="font-size:.75rem;">
+              {{ teacher.username }} · {{ teacher.department|default:"" }}
+            </div>
+          </td>
+          <td class="hide-mobile"><code>{{ teacher.username }}</code></td>
+          <td class="hide-mobile">{{ teacher.department|default:"—" }}</td>
+          <td class="hide-mobile">{{ teacher.email|default:"—" }}</td>
           <td>
             <div class="d-flex gap-1">
               <a href="{% url 'teacher_edit' teacher.id %}" class="btn-sm-icon btn-edit" title="Edit">
@@ -51,7 +54,7 @@
         </tr>
         {% empty %}
         <tr>
-          <td colspan="7" class="text-center py-4 text-muted-custom">
+          <td colspan="6" class="text-center py-4 text-muted-custom">
             No teachers found. <a href="{% url 'teacher_add' %}">Add one</a>.
           </td>
         </tr>
