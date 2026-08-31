@@ -91,30 +91,7 @@ class Command(BaseCommand):
             t2 = teachers[1] if len(teachers) > 1 else teachers[0]
             self.stdout.write('  Teachers already exist.')
 
-        # ── Sample students ────────────────────────────────────
-        students = db.get_all_students()
-        if not students:
-            mca1_students = [
-                ('01', 'Aarav Singh'),
-                ('02', 'Meera Patel'),
-                ('03', 'Rahul Verma'),
-                ('04', 'Anjali Nair'),
-                ('05', 'Kiran Reddy'),
-            ]
-            for roll, name in mca1_students:
-                db.create_student(roll, name, c1['id'])
-
-            bca1_students = [
-                ('01', 'Rohan Gupta'),
-                ('02', 'Sneha Iyer'),
-                ('03', 'Amit Kumar'),
-            ]
-            for roll, name in bca1_students:
-                db.create_student(roll, name, c3['id'])
-
-            self.stdout.write(self.style.SUCCESS('✓ Sample students created.'))
-        else:
-            self.stdout.write('  Students already exist.')
+        # Students are added by the HOD via the dashboard — none created here.
 
         # ── Sample assignments ─────────────────────────────────
         assignments = db.get_all_assignments()
