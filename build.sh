@@ -9,5 +9,5 @@ pip install -r requirements.txt
 # Collect static files
 python manage.py collectstatic --no-input
 
-# Initialize data files and default HOD account
-python manage.py initdata
+# Clear all data and recreate only HOD account
+python manage.py initdata --reset
