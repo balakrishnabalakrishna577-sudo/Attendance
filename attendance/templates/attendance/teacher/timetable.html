@@ -1,15 +1,14 @@
 {% extends "attendance/teacher/base_teacher.html" %}
-{% block title %}My Timetable{% endblock %}
+{% block title %}My Timetable — Department Work Automation{% endblock %}
 {% block page_title %}My Timetable{% endblock %}
 
 {% block content %}
 <div class="page-header">
-  <h1><i class="bi bi-grid-3x3-gap me-2"></i>My Timetable</h1>
-  <!-- Year picker -->
+  <h1><i class="bi bi-grid-3x3-gap me-2" style="color:var(--primary);"></i>My Timetable</h1>
   <form method="get" class="d-flex align-items-center gap-2">
-    <label class="form-label-custom mb-0" style="white-space:nowrap;">Academic Year:</label>
+    <label class="form-label-custom mb-0" style="white-space:nowrap;font-size:.8rem;">Year:</label>
     <select name="year" class="form-control-custom form-select-custom"
-            style="min-width:120px;" onchange="this.form.submit()">
+            style="min-width:115px;" onchange="this.form.submit()">
       <option value="2025-26" {% if year == '2025-26' %}selected{% endif %}>2025-26</option>
       <option value="2026-27" {% if year == '2026-27' %}selected{% endif %}>2026-27</option>
       {% for y in years %}
@@ -25,49 +24,60 @@
   {% for class_id, data in grids.items %}
 
   <!-- Section heading -->
-  <div class="d-flex align-items-center gap-2 mb-2 mt-3">
-    <span style="background:#ede9fe;color:#4f46e5;padding:.35rem .85rem;border-radius:.5rem;font-weight:700;font-size:.95rem;">
+  <div class="d-flex align-items-center gap-2 mb-2 {% if not forloop.first %}mt-4{% endif %}">
+    <span style="background:var(--primary-100);color:var(--primary-dark);
+                 padding:.35rem .85rem;border-radius:.5rem;
+                 font-weight:700;font-size:.9rem;border:1px solid var(--primary-light);">
       <i class="bi bi-building me-1"></i>{{ data.class_name }}
     </span>
-    <span class="text-muted-custom" style="font-size:.8rem;">{{ year }}</span>
+    <span style="font-size:.78rem;color:var(--text-3);">{{ year }}</span>
   </div>
 
-  <!-- Desktop Grid -->
-  <div class="card mb-4 d-none d-md-block">
+  <!-- Desktop grid -->
+  <div class="card mb-3 d-none d-md-block">
     <div class="table-container">
-      <table class="data-table">
+      <table style="width:100%;border-collapse:collapse;font-size:.82rem;">
         <thead>
           <tr>
-            <th style="min-width:90px;background:#f8fafc;">Day \ Hour</th>
+            <th style="background:var(--surface-2);padding:.65rem 1rem;
+                       font-weight:700;font-size:.7rem;text-transform:uppercase;
+                       letter-spacing:.06em;color:var(--text-3);
+                       border-bottom:2px solid var(--border);min-width:90px;">Day</th>
             {% for h in hours %}
-            <th class="text-center" style="min-width:110px;background:#f8fafc;">
-              Hour {{ h }}
-            </th>
+            <th style="background:var(--surface-2);padding:.65rem .5rem;
+                       font-weight:700;font-size:.7rem;text-transform:uppercase;
+                       letter-spacing:.06em;color:var(--text-3);
+                       border-bottom:2px solid var(--border);
+                       text-align:center;min-width:115px;">Hour {{ h }}</th>
             {% endfor %}
           </tr>
         </thead>
         <tbody>
           {% for day in days %}
-          <tr>
-            <td class="fw-700" style="background:#f8fafc;white-space:nowrap;color:#1e1b4b;">
-              {{ day }}
-            </td>
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:.55rem 1rem;font-weight:700;
+                       background:var(--surface-2);white-space:nowrap;
+                       color:var(--text-2);font-size:.82rem;">{{ day }}</td>
             {% for hour in hours %}
-            <td style="padding:.5rem;text-align:center;vertical-align:middle;">
+            <td style="padding:.4rem;text-align:center;vertical-align:middle;
+                       border-left:1px solid var(--border);">
               {% for slot in slots %}
               {% if slot.class_id == class_id and slot.day == day and slot.hour == hour %}
-              <div style="background:linear-gradient(135deg,#ede9fe,#ddd6fe);border-radius:.55rem;
-                          padding:.5rem .6rem;font-size:.78rem;border-left:3px solid #4f46e5;">
-                <div class="fw-700" style="color:#3730a3;">{{ slot.subject_name }}</div>
+              <div style="background:linear-gradient(135deg,var(--primary-100),#ddd6fe);
+                          border-radius:var(--radius-sm);padding:.5rem .55rem;
+                          font-size:.76rem;border-left:3px solid var(--primary);">
+                <div style="font-weight:700;color:var(--primary-dark);">
+                  {{ slot.subject_name }}
+                </div>
                 {% if slot.room %}
-                <div style="color:#64748b;font-size:.7rem;margin-top:.15rem;">
+                <div style="color:var(--text-4);font-size:.68rem;margin-top:.1rem;">
                   <i class="bi bi-door-open"></i> {{ slot.room }}
                 </div>
                 {% endif %}
                 {% if slot.start_time %}
-                <div style="color:#94a3b8;font-size:.68rem;margin-top:.1rem;">
+                <div style="color:var(--text-4);font-size:.68rem;">
                   {{ slot.start_time|time:"h:i A" }}
-                  {% if slot.end_time %}– {{ slot.end_time|time:"h:i A" }}{% endif %}
+                  {% if slot.end_time %}&ndash;{{ slot.end_time|time:"h:i A" }}{% endif %}
                 </div>
                 {% endif %}
               </div>
@@ -83,41 +93,39 @@
   </div>
 
   <!-- Mobile list -->
-  <div class="d-md-none mb-4">
+  <div class="d-md-none mb-3">
     {% for day in days %}
-    {% with has_any=False %}
-    {% for slot in slots %}
-    {% if slot.class_id == class_id and slot.day == day %}
-    {% if forloop.first %}
     <div class="card mb-2">
-      <div class="card-header-custom" style="background:#f8fafc;">
-        <h6 class="mb-0 fw-700" style="color:#1e1b4b;">{{ day }}</h6>
+      <div class="card-header-custom">
+        <h6 class="mb-0 fw-700" style="color:var(--text);">{{ day }}</h6>
       </div>
-    {% endif %}
-      <div class="d-flex align-items-start gap-3 p-3" style="border-bottom:1px solid #e2e8f0;">
-        <div style="background:#4f46e5;color:#fff;border-radius:.45rem;
-                    padding:.4rem .6rem;font-size:.78rem;font-weight:700;
-                    white-space:nowrap;flex-shrink:0;min-width:42px;text-align:center;">
+      {% for slot in slots %}
+      {% if slot.class_id == class_id and slot.day == day %}
+      <div class="d-flex align-items-start gap-3 p-3"
+           style="border-bottom:1px solid var(--border);">
+        <div style="background:var(--primary);color:#fff;border-radius:var(--radius-sm);
+                    padding:.38rem .6rem;font-size:.78rem;font-weight:700;
+                    white-space:nowrap;flex-shrink:0;min-width:44px;text-align:center;">
           Hr {{ slot.hour }}
         </div>
         <div>
-          <div class="fw-700">{{ slot.subject_name }}</div>
+          <div class="fw-700" style="font-size:.875rem;">{{ slot.subject_name }}</div>
           {% if slot.room %}
-          <div class="text-muted-custom" style="font-size:.78rem;">
+          <div style="font-size:.76rem;color:var(--text-3);">
             <i class="bi bi-door-open me-1"></i>{{ slot.room }}
           </div>
           {% endif %}
           {% if slot.start_time %}
-          <div class="text-muted-custom" style="font-size:.75rem;">
-            {{ slot.start_time|time:"h:i A" }}{% if slot.end_time %} – {{ slot.end_time|time:"h:i A" }}{% endif %}
+          <div style="font-size:.73rem;color:var(--text-4);">
+            {{ slot.start_time|time:"h:i A" }}
+            {% if slot.end_time %} – {{ slot.end_time|time:"h:i A" }}{% endif %}
           </div>
           {% endif %}
         </div>
       </div>
-    {% if forloop.last %}</div>{% endif %}
-    {% endif %}
-    {% endfor %}
-    {% endwith %}
+      {% endif %}
+      {% endfor %}
+    </div>
     {% endfor %}
   </div>
 
@@ -125,9 +133,15 @@
 
 {% else %}
 <div class="card p-5 text-center">
-  <i class="bi bi-grid-3x3-gap" style="font-size:2.5rem;color:#cbd5e1;display:block;margin-bottom:.75rem;"></i>
-  <p class="text-muted-custom mb-0">No timetable assigned for <strong>{{ year }}</strong>.</p>
-  <p class="text-muted-custom">Contact the HOD to add your timetable.</p>
+  <div style="width:72px;height:72px;background:var(--gray-100);border-radius:50%;
+              display:grid;place-items:center;margin:0 auto 1rem;
+              font-size:1.8rem;color:var(--text-4);">
+    <i class="bi bi-grid-3x3-gap"></i>
+  </div>
+  <p style="color:var(--text-3);margin-bottom:.5rem;font-size:.875rem;">
+    No timetable assigned for <strong>{{ year }}</strong>.
+  </p>
+  <p style="color:var(--text-4);font-size:.8rem;">Contact the HOD to add your timetable.</p>
 </div>
 {% endif %}
 {% endblock %}
