@@ -43,6 +43,9 @@
           <td class="hide-mobile">{{ teacher.email|default:"—" }}</td>
           <td>
             <div class="d-flex gap-1">
+              <a href="{% url 'teacher_profile' teacher.id %}" class="btn-sm-icon btn-view" title="View Profile">
+                <i class="bi bi-eye"></i>
+              </a>
               <a href="{% url 'teacher_edit' teacher.id %}" class="btn-sm-icon btn-edit" title="Edit">
                 <i class="bi bi-pencil"></i>
               </a>

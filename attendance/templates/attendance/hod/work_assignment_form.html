@@ -1,0 +1,88 @@
+{% extends "attendance/hod/base_hod.html" %}
+{% block title %}{% if work %}Edit{% else %}Assign{% endif %} Work{% endblock %}
+{% block page_title %}{% if work %}Edit{% else %}Assign{% endif %} Work{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>{% if work %}Edit Work Assignment{% else %}Assign Work to Teacher{% endif %}</h1>
+  <a href="{% url 'work_assignment_list' %}" class="btn-primary-custom" style="background:#64748b;">
+    <i class="bi bi-arrow-left"></i> Back
+  </a>
+</div>
+
+<div class="form-card" style="max-width:680px;">
+  <form method="post" novalidate>
+    {% csrf_token %}
+
+    <div class="mb-3">
+      <label class="form-label-custom">Teacher <span class="text-danger">*</span></label>
+      <select name="teacher_id" class="form-control-custom form-select-custom" required>
+        <option value="">— Select Teacher —</option>
+        {% for t in teachers %}
+        <option value="{{ t.id }}" {% if work.teacher_id == t.id %}selected{% endif %}>
+          {{ t.name }}{% if t.department %} ({{ t.department }}){% endif %}
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label-custom">Task Title <span class="text-danger">*</span></label>
+      <input type="text" name="title" class="form-control-custom"
+             value="{{ work.title|default:'' }}" required
+             placeholder="e.g. Prepare Question Paper for Mid-Term">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label-custom">Description</label>
+      <textarea name="description" class="form-control-custom" rows="3"
+                placeholder="Detailed instructions…">{{ work.description|default:'' }}</textarea>
+    </div>
+
+    <div class="row g-3 mb-3">
+      <div class="col-sm-6">
+        <label class="form-label-custom">Assigned Date <span class="text-danger">*</span></label>
+        <input type="date" name="assigned_date" class="form-control-custom"
+               value="{{ work.assigned_date|default:today }}" required>
+      </div>
+      <div class="col-sm-6">
+        <label class="form-label-custom">Due Date <span class="text-muted-custom">(optional)</span></label>
+        <input type="date" name="due_date" class="form-control-custom"
+               value="{{ work.due_date|default:'' }}">
+      </div>
+    </div>
+
+    <div class="row g-3 mb-3">
+      <div class="col-sm-6">
+        <label class="form-label-custom">Priority</label>
+        <select name="priority" class="form-control-custom form-select-custom">
+          {% for val,label in priority_choices %}
+          <option value="{{ val }}" {% if work.priority == val %}selected{% elif not work and val == 'medium' %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-sm-6">
+        <label class="form-label-custom">Status</label>
+        <select name="status" class="form-control-custom form-select-custom">
+          {% for val,label in status_choices %}
+          <option value="{{ val }}" {% if work.status == val %}selected{% elif not work and val == 'pending' %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <label class="form-label-custom">Remarks</label>
+      <textarea name="remarks" class="form-control-custom" rows="2"
+                placeholder="Additional notes…">{{ work.remarks|default:'' }}</textarea>
+    </div>
+
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn-primary-custom">
+        <i class="bi bi-check-lg"></i> {% if work %}Update{% else %}Assign{% endif %}
+      </button>
+      <a href="{% url 'work_assignment_list' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

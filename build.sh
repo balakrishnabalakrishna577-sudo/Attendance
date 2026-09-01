@@ -9,5 +9,8 @@ pip install -r requirements.txt
 # Collect static files
 python manage.py collectstatic --no-input
 
-# Clear all data and recreate only HOD account
-python manage.py initdata --reset
+# Run database migrations (creates SQLite tables for events, meetings, timetable, work assignments)
+python manage.py migrate --run-syncdb
+
+# Initialize HOD account (Naveen/Naveen@2006) — skips if already exists
+python manage.py initdata

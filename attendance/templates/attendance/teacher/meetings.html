@@ -1,0 +1,75 @@
+{% extends "attendance/teacher/base_teacher.html" %}
+{% block title %}Meetings{% endblock %}
+{% block page_title %}Meetings{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1><i class="bi bi-people-fill me-2"></i>My Meetings</h1>
+</div>
+
+<!-- Upcoming -->
+<h5 class="fw-700 mb-3" style="color:#4f46e5;">
+  <i class="bi bi-arrow-up-circle me-2"></i>Upcoming Meetings
+</h5>
+
+{% if upcoming %}
+<div class="row g-3 mb-4">
+  {% for m in upcoming %}
+  <div class="col-12 col-md-6">
+    <div class="card p-3 h-100">
+      <div class="d-flex align-items-center gap-2 mb-2">
+        <span style="background:#e0f2fe;color:#0c4a6e;padding:.2rem .6rem;border-radius:.35rem;font-size:.75rem;font-weight:700;">
+          {{ m.get_meeting_type_display }}
+        </span>
+        {% if m.programme != 'BOTH' %}
+        <span style="background:{% if m.programme == 'UG' %}#ede9fe{% else %}#d1fae5{% endif %};
+                     color:{% if m.programme == 'UG' %}#5b21b6{% else %}#065f46{% endif %};
+                     padding:.2rem .55rem;border-radius:.35rem;font-size:.72rem;font-weight:700;">
+          {{ m.programme }}
+        </span>
+        {% endif %}
+      </div>
+      <div class="fw-700 mb-1" style="font-size:1rem;">{{ m.title }}</div>
+      {% if m.description %}<div class="text-muted-custom mb-2" style="font-size:.82rem;">{{ m.description|truncatechars:100 }}</div>{% endif %}
+      <div class="mt-auto pt-2" style="border-top:1px solid #e2e8f0;">
+        <div class="d-flex flex-wrap gap-3" style="font-size:.82rem;color:#475569;">
+          <span><i class="bi bi-calendar3 me-1"></i><strong>{{ m.meeting_date }}</strong></span>
+          <span><i class="bi bi-clock me-1"></i>{{ m.meeting_time|time:"h:i A" }}</span>
+          {% if m.venue %}<span><i class="bi bi-geo-alt me-1"></i>{{ m.venue }}</span>{% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="card p-4 text-center mb-4">
+  <i class="bi bi-calendar-x" style="font-size:2rem;color:#cbd5e1;display:block;margin-bottom:.5rem;"></i>
+  <p class="text-muted-custom mb-0">No upcoming meetings.</p>
+</div>
+{% endif %}
+
+<!-- Past meetings -->
+{% if past %}
+<h5 class="fw-700 mb-3" style="color:#64748b;">
+  <i class="bi bi-clock-history me-2"></i>Past Meetings
+</h5>
+<div class="card">
+  <div class="table-container">
+    <table class="data-table">
+      <thead><tr><th>Title</th><th>Type</th><th>Date</th><th>Venue</th></tr></thead>
+      <tbody>
+        {% for m in past %}
+        <tr>
+          <td class="fw-700">{{ m.title }}</td>
+          <td><span style="background:#f1f5f9;color:#475569;padding:.15rem .5rem;border-radius:.3rem;font-size:.75rem;">{{ m.get_meeting_type_display }}</span></td>
+          <td style="font-size:.82rem;">{{ m.meeting_date }} {{ m.meeting_time|time:"h:i A" }}</td>
+          <td>{{ m.venue|default:"—" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,161 @@
+{% extends "attendance/hod/base_hod.html" %}
+{% block title %}Academic Events{% endblock %}
+{% block page_title %}Academic Events{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1><i class="bi bi-calendar-event me-2"></i>Academic Events</h1>
+  <a href="{% url 'event_add' %}" class="btn-primary-custom">
+    <i class="bi bi-plus-lg"></i> Add Event
+  </a>
+</div>
+
+<!-- Filters -->
+<div class="card mb-3">
+  <div class="p-3">
+    <form method="get" class="row g-2">
+      <div class="col-12 col-sm-6 col-md-3">
+        <label class="form-label-custom">Programme</label>
+        <select name="programme" class="form-control-custom form-select-custom">
+          <option value="">All</option>
+          {% for val,label in programme_choices %}
+          <option value="{{ val }}" {% if f_programme == val %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-12 col-sm-6 col-md-3">
+        <label class="form-label-custom">Event Type</label>
+        <select name="event_type" class="form-control-custom form-select-custom">
+          <option value="">All Types</option>
+          {% for val,label in event_type_choices %}
+          <option value="{{ val }}" {% if f_etype == val %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-12 col-sm-6 col-md-2">
+        <label class="form-label-custom">Academic Year</label>
+        <select name="year" class="form-control-custom form-select-custom">
+          <option value="">All Years</option>
+          {% for y in years %}
+          <option value="{{ y }}" {% if f_year == y %}selected{% endif %}>{{ y }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-12 col-sm-6 col-md-2">
+        <label class="form-label-custom">Show</label>
+        <select name="next_year" class="form-control-custom form-select-custom">
+          <option value="">All Events</option>
+          <option value="1" {% if f_next_year == '1' %}selected{% endif %}>Next Year Plans</option>
+        </select>
+      </div>
+      <div class="col-12 col-md-2 d-flex align-items-end gap-2">
+        <button type="submit" class="btn-primary-custom flex-fill justify-content-center">
+          <i class="bi bi-search"></i> Filter
+        </button>
+        <a href="{% url 'event_list' %}" class="btn btn-secondary px-3">✕</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- UG Events -->
+{% with ug_events=events|dictsort:"start_date" %}
+<div class="row g-3 mb-3">
+
+  <!-- UG Section -->
+  <div class="col-12 col-lg-6">
+    <div class="card h-100">
+      <div class="card-header-custom" style="background:#ede9fe;">
+        <h5><span style="background:#7c3aed;color:#fff;padding:.2rem .6rem;border-radius:.35rem;font-size:.8rem;margin-right:.5rem;">UG</span>Under Graduate Events</h5>
+        <span class="text-muted-custom">{{ events|length }} total</span>
+      </div>
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr><th>Event</th><th>Type</th><th>Date</th><th>Year</th><th>Actions</th></tr>
+          </thead>
+          <tbody>
+            {% for e in events %}
+            {% if e.programme == 'UG' or e.programme == 'BOTH' %}
+            <tr>
+              <td>
+                <div class="fw-700">{{ e.title }}</div>
+                {% if e.is_next_year %}<span style="background:#fef3c7;color:#92400e;padding:.1rem .4rem;border-radius:.3rem;font-size:.7rem;">Next Year Plan</span>{% endif %}
+              </td>
+              <td>
+                <span style="background:#e0f2fe;color:#0c4a6e;padding:.15rem .5rem;border-radius:.3rem;font-size:.75rem;">
+                  {{ e.get_event_type_display }}
+                </span>
+              </td>
+              <td style="white-space:nowrap;font-size:.82rem;">
+                {{ e.start_date }}
+                {% if e.end_date and e.end_date != e.start_date %}
+                <br><span class="text-muted-custom">→ {{ e.end_date }}</span>
+                {% endif %}
+              </td>
+              <td><code style="font-size:.78rem;">{{ e.academic_year }}</code></td>
+              <td>
+                <div class="d-flex gap-1">
+                  <a href="{% url 'event_edit' e.pk %}" class="btn-sm-icon btn-edit"><i class="bi bi-pencil"></i></a>
+                  <a href="{% url 'event_delete' e.pk %}" class="btn-sm-icon btn-delete"><i class="bi bi-trash"></i></a>
+                </div>
+              </td>
+            </tr>
+            {% endif %}
+            {% empty %}
+            <tr><td colspan="5" class="text-center py-3 text-muted-custom">No UG events.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- PG Section -->
+  <div class="col-12 col-lg-6">
+    <div class="card h-100">
+      <div class="card-header-custom" style="background:#d1fae5;">
+        <h5><span style="background:#059669;color:#fff;padding:.2rem .6rem;border-radius:.35rem;font-size:.8rem;margin-right:.5rem;">PG</span>Post Graduate Events</h5>
+      </div>
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr><th>Event</th><th>Type</th><th>Date</th><th>Year</th><th>Actions</th></tr>
+          </thead>
+          <tbody>
+            {% for e in events %}
+            {% if e.programme == 'PG' or e.programme == 'BOTH' %}
+            <tr>
+              <td>
+                <div class="fw-700">{{ e.title }}</div>
+                {% if e.is_next_year %}<span style="background:#fef3c7;color:#92400e;padding:.1rem .4rem;border-radius:.3rem;font-size:.7rem;">Next Year Plan</span>{% endif %}
+              </td>
+              <td>
+                <span style="background:#e0f2fe;color:#0c4a6e;padding:.15rem .5rem;border-radius:.3rem;font-size:.75rem;">
+                  {{ e.get_event_type_display }}
+                </span>
+              </td>
+              <td style="white-space:nowrap;font-size:.82rem;">
+                {{ e.start_date }}
+                {% if e.end_date and e.end_date != e.start_date %}<br><span class="text-muted-custom">→ {{ e.end_date }}</span>{% endif %}
+              </td>
+              <td><code style="font-size:.78rem;">{{ e.academic_year }}</code></td>
+              <td>
+                <div class="d-flex gap-1">
+                  <a href="{% url 'event_edit' e.pk %}" class="btn-sm-icon btn-edit"><i class="bi bi-pencil"></i></a>
+                  <a href="{% url 'event_delete' e.pk %}" class="btn-sm-icon btn-delete"><i class="bi bi-trash"></i></a>
+                </div>
+              </td>
+            </tr>
+            {% endif %}
+            {% empty %}
+            <tr><td colspan="5" class="text-center py-3 text-muted-custom">No PG events.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endwith %}
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends "attendance/hod/base_hod.html" %}
+{% block title %}{% if event %}Edit{% else %}Add{% endif %} Event{% endblock %}
+{% block page_title %}{% if event %}Edit{% else %}Add{% endif %} Event{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>{% if event %}Edit Event{% else %}Add Academic Event{% endif %}</h1>
+  <a href="{% url 'event_list' %}" class="btn-primary-custom" style="background:#64748b;">
+    <i class="bi bi-arrow-left"></i> Back
+  </a>
+</div>
+
+<div class="form-card">
+  <form method="post" novalidate>
+    {% csrf_token %}
+
+    <div class="mb-3">
+      <label class="form-label-custom">Event Title <span class="text-danger">*</span></label>
+      <input type="text" name="title" class="form-control-custom"
+             value="{{ event.title|default:'' }}" required placeholder="e.g. Annual Day Celebration">
+    </div>
+
+    <div class="row g-3 mb-3">
+      <div class="col-sm-6">
+        <label class="form-label-custom">Event Type</label>
+        <select name="event_type" class="form-control-custom form-select-custom">
+          {% for val,label in event_type_choices %}
+          <option value="{{ val }}" {% if event.event_type == val %}selected{% elif not event and val == 'academic' %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-sm-6">
+        <label class="form-label-custom">Programme</label>
+        <select name="programme" class="form-control-custom form-select-custom">
+          {% for val,label in programme_choices %}
+          <option value="{{ val }}" {% if event.programme == val %}selected{% elif not event and val == 'BOTH' %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div class="row g-3 mb-3">
+      <div class="col-sm-6">
+        <label class="form-label-custom">Start Date <span class="text-danger">*</span></label>
+        <input type="date" name="start_date" class="form-control-custom"
+               value="{{ event.start_date|default:today }}" required>
+      </div>
+      <div class="col-sm-6">
+        <label class="form-label-custom">End Date <span class="text-muted-custom">(optional)</span></label>
+        <input type="date" name="end_date" class="form-control-custom"
+               value="{{ event.end_date|default:'' }}">
+      </div>
+    </div>
+
+    <div class="row g-3 mb-3">
+      <div class="col-sm-6">
+        <label class="form-label-custom">Academic Year <span class="text-danger">*</span></label>
+        <input type="text" name="academic_year" class="form-control-custom"
+               value="{{ event.academic_year|default:'2025-26' }}" required placeholder="e.g. 2025-26">
+      </div>
+      <div class="col-sm-6">
+        <label class="form-label-custom">Plan Type</label>
+        <select name="is_next_year" class="form-control-custom form-select-custom">
+          <option value="0" {% if not event.is_next_year %}selected{% endif %}>Current Year Event</option>
+          <option value="1" {% if event.is_next_year %}selected{% endif %}>Next Year Plan</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <label class="form-label-custom">Description</label>
+      <textarea name="description" class="form-control-custom" rows="3"
+                placeholder="Event details…">{{ event.description|default:'' }}</textarea>
+    </div>
+
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn-primary-custom">
+        <i class="bi bi-check-lg"></i> {% if event %}Update{% else %}Add{% endif %} Event
+      </button>
+      <a href="{% url 'event_list' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

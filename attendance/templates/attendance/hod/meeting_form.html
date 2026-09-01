@@ -1,0 +1,88 @@
+{% extends "attendance/hod/base_hod.html" %}
+{% block title %}{% if meeting %}Edit{% else %}Schedule{% endif %} Meeting{% endblock %}
+{% block page_title %}{% if meeting %}Edit{% else %}Schedule{% endif %} Meeting{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>{% if meeting %}Edit Meeting{% else %}Schedule New Meeting{% endif %}</h1>
+  <a href="{% url 'meeting_list' %}" class="btn-primary-custom" style="background:#64748b;">
+    <i class="bi bi-arrow-left"></i> Back
+  </a>
+</div>
+
+<div class="form-card" style="max-width:700px;">
+  <form method="post" novalidate>
+    {% csrf_token %}
+
+    <div class="mb-3">
+      <label class="form-label-custom">Meeting Title <span class="text-danger">*</span></label>
+      <input type="text" name="title" class="form-control-custom"
+             value="{{ meeting.title|default:'' }}" required placeholder="e.g. Monthly Staff Meeting">
+    </div>
+
+    <div class="row g-3 mb-3">
+      <div class="col-sm-6">
+        <label class="form-label-custom">Meeting Type</label>
+        <select name="meeting_type" class="form-control-custom form-select-custom">
+          {% for val,label in meeting_type_choices %}
+          <option value="{{ val }}" {% if meeting.meeting_type == val %}selected{% elif not meeting and val == 'staff' %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-sm-6">
+        <label class="form-label-custom">Programme</label>
+        <select name="programme" class="form-control-custom form-select-custom">
+          {% for val,label in programme_choices %}
+          <option value="{{ val }}" {% if meeting.programme == val %}selected{% elif not meeting and val == 'BOTH' %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div class="row g-3 mb-3">
+      <div class="col-sm-6">
+        <label class="form-label-custom">Date <span class="text-danger">*</span></label>
+        <input type="date" name="meeting_date" class="form-control-custom"
+               value="{{ meeting.meeting_date|default:today }}" required>
+      </div>
+      <div class="col-sm-6">
+        <label class="form-label-custom">Time <span class="text-danger">*</span></label>
+        <input type="time" name="meeting_time" class="form-control-custom"
+               value="{{ meeting.meeting_time|default:'' }}" required>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label-custom">Venue</label>
+      <input type="text" name="venue" class="form-control-custom"
+             value="{{ meeting.venue|default:'' }}" placeholder="e.g. Conference Hall">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label-custom">Invite Specific Teachers <span class="text-muted-custom">(leave blank = all teachers)</span></label>
+      <select name="invited_teachers" class="form-control-custom" multiple style="height:120px;">
+        {% for t in teachers %}
+        <option value="{{ t.id }}"
+          {% if invited_list and t.id in invited_list %}selected{% endif %}>
+          {{ t.name }}{% if t.department %} — {{ t.department }}{% endif %}
+        </option>
+        {% endfor %}
+      </select>
+      <small class="text-muted-custom">Hold Ctrl/Cmd to select multiple.</small>
+    </div>
+
+    <div class="mb-4">
+      <label class="form-label-custom">Agenda / Description</label>
+      <textarea name="description" class="form-control-custom" rows="3"
+                placeholder="Meeting agenda…">{{ meeting.description|default:'' }}</textarea>
+    </div>
+
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn-primary-custom">
+        <i class="bi bi-check-lg"></i> {% if meeting %}Update{% else %}Schedule{% endif %} Meeting
+      </button>
+      <a href="{% url 'meeting_list' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'django.contrib.contenttypes',  # required by migrations
     'attendance',
 ]
 
@@ -57,8 +58,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'attendance_system.wsgi.application'
 
-# ── No database — JSON files only ─────────────────────
-DATABASES = {}
+# ── Database — SQLite for new features only ───────────
+# (Auth, teachers, classes etc. still use JSON files)
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 # ── Sessions (file-based, no DB) ───────────────────────
 SESSION_ENGINE = 'django.contrib.sessions.backends.file'

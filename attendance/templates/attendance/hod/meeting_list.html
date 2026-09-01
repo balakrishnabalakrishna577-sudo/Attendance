@@ -1,0 +1,106 @@
+{% extends "attendance/hod/base_hod.html" %}
+{% block title %}Meetings{% endblock %}
+{% block page_title %}Meetings{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1><i class="bi bi-people-fill me-2"></i>Meetings</h1>
+  <a href="{% url 'meeting_add' %}" class="btn-primary-custom">
+    <i class="bi bi-plus-lg"></i> Schedule Meeting
+  </a>
+</div>
+
+<!-- Filters -->
+<div class="card mb-3">
+  <div class="p-3">
+    <form method="get" class="row g-2">
+      <div class="col-12 col-sm-4 col-md-3">
+        <label class="form-label-custom">Programme</label>
+        <select name="programme" class="form-control-custom form-select-custom">
+          <option value="">All</option>
+          {% for val,label in programme_choices %}
+          <option value="{{ val }}" {% if f_programme == val %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-12 col-sm-4 col-md-3">
+        <label class="form-label-custom">Meeting Type</label>
+        <select name="meeting_type" class="form-control-custom form-select-custom">
+          <option value="">All Types</option>
+          {% for val,label in meeting_type_choices %}
+          <option value="{{ val }}" {% if f_type == val %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-12 col-sm-4 col-md-3">
+        <label class="form-label-custom">Show</label>
+        <select name="upcoming" class="form-control-custom form-select-custom">
+          <option value="">All Meetings</option>
+          <option value="1" {% if f_upcoming == '1' %}selected{% endif %}>Upcoming Only</option>
+        </select>
+      </div>
+      <div class="col-12 col-md-3 d-flex align-items-end gap-2">
+        <button type="submit" class="btn-primary-custom flex-fill justify-content-center">
+          <i class="bi bi-search"></i> Filter
+        </button>
+        <a href="{% url 'meeting_list' %}" class="btn btn-secondary px-3">✕</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header-custom">
+    <h5>All Meetings ({{ meetings|length }})</h5>
+  </div>
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>#</th><th>Title</th><th>Type</th><th>Date & Time</th>
+          <th class="hide-mobile">Venue</th><th class="hide-mobile">Programme</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in meetings %}
+        <tr>
+          <td class="text-muted-custom">{{ forloop.counter }}</td>
+          <td>
+            <div class="fw-700">{{ m.title }}</div>
+            <div class="text-muted-custom d-md-none" style="font-size:.75rem;">{{ m.venue }}</div>
+          </td>
+          <td>
+            <span style="background:#e0f2fe;color:#0c4a6e;padding:.15rem .5rem;border-radius:.3rem;font-size:.75rem;white-space:nowrap;">
+              {{ m.get_meeting_type_display }}
+            </span>
+          </td>
+          <td style="white-space:nowrap;font-size:.82rem;">
+            <div class="fw-700">{{ m.meeting_date }}</div>
+            <div class="text-muted-custom">{{ m.meeting_time|time:"h:i A" }}</div>
+          </td>
+          <td class="hide-mobile">{{ m.venue|default:"—" }}</td>
+          <td class="hide-mobile">
+            {% if m.programme == 'UG' %}
+              <span style="background:#ede9fe;color:#5b21b6;padding:.15rem .5rem;border-radius:.3rem;font-size:.75rem;">UG</span>
+            {% elif m.programme == 'PG' %}
+              <span style="background:#d1fae5;color:#065f46;padding:.15rem .5rem;border-radius:.3rem;font-size:.75rem;">PG</span>
+            {% else %}
+              <span style="background:#f1f5f9;color:#475569;padding:.15rem .5rem;border-radius:.3rem;font-size:.75rem;">Both</span>
+            {% endif %}
+          </td>
+          <td>
+            <div class="d-flex gap-1">
+              <a href="{% url 'meeting_edit' m.pk %}" class="btn-sm-icon btn-edit"><i class="bi bi-pencil"></i></a>
+              <a href="{% url 'meeting_delete' m.pk %}" class="btn-sm-icon btn-delete"><i class="bi bi-trash"></i></a>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" class="text-center py-4 text-muted-custom">No meetings yet. <a href="{% url 'meeting_add' %}">Schedule one</a>.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

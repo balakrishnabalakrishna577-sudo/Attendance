@@ -1,0 +1,134 @@
+{% extends "attendance/hod/base_hod.html" %}
+{% block title %}Timetable — {{ cls.name }}{% endblock %}
+{% block page_title %}Timetable — {{ cls.name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1><i class="bi bi-grid-3x3-gap me-2"></i>{{ cls.name }} — Timetable</h1>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item"><a href="{% url 'timetable_sections' %}">Sections</a></li>
+        <li class="breadcrumb-item active">{{ cls.name }}</li>
+      </ol>
+    </nav>
+  </div>
+  <div class="d-flex gap-2 flex-wrap">
+    <!-- Year filter -->
+    <form method="get" class="d-flex gap-2 align-items-center">
+      <select name="year" class="form-control-custom form-select-custom" style="width:120px;"
+              onchange="this.form.submit()">
+        <option value="2025-26" {% if year == '2025-26' %}selected{% endif %}>2025-26</option>
+        <option value="2026-27" {% if year == '2026-27' %}selected{% endif %}>2026-27</option>
+        {% for y in years %}
+        {% if y != '2025-26' and y != '2026-27' %}
+        <option value="{{ y }}" {% if year == y %}selected{% endif %}>{{ y }}</option>
+        {% endif %}
+        {% endfor %}
+      </select>
+    </form>
+    <a href="{% url 'timetable_slot_add' cls.id %}" class="btn-primary-custom">
+      <i class="bi bi-plus-lg"></i> Add Slot
+    </a>
+    <a href="{% url 'timetable_sections' %}" class="btn-primary-custom" style="background:#64748b;">
+      <i class="bi bi-arrow-left"></i> <span class="d-none d-sm-inline">Sections</span>
+    </a>
+  </div>
+</div>
+
+{% if slots %}
+<!-- Desktop Grid -->
+<div class="card d-none d-md-block">
+  <div class="card-header-custom">
+    <h5>Weekly Timetable — {{ year }}</h5>
+    <span class="text-muted-custom" style="font-size:.8rem;">{{ slots|length }} slots</span>
+  </div>
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th style="min-width:90px;">Day</th>
+          {% for h in hours %}
+          <th class="text-center" style="min-width:120px;">Hour {{ h }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for day in days %}
+        <tr>
+          <td class="fw-700" style="background:#f8fafc;white-space:nowrap;">{{ day }}</td>
+          {% for hour in hours %}
+          {% with slot=grid|default:{}%}
+          <td class="text-center" style="padding:.5rem;">
+            {% for s in slots %}
+            {% if s.day == day and s.hour == hour %}
+              <div style="background:#ede9fe;border-radius:.5rem;padding:.4rem .5rem;font-size:.78rem;">
+                <div class="fw-700" style="color:#4f46e5;">{{ s.subject_name }}</div>
+                <div style="color:#64748b;">{{ s.teacher_name }}</div>
+                {% if s.room %}<div style="color:#94a3b8;font-size:.7rem;"><i class="bi bi-door-open"></i> {{ s.room }}</div>{% endif %}
+                {% if s.start_time %}<div style="color:#94a3b8;font-size:.7rem;">{{ s.start_time|time:"h:i A" }}</div>{% endif %}
+                <div class="d-flex justify-content-center gap-1 mt-1">
+                  <a href="{% url 'timetable_slot_edit' s.pk %}" class="btn-sm-icon btn-edit" style="width:24px;height:24px;font-size:.7rem;"><i class="bi bi-pencil"></i></a>
+                  <a href="{% url 'timetable_slot_delete' s.pk %}" class="btn-sm-icon btn-delete" style="width:24px;height:24px;font-size:.7rem;"><i class="bi bi-trash"></i></a>
+                </div>
+              </div>
+            {% endif %}
+            {% endfor %}
+            <!-- Empty cell add link -->
+            {% with has_slot=False %}
+            {% for s in slots %}{% if s.day == day and s.hour == hour %}{% endfor %}
+            {% endwith %}
+          </td>
+          {% endwith %}
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Mobile list -->
+<div class="d-md-none">
+  {% for day in days %}
+  {% with day_slots=slots %}
+  {% for s in slots %}{% if s.day == day %}
+  {% if forloop.first or forloop.parentloop.first %}{% endif %}
+  {% endif %}{% endfor %}
+  <div class="card mb-2">
+    <div class="card-header-custom" style="background:#f8fafc;">
+      <h6 class="mb-0 fw-700">{{ day }}</h6>
+    </div>
+    {% for s in slots %}
+    {% if s.day == day %}
+    <div class="d-flex align-items-start gap-3 p-3" style="border-bottom:1px solid #e2e8f0;">
+      <div style="background:#ede9fe;color:#4f46e5;border-radius:.5rem;padding:.4rem .6rem;font-size:.8rem;font-weight:700;white-space:nowrap;flex-shrink:0;">
+        Hr {{ s.hour }}
+      </div>
+      <div class="flex-grow-1 min-width-0">
+        <div class="fw-700">{{ s.subject_name }}</div>
+        <div class="text-muted-custom" style="font-size:.8rem;">{{ s.teacher_name }}</div>
+        {% if s.room %}<div class="text-muted-custom" style="font-size:.75rem;"><i class="bi bi-door-open"></i> {{ s.room }}</div>{% endif %}
+      </div>
+      <div class="d-flex gap-1 flex-shrink-0">
+        <a href="{% url 'timetable_slot_edit' s.pk %}" class="btn-sm-icon btn-edit"><i class="bi bi-pencil"></i></a>
+        <a href="{% url 'timetable_slot_delete' s.pk %}" class="btn-sm-icon btn-delete"><i class="bi bi-trash"></i></a>
+      </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+  </div>
+  {% endwith %}
+  {% endfor %}
+</div>
+
+{% else %}
+<div class="card p-5 text-center">
+  <i class="bi bi-grid-3x3-gap" style="font-size:2.5rem;color:#cbd5e1;display:block;margin-bottom:.75rem;"></i>
+  <p class="text-muted-custom mb-2">No timetable slots yet for {{ cls.name }} ({{ year }}).</p>
+  <a href="{% url 'timetable_slot_add' cls.id %}" class="btn-primary-custom" style="display:inline-flex;margin:0 auto;">
+    <i class="bi bi-plus-lg"></i> Add First Slot
+  </a>
+</div>
+{% endif %}
+{% endblock %}

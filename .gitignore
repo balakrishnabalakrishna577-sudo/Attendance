@@ -16,6 +16,9 @@ local_settings.py
 staticfiles/
 media/
 
+# SQLite DB — created fresh on each deploy via migrations
+db.sqlite3
+
 # Sessions (contain user session data — do not commit)
 sessions/
 

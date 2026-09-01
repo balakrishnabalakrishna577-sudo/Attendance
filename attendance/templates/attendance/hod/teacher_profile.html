@@ -1,0 +1,178 @@
+{% extends "attendance/hod/base_hod.html" %}
+{% block title %}{{ teacher.name }} — Profile{% endblock %}
+{% block page_title %}Teacher Profile{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1><i class="bi bi-person-badge me-2"></i>{{ teacher.name }}</h1>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item"><a href="{% url 'teacher_list' %}">Teachers</a></li>
+        <li class="breadcrumb-item active">{{ teacher.name }}</li>
+      </ol>
+    </nav>
+  </div>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="{% url 'teacher_edit' teacher.id %}" class="btn-primary-custom" style="font-size:.8rem;">
+      <i class="bi bi-pencil"></i> Edit
+    </a>
+    <a href="{% url 'work_assignment_add' %}" class="btn-primary-custom" style="background:#10b981;font-size:.8rem;">
+      <i class="bi bi-clipboard-plus"></i> Assign Work
+    </a>
+    <a href="{% url 'teacher_list' %}" class="btn-primary-custom" style="background:#64748b;font-size:.8rem;">
+      <i class="bi bi-arrow-left"></i> Back
+    </a>
+  </div>
+</div>
+
+<!-- Info + Stats -->
+<div class="row g-3 mb-4">
+  <div class="col-12 col-md-4">
+    <div class="card p-4 h-100 text-center">
+      <div style="width:72px;height:72px;background:#4f46e5;border-radius:50%;display:grid;place-items:center;margin:0 auto .85rem;color:#fff;font-size:1.8rem;font-weight:800;">
+        {{ teacher.name|first|upper }}
+      </div>
+      <div class="fw-700" style="font-size:1.1rem;">{{ teacher.name }}</div>
+      <div class="text-muted-custom">{{ teacher.department|default:"No department" }}</div>
+      {% if teacher.email %}<div class="text-muted-custom mt-1" style="font-size:.8rem;"><i class="bi bi-envelope me-1"></i>{{ teacher.email }}</div>{% endif %}
+      {% if teacher.phone %}<div class="text-muted-custom" style="font-size:.8rem;"><i class="bi bi-phone me-1"></i>{{ teacher.phone }}</div>{% endif %}
+    </div>
+  </div>
+  <div class="col-12 col-md-8">
+    <div class="row g-3 h-100">
+      <div class="col-6">
+        <div class="stat-card h-100">
+          <div class="stat-icon purple"><i class="bi bi-diagram-3"></i></div>
+          <div class="stat-info">
+            <div class="stat-value">{{ assignments|length }}</div>
+            <div class="stat-label">Assignments</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="stat-card h-100">
+          <div class="stat-icon green"><i class="bi bi-calendar-check"></i></div>
+          <div class="stat-info">
+            <div class="stat-value">{{ total_sessions }}</div>
+            <div class="stat-label">Sessions Taken</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="stat-card h-100">
+          <div class="stat-icon cyan"><i class="bi bi-people"></i></div>
+          <div class="stat-info">
+            <div class="stat-value">{{ total_students_marked }}</div>
+            <div class="stat-label">Students Marked</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="stat-card h-100">
+          <div class="stat-icon yellow"><i class="bi bi-clipboard-check"></i></div>
+          <div class="stat-info">
+            <div class="stat-value">{{ works|length }}</div>
+            <div class="stat-label">Work Tasks</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Class Assignments -->
+<div class="card mb-3">
+  <div class="card-header-custom">
+    <h5><i class="bi bi-diagram-3 me-2 text-primary"></i>Class Assignments</h5>
+  </div>
+  <div class="table-container">
+    <table class="data-table">
+      <thead><tr><th>Class</th><th>Subject</th><th>Code</th></tr></thead>
+      <tbody>
+        {% for a in assignments %}
+        <tr>
+          <td><span style="background:#ede9fe;color:#5b21b6;padding:.2rem .6rem;border-radius:.4rem;font-size:.8rem;font-weight:700;">{{ a.class_name }}</span></td>
+          <td class="fw-700">{{ a.subject_name }}</td>
+          <td><code>{{ a.subject_code }}</code></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="3" class="text-center py-3 text-muted-custom">No assignments yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Work Assignments -->
+<div class="card mb-3">
+  <div class="card-header-custom">
+    <h5><i class="bi bi-clipboard-check me-2 text-success"></i>Work Assignments</h5>
+    <a href="{% url 'work_assignment_add' %}" class="btn-primary-custom" style="font-size:.78rem;padding:.35rem .75rem;background:#10b981;">
+      <i class="bi bi-plus-lg"></i> Add
+    </a>
+  </div>
+  <div class="table-container">
+    <table class="data-table">
+      <thead><tr><th>Task</th><th>Priority</th><th>Status</th><th>Due</th><th>Actions</th></tr></thead>
+      <tbody>
+        {% for w in works %}
+        <tr>
+          <td>
+            <div class="fw-700">{{ w.title }}</div>
+            {% if w.description %}<div class="text-muted-custom" style="font-size:.75rem;">{{ w.description|truncatechars:60 }}</div>{% endif %}
+          </td>
+          <td>
+            {% if w.priority == 'high' %}<span style="background:#fee2e2;color:#991b1b;padding:.15rem .5rem;border-radius:.3rem;font-size:.75rem;">High</span>
+            {% elif w.priority == 'medium' %}<span style="background:#fef3c7;color:#92400e;padding:.15rem .5rem;border-radius:.3rem;font-size:.75rem;">Medium</span>
+            {% else %}<span style="background:#d1fae5;color:#065f46;padding:.15rem .5rem;border-radius:.3rem;font-size:.75rem;">Low</span>{% endif %}
+          </td>
+          <td>
+            {% if w.status == 'completed' %}<span class="badge-present">Done</span>
+            {% elif w.status == 'in_progress' %}<span style="background:#e0f2fe;color:#0c4a6e;padding:.15rem .5rem;border-radius:999px;font-size:.75rem;font-weight:700;">In Progress</span>
+            {% else %}<span class="badge-absent">Pending</span>{% endif %}
+          </td>
+          <td style="font-size:.82rem;">{{ w.due_date|default:"—" }}</td>
+          <td>
+            <div class="d-flex gap-1">
+              <a href="{% url 'work_assignment_edit' w.pk %}" class="btn-sm-icon btn-edit"><i class="bi bi-pencil"></i></a>
+              <a href="{% url 'work_assignment_delete' w.pk %}" class="btn-sm-icon btn-delete"><i class="bi bi-trash"></i></a>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="text-center py-3 text-muted-custom">No work assigned yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Timetable -->
+<div class="card">
+  <div class="card-header-custom">
+    <h5><i class="bi bi-grid-3x3-gap me-2 text-warning"></i>Timetable Slots</h5>
+  </div>
+  <div class="table-container">
+    <table class="data-table">
+      <thead><tr><th>Class</th><th>Day</th><th>Hour</th><th>Subject</th><th>Room</th><th>Time</th></tr></thead>
+      <tbody>
+        {% for s in timetable %}
+        <tr>
+          <td><span style="background:#ede9fe;color:#5b21b6;padding:.2rem .5rem;border-radius:.35rem;font-size:.78rem;font-weight:700;">{{ s.class_name }}</span></td>
+          <td class="fw-700">{{ s.day }}</td>
+          <td>Hr {{ s.hour }}</td>
+          <td>{{ s.subject_name }}</td>
+          <td>{{ s.room|default:"—" }}</td>
+          <td style="font-size:.8rem;">
+            {% if s.start_time %}{{ s.start_time|time:"h:i A" }}{% if s.end_time %} – {{ s.end_time|time:"h:i A" }}{% endif %}{% else %}—{% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="text-center py-3 text-muted-custom">No timetable slots assigned.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

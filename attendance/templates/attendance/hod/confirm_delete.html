@@ -8,18 +8,24 @@
     <div style="font-size:3rem;color:#ef4444;margin-bottom:1rem;">
       <i class="bi bi-exclamation-triangle-fill"></i>
     </div>
-    <h4 class="fw-700 mb-2">Delete Confirmation</h4>
+    <h4 class="fw-700 mb-2">Confirm Delete</h4>
     <p class="text-muted-custom mb-1">You are about to permanently delete:</p>
     <p class="fw-700 mb-4" style="font-size:1rem;">{{ item }}</p>
     <p style="font-size:.85rem;color:#ef4444;margin-bottom:1.5rem;">
       This action cannot be undone.
     </p>
-    <form method="post" class="d-flex justify-content-center gap-3">
+    <form method="post" class="d-flex justify-content-center gap-3 flex-wrap">
       {% csrf_token %}
       <button type="submit" class="btn btn-danger px-4">
         <i class="bi bi-trash me-1"></i> Yes, Delete
       </button>
-      <a href="{% url cancel_url %}" class="btn btn-secondary px-4">Cancel</a>
+      {% if back_url %}
+        <a href="{{ back_url }}" class="btn btn-secondary px-4">Cancel</a>
+      {% elif cancel_url %}
+        <a href="{% url cancel_url %}" class="btn btn-secondary px-4">Cancel</a>
+      {% else %}
+        <a href="javascript:history.back()" class="btn btn-secondary px-4">Cancel</a>
+      {% endif %}
     </form>
   </div>
 </div>

@@ -7,6 +7,14 @@
 <span class="sidebar-section">Attendance</span>
 <a href="{% url 'my_attendance_records' %}"><i class="bi bi-journal-check"></i> My Records</a>
 
+<span class="sidebar-section">My Schedule</span>
+<a href="{% url 'teacher_timetable' %}"><i class="bi bi-grid-3x3-gap"></i> My Timetable</a>
+<a href="{% url 'teacher_work_assignments' %}"><i class="bi bi-clipboard-check"></i> Work Assignments</a>
+
+<span class="sidebar-section">Calendar</span>
+<a href="{% url 'teacher_events' %}"><i class="bi bi-calendar-event"></i> Academic Events</a>
+<a href="{% url 'teacher_meetings' %}"><i class="bi bi-people-fill"></i> Meetings</a>
+
 <span class="sidebar-section">Account</span>
 <a href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a>
 {% endblock %}

@@ -1,0 +1,88 @@
+{% extends "attendance/teacher/base_teacher.html" %}
+{% block title %}Academic Events{% endblock %}
+{% block page_title %}Academic Events{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1><i class="bi bi-calendar-event me-2"></i>Academic Events</h1>
+</div>
+
+<!-- Upcoming -->
+<h5 class="fw-700 mb-3" style="color:#4f46e5;">
+  <i class="bi bi-arrow-up-circle me-2"></i>Upcoming Events
+</h5>
+
+{% if events %}
+<div class="row g-3 mb-4">
+  {% for e in events %}
+  <div class="col-12 col-sm-6 col-lg-4">
+    <div class="card p-3 h-100">
+      <div class="d-flex align-items-start gap-2 mb-2">
+        <div style="background:{% if e.programme == 'UG' %}#ede9fe{% elif e.programme == 'PG' %}#d1fae5{% else %}#e0f2fe{% endif %};
+                    color:{% if e.programme == 'UG' %}#5b21b6{% elif e.programme == 'PG' %}#065f46{% else %}#0c4a6e{% endif %};
+                    padding:.2rem .55rem;border-radius:.35rem;font-size:.72rem;font-weight:700;flex-shrink:0;">
+          {{ e.programme }}
+        </div>
+        <div style="background:#f1f5f9;color:#475569;padding:.2rem .55rem;border-radius:.35rem;font-size:.72rem;font-weight:600;">
+          {{ e.get_event_type_display }}
+        </div>
+        {% if e.is_next_year %}
+        <div style="background:#fef3c7;color:#92400e;padding:.2rem .55rem;border-radius:.35rem;font-size:.72rem;font-weight:600;">
+          Next Year
+        </div>
+        {% endif %}
+      </div>
+      <div class="fw-700 mb-1">{{ e.title }}</div>
+      {% if e.description %}<div class="text-muted-custom mb-2" style="font-size:.8rem;">{{ e.description|truncatechars:80 }}</div>{% endif %}
+      <div class="mt-auto pt-2" style="border-top:1px solid #e2e8f0;">
+        <div style="font-size:.8rem;color:#475569;">
+          <i class="bi bi-calendar3 me-1"></i>
+          <strong>{{ e.start_date }}</strong>
+          {% if e.end_date and e.end_date != e.start_date %}
+          → {{ e.end_date }}
+          <span class="text-muted-custom">({{ e.duration_days }} days)</span>
+          {% endif %}
+        </div>
+        <div style="font-size:.75rem;color:#94a3b8;" class="mt-1">
+          AY: {{ e.academic_year }}
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="card p-4 text-center mb-4">
+  <i class="bi bi-calendar-x" style="font-size:2rem;color:#cbd5e1;display:block;margin-bottom:.5rem;"></i>
+  <p class="text-muted-custom mb-0">No upcoming events.</p>
+</div>
+{% endif %}
+
+<!-- Past Events -->
+{% if past %}
+<h5 class="fw-700 mb-3" style="color:#64748b;">
+  <i class="bi bi-clock-history me-2"></i>Past Events
+</h5>
+<div class="card">
+  <div class="table-container">
+    <table class="data-table">
+      <thead><tr><th>Event</th><th>Programme</th><th>Date</th><th>Year</th></tr></thead>
+      <tbody>
+        {% for e in past %}
+        <tr>
+          <td class="fw-700">{{ e.title }}</td>
+          <td>
+            <span style="background:#f1f5f9;color:#475569;padding:.15rem .5rem;border-radius:.3rem;font-size:.75rem;">
+              {{ e.programme }}
+            </span>
+          </td>
+          <td style="font-size:.82rem;">{{ e.start_date }}</td>
+          <td><code style="font-size:.78rem;">{{ e.academic_year }}</code></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

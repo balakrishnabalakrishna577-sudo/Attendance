@@ -1,0 +1,112 @@
+{% extends "attendance/hod/base_hod.html" %}
+{% block title %}Teacher Work Assignments{% endblock %}
+{% block page_title %}Teacher Work Assignments{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1><i class="bi bi-clipboard-check me-2"></i>Teacher Work Assignments</h1>
+  <a href="{% url 'work_assignment_add' %}" class="btn-primary-custom">
+    <i class="bi bi-plus-lg"></i> Assign Work
+  </a>
+</div>
+
+<!-- Filters -->
+<div class="card mb-3">
+  <div class="p-3">
+    <form method="get" class="row g-2">
+      <div class="col-12 col-sm-4">
+        <label class="form-label-custom">Teacher</label>
+        <select name="teacher_id" class="form-control-custom form-select-custom">
+          <option value="">All Teachers</option>
+          {% for t in teachers %}
+          <option value="{{ t.id }}" {% if f_teacher == t.id %}selected{% endif %}>{{ t.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-12 col-sm-3">
+        <label class="form-label-custom">Status</label>
+        <select name="status" class="form-control-custom form-select-custom">
+          <option value="">All Status</option>
+          {% for val,label in status_choices %}
+          <option value="{{ val }}" {% if f_status == val %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-12 col-sm-3">
+        <label class="form-label-custom">Priority</label>
+        <select name="priority" class="form-control-custom form-select-custom">
+          <option value="">All Priority</option>
+          {% for val,label in priority_choices %}
+          <option value="{{ val }}" {% if f_priority == val %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-12 col-sm-2 d-flex align-items-end gap-2">
+        <button type="submit" class="btn-primary-custom flex-fill justify-content-center">
+          <i class="bi bi-search"></i>
+        </button>
+        <a href="{% url 'work_assignment_list' %}" class="btn btn-secondary px-3">✕</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header-custom">
+    <h5>Assignments ({{ works|length }})</h5>
+  </div>
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>#</th><th>Teacher</th><th>Task</th><th>Priority</th>
+          <th>Status</th><th class="hide-mobile">Assigned</th>
+          <th class="hide-mobile">Due</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for w in works %}
+        <tr>
+          <td class="text-muted-custom">{{ forloop.counter }}</td>
+          <td class="fw-700">{{ w.teacher_name }}</td>
+          <td>
+            <div class="fw-700">{{ w.title }}</div>
+            {% if w.description %}
+            <div class="text-muted-custom" style="font-size:.75rem;">{{ w.description|truncatechars:50 }}</div>
+            {% endif %}
+          </td>
+          <td>
+            {% if w.priority == 'high' %}
+              <span style="background:#fee2e2;color:#991b1b;padding:.15rem .5rem;border-radius:.3rem;font-size:.75rem;">High</span>
+            {% elif w.priority == 'medium' %}
+              <span style="background:#fef3c7;color:#92400e;padding:.15rem .5rem;border-radius:.3rem;font-size:.75rem;">Medium</span>
+            {% else %}
+              <span style="background:#d1fae5;color:#065f46;padding:.15rem .5rem;border-radius:.3rem;font-size:.75rem;">Low</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if w.status == 'completed' %}
+              <span class="badge-present">Completed</span>
+            {% elif w.status == 'in_progress' %}
+              <span style="background:#e0f2fe;color:#0c4a6e;padding:.15rem .5rem;border-radius:999px;font-size:.75rem;font-weight:700;">In Progress</span>
+            {% else %}
+              <span class="badge-absent">Pending</span>
+            {% endif %}
+          </td>
+          <td class="hide-mobile" style="font-size:.82rem;">{{ w.assigned_date }}</td>
+          <td class="hide-mobile" style="font-size:.82rem;">{{ w.due_date|default:"—" }}</td>
+          <td>
+            <div class="d-flex gap-1">
+              <a href="{% url 'work_assignment_edit' w.pk %}" class="btn-sm-icon btn-edit"><i class="bi bi-pencil"></i></a>
+              <a href="{% url 'work_assignment_delete' w.pk %}" class="btn-sm-icon btn-delete"><i class="bi bi-trash"></i></a>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8" class="text-center py-4 text-muted-custom">No work assignments yet. <a href="{% url 'work_assignment_add' %}">Assign one</a>.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

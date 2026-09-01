@@ -13,8 +13,8 @@
   <span class="badge-role"><i class="bi bi-shield-check me-1"></i>HOD</span>
 </div>
 
-<!-- Stat Cards: 2 cols on mobile, 3 on md, 5 on xl -->
-<div class="row g-3 mb-4">
+<!-- Row 1: Core stats -->
+<div class="row g-3 mb-3">
   <div class="col-6 col-md-4 col-xl">
     <div class="stat-card h-100">
       <div class="stat-icon purple"><i class="bi bi-person-badge"></i></div>
@@ -62,6 +62,43 @@
   </div>
 </div>
 
+<!-- Row 2: New feature stats -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-4">
+    <a href="{% url 'event_list' %}" class="text-decoration-none">
+      <div class="stat-card h-100" style="border-left:4px solid #8b5cf6;">
+        <div class="stat-icon" style="background:#ede9fe;color:#7c3aed;"><i class="bi bi-calendar-event"></i></div>
+        <div class="stat-info">
+          <div class="stat-value" style="color:#7c3aed;">{{ upcoming_events }}</div>
+          <div class="stat-label">Upcoming Events</div>
+        </div>
+      </div>
+    </a>
+  </div>
+  <div class="col-6 col-md-4">
+    <a href="{% url 'meeting_list' %}" class="text-decoration-none">
+      <div class="stat-card h-100" style="border-left:4px solid #06b6d4;">
+        <div class="stat-icon" style="background:#cffafe;color:#0891b2;"><i class="bi bi-people-fill"></i></div>
+        <div class="stat-info">
+          <div class="stat-value" style="color:#0891b2;">{{ upcoming_meetings }}</div>
+          <div class="stat-label">Upcoming Meetings</div>
+        </div>
+      </div>
+    </a>
+  </div>
+  <div class="col-6 col-md-4">
+    <a href="{% url 'work_assignment_list' %}" class="text-decoration-none">
+      <div class="stat-card h-100" style="border-left:4px solid #f59e0b;">
+        <div class="stat-icon" style="background:#fef3c7;color:#d97706;"><i class="bi bi-clipboard-check"></i></div>
+        <div class="stat-info">
+          <div class="stat-value" style="color:#d97706;">{{ pending_work }}</div>
+          <div class="stat-label">Pending Work</div>
+        </div>
+      </div>
+    </a>
+  </div>
+</div>
+
 <!-- Quick Actions + Summary -->
 <div class="row g-3">
   <div class="col-12 col-lg-5 col-xl-4">
@@ -76,14 +113,20 @@
         <a href="{% url 'class_add' %}" class="btn-primary-custom w-100 justify-content-center" style="background:#06b6d4;">
           <i class="bi bi-plus-circle"></i> Add Class
         </a>
-        <a href="{% url 'subject_add' %}" class="btn-primary-custom w-100 justify-content-center" style="background:#f59e0b;">
-          <i class="bi bi-book"></i> Add Subject
-        </a>
         <a href="{% url 'assignment_add' %}" class="btn-primary-custom w-100 justify-content-center" style="background:#10b981;">
           <i class="bi bi-diagram-3"></i> Assign Teacher
         </a>
-        <a href="{% url 'student_add' %}" class="btn-primary-custom w-100 justify-content-center" style="background:#8b5cf6;">
-          <i class="bi bi-person-plus"></i> Add Student
+        <a href="{% url 'event_add' %}" class="btn-primary-custom w-100 justify-content-center" style="background:#8b5cf6;">
+          <i class="bi bi-calendar-plus"></i> Add Event
+        </a>
+        <a href="{% url 'meeting_add' %}" class="btn-primary-custom w-100 justify-content-center" style="background:#0891b2;">
+          <i class="bi bi-people-fill"></i> Schedule Meeting
+        </a>
+        <a href="{% url 'work_assignment_add' %}" class="btn-primary-custom w-100 justify-content-center" style="background:#d97706;">
+          <i class="bi bi-clipboard-plus"></i> Assign Work
+        </a>
+        <a href="{% url 'timetable_sections' %}" class="btn-primary-custom w-100 justify-content-center" style="background:#475569;">
+          <i class="bi bi-grid-3x3-gap"></i> Manage Timetable
         </a>
       </div>
     </div>
@@ -101,26 +144,38 @@
         <div class="row g-3">
           <div class="col-6">
             <div class="p-3 rounded" style="background:#f8fafc;border:1px solid #e2e8f0;">
-              <div class="fw-700" style="font-size:1.4rem;color:#4f46e5;">{{ total_teachers }}</div>
+              <div class="fw-700" style="font-size:1.3rem;color:#4f46e5;">{{ total_teachers }}</div>
               <div class="text-muted-custom">Active Teachers</div>
             </div>
           </div>
           <div class="col-6">
             <div class="p-3 rounded" style="background:#f8fafc;border:1px solid #e2e8f0;">
-              <div class="fw-700" style="font-size:1.4rem;color:#10b981;">{{ total_students }}</div>
+              <div class="fw-700" style="font-size:1.3rem;color:#10b981;">{{ total_students }}</div>
               <div class="text-muted-custom">Enrolled Students</div>
             </div>
           </div>
           <div class="col-6">
             <div class="p-3 rounded" style="background:#f8fafc;border:1px solid #e2e8f0;">
-              <div class="fw-700" style="font-size:1.4rem;color:#f59e0b;">{{ total_classes }}</div>
+              <div class="fw-700" style="font-size:1.3rem;color:#f59e0b;">{{ total_classes }}</div>
               <div class="text-muted-custom">Total Classes</div>
             </div>
           </div>
           <div class="col-6">
             <div class="p-3 rounded" style="background:#f8fafc;border:1px solid #e2e8f0;">
-              <div class="fw-700" style="font-size:1.4rem;color:#06b6d4;">{{ today_attendance }}</div>
+              <div class="fw-700" style="font-size:1.3rem;color:#06b6d4;">{{ today_attendance }}</div>
               <div class="text-muted-custom">Marked Today</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="p-3 rounded" style="background:#f8fafc;border:1px solid #e2e8f0;">
+              <div class="fw-700" style="font-size:1.3rem;color:#7c3aed;">{{ upcoming_events }}</div>
+              <div class="text-muted-custom">Upcoming Events</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="p-3 rounded" style="background:#f8fafc;border:1px solid #e2e8f0;">
+              <div class="fw-700" style="font-size:1.3rem;color:#d97706;">{{ pending_work }}</div>
+              <div class="text-muted-custom">Pending Work Tasks</div>
             </div>
           </div>
         </div>

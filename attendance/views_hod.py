@@ -18,16 +18,21 @@ from attendance.services import json_storage as db
 # Dashboard
 # ─────────────────────────────────────────────
 
+from attendance.models import AcademicEvent, Meeting, TeacherWorkAssignment, TimetableSlot
+
 @hod_required
 def hod_dashboard(request):
     today = dt_date.today().isoformat()
     ctx = {
-        'total_teachers': len(db.get_all_teachers()),
-        'total_classes': len(db.get_all_classes()),
-        'total_subjects': len(db.get_all_subjects()),
-        'total_students': len(db.get_all_students()),
-        'today_attendance': db.get_today_attendance_count(today),
-        'today': today,
+        'total_teachers':    len(db.get_all_teachers()),
+        'total_classes':     len(db.get_all_classes()),
+        'total_subjects':    len(db.get_all_subjects()),
+        'total_students':    len(db.get_all_students()),
+        'today_attendance':  db.get_today_attendance_count(today),
+        'today':             today,
+        'upcoming_events':   AcademicEvent.objects.filter(start_date__gte=today).count(),
+        'upcoming_meetings': Meeting.objects.filter(meeting_date__gte=today).count(),
+        'pending_work':      TeacherWorkAssignment.objects.filter(status='pending').count(),
     }
     return render(request, 'attendance/hod/dashboard.html', ctx)
 
