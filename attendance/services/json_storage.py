@@ -204,6 +204,19 @@ def create_teacher(name: str, email: str, phone: str,
     return teacher
 
 
+def create_teacher_no_login(name: str, email: str, phone: str,
+                             department: str) -> dict:
+    """Create a teacher record without a login account."""
+    teacher = {
+        'id': generate_id('T'),
+        'name': name,
+        'email': email,
+        'phone': phone,
+        'department': department,
+    }
+    return create_record(TEACHERS_FILE, teacher)
+
+
 def update_teacher(teacher_id: str, name: str, email: str,
                    phone: str, department: str) -> dict | None:
     updates = {'name': name, 'email': email, 'phone': phone, 'department': department}

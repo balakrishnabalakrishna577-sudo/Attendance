@@ -44,34 +44,22 @@ def hod_dashboard(request):
 @hod_required
 def teacher_list(request):
     teachers = db.get_all_teachers()
-    # Enrich with username
-    users = db.read_json(db.USERS_FILE)
-    user_map = {u.get('teacher_id'): u.get('username') for u in users if u.get('teacher_id')}
-    for t in teachers:
-        t['username'] = user_map.get(t['id'], '-')
     return render(request, 'attendance/hod/teacher_list.html', {'teachers': teachers})
 
 
 @hod_required
 def teacher_add(request):
     if request.method == 'POST':
-        name = request.POST.get('name', '').strip()
-        email = request.POST.get('email', '').strip()
-        phone = request.POST.get('phone', '').strip()
+        name       = request.POST.get('name', '').strip()
+        email      = request.POST.get('email', '').strip()
+        phone      = request.POST.get('phone', '').strip()
         department = request.POST.get('department', '').strip()
-        username = request.POST.get('username', '').strip()
-        password = request.POST.get('password', '').strip()
 
-        if not all([name, username, password]):
-            messages.error(request, 'Name, username and password are required.')
+        if not name:
+            messages.error(request, 'Teacher name is required.')
             return render(request, 'attendance/hod/teacher_form.html', {'action': 'Add'})
 
-        # Check username uniqueness
-        if db.get_user_by_username(username):
-            messages.error(request, f'Username "{username}" already exists.')
-            return render(request, 'attendance/hod/teacher_form.html', {'action': 'Add'})
-
-        db.create_teacher(name, email, phone, department, username, password)
+        db.create_teacher_no_login(name, email, phone, department)
         messages.success(request, f'Teacher {name} added successfully.')
         return redirect('teacher_list')
 
@@ -86,11 +74,10 @@ def teacher_edit(request, teacher_id):
         return redirect('teacher_list')
 
     if request.method == 'POST':
-        name = request.POST.get('name', '').strip()
-        email = request.POST.get('email', '').strip()
-        phone = request.POST.get('phone', '').strip()
+        name       = request.POST.get('name', '').strip()
+        email      = request.POST.get('email', '').strip()
+        phone      = request.POST.get('phone', '').strip()
         department = request.POST.get('department', '').strip()
-        new_password = request.POST.get('password', '').strip()
 
         if not name:
             messages.error(request, 'Name is required.')
@@ -98,16 +85,6 @@ def teacher_edit(request, teacher_id):
                           {'action': 'Edit', 'teacher': teacher})
 
         db.update_teacher(teacher_id, name, email, phone, department)
-
-        # Optional password reset
-        if new_password:
-            from django.contrib.auth.hashers import make_password
-            users = db.read_json(db.USERS_FILE)
-            for u in users:
-                if u.get('teacher_id') == teacher_id:
-                    u['password'] = make_password(new_password)
-            db.write_json(db.USERS_FILE, users)
-
         messages.success(request, 'Teacher updated successfully.')
         return redirect('teacher_list')
 
