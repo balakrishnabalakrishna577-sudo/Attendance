@@ -1,11 +1,14 @@
 {% extends "attendance/teacher/base_teacher.html" %}
-{% block title %}Mark Attendance{% endblock %}
+{% block title %}Mark Attendance — Department Work Automation{% endblock %}
 {% block page_title %}Mark Attendance{% endblock %}
 
 {% block content %}
 <div class="page-header">
   <div>
-    <h1 style="font-size:1.1rem;">{{ cls.name }} — {{ subject.name }}</h1>
+    <h1 style="font-size:1.1rem;">
+      <i class="bi bi-pencil-square me-2" style="color:var(--primary);"></i>
+      {{ cls.name }} &mdash; {{ subject.name }}
+    </h1>
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb mb-0">
         <li class="breadcrumb-item"><a href="{% url 'teacher_dashboard' %}">Dashboard</a></li>
@@ -13,35 +16,40 @@
       </ol>
     </nav>
   </div>
-  <a href="{% url 'teacher_dashboard' %}" class="btn-primary-custom" style="background:#64748b;">
-    <i class="bi bi-arrow-left"></i> <span class="d-none d-sm-inline">Back</span>
+  <a href="{% url 'teacher_dashboard' %}" class="btn-primary-custom"
+     style="background:var(--gray-500);">
+    <i class="bi bi-arrow-left"></i>
+    <span class="d-none d-sm-inline">Back</span>
   </a>
 </div>
 
 {% if is_edit %}
-<div class="mb-3 p-3 rounded d-flex align-items-start gap-2" style="background:#fef3c7;border:1px solid #fde68a;">
-  <i class="bi bi-pencil-square text-warning mt-1" style="flex-shrink:0;"></i>
+<div class="mb-3 p-3 rounded-3 d-flex align-items-start gap-2"
+     style="background:var(--amber-50);border:1px solid #fde68a;">
+  <i class="bi bi-pencil-square" style="color:var(--amber);flex-shrink:0;margin-top:.1rem;"></i>
   <span style="font-size:.845rem;">
     <strong>Editing existing attendance</strong> for {{ selected_date }}.
-    Changes will overwrite the previous record.
+    Saving will overwrite the previous record.
   </span>
 </div>
 {% endif %}
 
-<!-- Date Selector -->
-<div class="card mb-3 p-3">
-  <div class="d-flex align-items-center gap-2 flex-wrap">
-    <label class="form-label-custom mb-0" style="white-space:nowrap;">
-      <i class="bi bi-calendar3 me-1"></i> Date:
-    </label>
-    <input type="date" id="date-picker" value="{{ selected_date }}" max="{{ today }}"
-           class="form-control-custom" style="max-width:180px;min-width:140px;">
-    <button id="go-date" class="btn-primary-custom">
-      <i class="bi bi-arrow-right"></i> Go
-    </button>
-    <span class="text-muted-custom ms-auto" style="font-size:.78rem;">
-      {{ students|length }} student{{ students|length|pluralize }}
-    </span>
+<!-- Date selector -->
+<div class="card mb-3">
+  <div class="p-3">
+    <div class="d-flex align-items-center gap-3 flex-wrap">
+      <label class="form-label-custom mb-0" style="white-space:nowrap;">
+        <i class="bi bi-calendar3 me-1" style="color:var(--primary);"></i>Attendance Date
+      </label>
+      <input type="date" id="date-picker" value="{{ selected_date }}" max="{{ today }}"
+             class="form-control-custom" style="max-width:190px;">
+      <button id="go-date" class="btn-primary-custom">
+        <i class="bi bi-check2"></i> Apply
+      </button>
+      <span class="ms-auto" style="font-size:.78rem;color:var(--text-3);font-weight:500;">
+        <i class="bi bi-people me-1"></i>{{ students|length }} student{{ students|length|pluralize }}
+      </span>
+    </div>
   </div>
 </div>
 
@@ -50,17 +58,17 @@
   <input type="hidden" name="date" id="form-date" value="{{ selected_date }}">
 
   <div class="card mb-3">
-    <!-- Bulk Actions -->
+    <!-- Bulk actions -->
     <div class="card-header-custom">
-      <h5 class="mb-0">Student Attendance</h5>
+      <h5>Student Attendance</h5>
       <div class="d-flex gap-2 att-bulk-row flex-wrap">
-        <button type="button" id="btn-present-all"
-                class="btn-primary-custom" style="background:#10b981;font-size:.8rem;padding:.38rem .8rem;">
-          <i class="bi bi-check-all"></i> Present All
+        <button type="button" id="btn-present-all" class="btn-primary-custom"
+                style="background:var(--green);font-size:.78rem;padding:.38rem .85rem;">
+          <i class="bi bi-check-all"></i> All Present
         </button>
-        <button type="button" id="btn-absent-all"
-                class="btn-primary-custom" style="background:#ef4444;font-size:.8rem;padding:.38rem .8rem;">
-          <i class="bi bi-x-circle"></i> Absent All
+        <button type="button" id="btn-absent-all" class="btn-primary-custom"
+                style="background:var(--rose);font-size:.78rem;padding:.38rem .85rem;">
+          <i class="bi bi-x-circle"></i> All Absent
         </button>
       </div>
     </div>
@@ -70,17 +78,17 @@
       <table class="data-table">
         <thead>
           <tr>
-            <th style="width:50px;">#</th>
+            <th style="width:48px;">#</th>
             <th style="width:90px;">Roll No</th>
             <th>Student Name</th>
-            <th style="width:170px;">Status</th>
+            <th style="width:165px;">Status</th>
           </tr>
         </thead>
         <tbody>
           {% for student in students %}
           <tr id="row-{{ student.id }}">
-            <td class="text-muted-custom">{{ forloop.counter }}</td>
-            <td><code>{{ student.roll_number }}</code></td>
+            <td style="color:var(--text-4);">{{ forloop.counter }}</td>
+            <td><code style="background:var(--gray-100);padding:.15rem .45rem;border-radius:.3rem;font-size:.78rem;">{{ student.roll_number }}</code></td>
             <td class="fw-700">{{ student.name }}</td>
             <td>
               <div class="att-toggle">
@@ -95,7 +103,8 @@
           </tr>
           {% empty %}
           <tr>
-            <td colspan="4" class="text-center py-4 text-muted-custom">
+            <td colspan="4" class="text-center py-5" style="color:var(--text-3);">
+              <i class="bi bi-people" style="font-size:1.5rem;display:block;margin-bottom:.4rem;"></i>
               No students in this class. Ask the HOD to add students.
             </td>
           </tr>
@@ -104,41 +113,39 @@
       </table>
     </div>
 
-    <!-- Mobile card list (shown only on small screens) -->
+    <!-- Mobile cards -->
     <div class="d-sm-none p-2" id="mobile-att-list">
       {% for student in students %}
-      <div class="d-flex align-items-center justify-content-between p-2 mb-1 rounded"
+      <div class="d-flex align-items-center justify-content-between p-2 mb-2 rounded-3"
            id="mob-row-{{ student.id }}"
-           style="border:1px solid #e2e8f0;gap:.5rem;">
+           style="border:1px solid var(--border);background:var(--surface-2);">
         <div style="min-width:0;">
-          <div class="fw-700" style="font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-            {{ student.name }}
-          </div>
-          <div class="text-muted-custom">Roll: {{ student.roll_number }}</div>
+          <div class="fw-700" style="font-size:.88rem;">{{ student.name }}</div>
+          <div style="font-size:.74rem;color:var(--text-3);">Roll: {{ student.roll_number }}</div>
         </div>
         <div class="att-toggle" style="flex-shrink:0;">
           <input type="radio" name="status_{{ student.id }}" id="mp_{{ student.id }}"
                  value="Present" class="att-radio-present">
-          <label for="mp_{{ student.id }}">P</label>
+          <label for="mp_{{ student.id }}" style="padding:.3rem .7rem;">P</label>
           <input type="radio" name="status_{{ student.id }}" id="ma_{{ student.id }}"
                  value="Absent" class="att-radio-absent">
-          <label for="ma_{{ student.id }}">A</label>
+          <label for="ma_{{ student.id }}" style="padding:.3rem .7rem;">A</label>
         </div>
       </div>
       {% empty %}
-      <p class="text-center text-muted-custom p-3">No students in this class.</p>
+      <p class="text-center p-3" style="color:var(--text-3);">No students in this class.</p>
       {% endfor %}
     </div>
   </div>
 
   {% if students %}
   <div class="d-flex flex-wrap gap-2 align-items-center">
-    <button type="submit" class="btn-primary-custom" style="padding:.6rem 1.4rem;">
-      <i class="bi bi-save"></i> Save Attendance
+    <button type="submit" class="btn-primary-custom" style="padding:.62rem 1.5rem;font-size:.9rem;">
+      <i class="bi bi-save2"></i> Save Attendance
     </button>
-    <a href="{% url 'teacher_dashboard' %}" class="btn btn-secondary">Cancel</a>
-    <span class="text-muted-custom d-none d-md-inline" style="font-size:.78rem;margin-left:.5rem;">
-      {{ cls.name }} &nbsp;|&nbsp; {{ subject.name }} &nbsp;|&nbsp; {{ selected_date }}
+    <a href="{% url 'teacher_dashboard' %}" class="btn btn-light border">Cancel</a>
+    <span class="d-none d-md-inline" style="font-size:.76rem;color:var(--text-3);margin-left:.5rem;">
+      {{ cls.name }} &nbsp;·&nbsp; {{ subject.name }} &nbsp;·&nbsp; {{ selected_date }}
     </span>
   </div>
   {% endif %}
@@ -150,10 +157,10 @@
 var existingMap = {{ existing_map_json|default:"{}" }};
 
 document.addEventListener('DOMContentLoaded', function () {
-  // Apply existing statuses (desktop radio: p_/a_, mobile: mp_/ma_)
+  // Pre-fill existing statuses
   Object.keys(existingMap).forEach(function (sid) {
     var status = existingMap[sid];
-    var prefix = status === 'Present' ? 'p_' : 'a_';
+    var prefix  = status === 'Present' ? 'p_'  : 'a_';
     var mPrefix = status === 'Present' ? 'mp_' : 'ma_';
     [prefix + sid, mPrefix + sid].forEach(function (id) {
       var r = document.getElementById(id);
@@ -161,17 +168,12 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  // Default unset to Absent
-  ['p_', 'a_', 'mp_', 'ma_'].forEach(function () {}); // no-op placeholder
-  document.querySelectorAll('input[type="radio"][name^="status_"]').forEach(function (r) {
-    // group check
-  });
-  // Set Absent for any unanswered students
+  // Default all unset to Absent
   {% for student in students %}
   (function () {
-    var name = 'status_{{ student.id }}';
+    var name   = 'status_{{ student.id }}';
     var radios = document.querySelectorAll('[name="' + name + '"]');
-    var any = Array.from(radios).some(function (r) { return r.checked; });
+    var any    = Array.from(radios).some(function (r) { return r.checked; });
     if (!any) {
       document.querySelectorAll('[name="' + name + '"][value="Absent"]').forEach(function (r) {
         r.checked = true; updateRowHighlight(r);
@@ -180,7 +182,7 @@ document.addEventListener('DOMContentLoaded', function () {
   })();
   {% endfor %}
 
-  // Date picker → redirect
+  // Date picker navigation
   document.getElementById('go-date').addEventListener('click', function () {
     var d = document.getElementById('date-picker').value;
     if (d) window.location.href = window.location.pathname + '?date=' + d;
@@ -191,17 +193,14 @@ document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('date-picker').addEventListener('change', function () {
     document.getElementById('form-date').value = this.value;
   });
-
-  // Sync desktop ↔ mobile radios (same name so browser handles it natively)
 });
 
 function updateRowHighlight(radio) {
   var row = radio.closest('tr') || radio.closest('[id^="mob-row-"]');
   if (!row) return;
   row.classList.remove('att-row-present', 'att-row-absent');
-  if (radio.checked) {
+  if (radio.checked)
     row.classList.add(radio.value === 'Present' ? 'att-row-present' : 'att-row-absent');
-  }
 }
 </script>
 {% endblock %}

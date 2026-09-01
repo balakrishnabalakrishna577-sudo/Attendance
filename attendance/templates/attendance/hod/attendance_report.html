@@ -1,29 +1,31 @@
 {% extends "attendance/hod/base_hod.html" %}
-{% block title %}Attendance Reports{% endblock %}
+{% block title %}Attendance Reports — Department Work Automation{% endblock %}
 {% block page_title %}Attendance Reports{% endblock %}
 
 {% block content %}
 <div class="page-header">
-  <h1><i class="bi bi-bar-chart-line me-2"></i>Attendance Reports</h1>
+  <h1><i class="bi bi-bar-chart-line me-2" style="color:var(--primary);"></i>Attendance Reports</h1>
   <a href="?{% if f_date %}date={{ f_date }}&{% endif %}{% if f_teacher %}teacher_id={{ f_teacher }}&{% endif %}{% if f_class %}class_id={{ f_class }}&{% endif %}{% if f_subject %}subject_id={{ f_subject }}&{% endif %}{% if f_student %}student_id={{ f_student }}&{% endif %}export=csv"
-     class="btn-primary-custom" style="background:#10b981;">
-    <i class="bi bi-download"></i> <span class="d-none d-sm-inline">Export</span> CSV
+     class="btn-primary-custom" style="background:var(--green);">
+    <i class="bi bi-download"></i>
+    <span class="d-none d-sm-inline">Export</span> CSV
   </a>
 </div>
 
-<!-- Filter Panel -->
+<!-- Filter panel -->
 <div class="card mb-4">
   <div class="card-header-custom">
-    <h5><i class="bi bi-funnel me-2"></i>Filters</h5>
+    <h5><i class="bi bi-funnel me-2" style="color:var(--primary);"></i>Filters</h5>
     {% if f_date or f_teacher or f_class or f_subject or f_student %}
-    <a href="{% url 'attendance_report' %}" class="btn-primary-custom" style="background:#64748b;font-size:.78rem;padding:.35rem .75rem;">
-      <i class="bi bi-x-circle"></i> Clear
+    <a href="{% url 'attendance_report' %}" class="btn-primary-custom"
+       style="background:var(--gray-500);font-size:.76rem;padding:.35rem .7rem;">
+      <i class="bi bi-x-lg"></i> Clear
     </a>
     {% endif %}
   </div>
   <div class="p-3">
     <form method="get">
-      <div class="row g-2 filter-row">
+      <div class="row g-2">
         <div class="col-12 col-sm-6 col-md-4 col-lg-2">
           <label class="form-label-custom">Date</label>
           <input type="date" name="date" value="{{ f_date }}" class="form-control-custom">
@@ -31,7 +33,7 @@
         <div class="col-12 col-sm-6 col-md-4 col-lg-2">
           <label class="form-label-custom">Teacher</label>
           <select name="teacher_id" class="form-control-custom form-select-custom">
-            <option value="">All</option>
+            <option value="">All Teachers</option>
             {% for t in teachers %}
             <option value="{{ t.id }}" {% if f_teacher == t.id %}selected{% endif %}>{{ t.name }}</option>
             {% endfor %}
@@ -40,7 +42,7 @@
         <div class="col-12 col-sm-6 col-md-4 col-lg-2">
           <label class="form-label-custom">Class</label>
           <select name="class_id" class="form-control-custom form-select-custom">
-            <option value="">All</option>
+            <option value="">All Classes</option>
             {% for cls in classes %}
             <option value="{{ cls.id }}" {% if f_class == cls.id %}selected{% endif %}>{{ cls.name }}</option>
             {% endfor %}
@@ -49,7 +51,7 @@
         <div class="col-12 col-sm-6 col-md-4 col-lg-2">
           <label class="form-label-custom">Subject</label>
           <select name="subject_id" class="form-control-custom form-select-custom">
-            <option value="">All</option>
+            <option value="">All Subjects</option>
             {% for s in subjects %}
             <option value="{{ s.id }}" {% if f_subject == s.id %}selected{% endif %}>{{ s.name }}</option>
             {% endfor %}
@@ -58,7 +60,7 @@
         <div class="col-12 col-sm-6 col-md-4 col-lg-2">
           <label class="form-label-custom">Student</label>
           <select name="student_id" class="form-control-custom form-select-custom">
-            <option value="">All</option>
+            <option value="">All Students</option>
             {% for st in students %}
             <option value="{{ st.id }}" {% if f_student == st.id %}selected{% endif %}>{{ st.name }}</option>
             {% endfor %}
@@ -74,10 +76,14 @@
   </div>
 </div>
 
-<!-- Report Table -->
+<!-- Results -->
 <div class="card">
   <div class="card-header-custom">
-    <h5>Results ({{ report_rows|length }} record{{ report_rows|length|pluralize }})</h5>
+    <h5>Results
+      <span style="background:var(--primary-100);color:var(--primary-dark);
+                   padding:.15rem .55rem;border-radius:999px;font-size:.72rem;
+                   font-weight:700;margin-left:.4rem;">{{ report_rows|length }}</span>
+    </h5>
   </div>
   <div class="table-container">
     <table class="data-table">
@@ -92,18 +98,23 @@
           <th class="text-center">Present</th>
           <th class="text-center">Absent</th>
           <th class="text-center hide-mobile">Total</th>
-          <th style="min-width:120px;">Attendance %</th>
+          <th style="min-width:130px;">Attendance %</th>
         </tr>
       </thead>
       <tbody>
         {% for row in report_rows %}
         <tr>
-          <td class="text-muted-custom">{{ forloop.counter }}</td>
+          <td style="color:var(--text-4);">{{ forloop.counter }}</td>
           <td class="fw-700">{{ row.student_name }}</td>
-          <td><code>{{ row.roll_number }}</code></td>
-          <td>{{ row.class_name }}</td>
-          <td class="hide-mobile">{{ row.subject_name }}</td>
-          <td class="hide-mobile">{{ row.teacher_name }}</td>
+          <td><code style="background:var(--gray-100);padding:.15rem .45rem;border-radius:.3rem;font-size:.76rem;">{{ row.roll_number }}</code></td>
+          <td>
+            <span style="background:var(--primary-100);color:var(--primary-dark);
+                         padding:.18rem .55rem;border-radius:.35rem;font-size:.76rem;font-weight:700;">
+              {{ row.class_name }}
+            </span>
+          </td>
+          <td class="hide-mobile" style="font-size:.82rem;">{{ row.subject_name }}</td>
+          <td class="hide-mobile" style="font-size:.82rem;">{{ row.teacher_name }}</td>
           <td class="text-center"><span class="badge-present">{{ row.present }}</span></td>
           <td class="text-center"><span class="badge-absent">{{ row.absent }}</span></td>
           <td class="text-center fw-700 hide-mobile">{{ row.total }}</td>
@@ -112,8 +123,10 @@
               <div class="pct-bar">
                 <div class="pct-fill" data-pct="{{ row.percentage }}"></div>
               </div>
-              <span style="font-size:.78rem;font-weight:700;min-width:38px;text-align:right;
-                {% if row.percentage >= 75 %}color:#10b981;{% elif row.percentage >= 50 %}color:#f59e0b;{% else %}color:#ef4444;{% endif %}">
+              <span style="font-size:.78rem;font-weight:700;min-width:42px;text-align:right;
+                {% if row.percentage >= 75 %}color:var(--green);
+                {% elif row.percentage >= 50 %}color:var(--amber);
+                {% else %}color:var(--rose);{% endif %}">
                 {{ row.percentage }}%
               </span>
             </div>
@@ -121,7 +134,7 @@
         </tr>
         {% empty %}
         <tr>
-          <td colspan="10" class="text-center py-5 text-muted-custom">
+          <td colspan="10" class="text-center py-5" style="color:var(--text-3);">
             <i class="bi bi-inbox" style="font-size:2rem;display:block;margin-bottom:.5rem;"></i>
             No attendance data found for the selected filters.
           </td>
