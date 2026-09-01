@@ -33,7 +33,7 @@ function initSidebar() {
     sidebar.classList.add('open');
     if (overlay) { overlay.classList.add('show'); overlay.removeAttribute('aria-hidden'); }
     toggle.setAttribute('aria-expanded', 'true');
-    document.body.style.overflow = 'hidden'; // prevent background scroll
+    document.body.style.overflow = 'hidden';
   }
 
   function closeSidebar() {
@@ -43,29 +43,32 @@ function initSidebar() {
     document.body.style.overflow = '';
   }
 
+  function isMobile() { return window.innerWidth <= 768; }
+
   toggle.addEventListener('click', function () {
-    sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
+    if (isMobile()) {
+      sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
+    }
   });
 
   if (overlay) overlay.addEventListener('click', closeSidebar);
 
-  // Close on Escape key
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && sidebar.classList.contains('open')) closeSidebar();
   });
 
-  // Close sidebar when a nav link is clicked on mobile
+  // Close on nav link click (mobile only)
   sidebar.querySelectorAll('a').forEach(function (a) {
     a.addEventListener('click', function () {
-      if (window.innerWidth <= 768) closeSidebar();
+      if (isMobile()) closeSidebar();
     });
   });
 
-  // Restore overflow on resize to desktop
+  // Restore on resize to desktop
   window.addEventListener('resize', function () {
-    if (window.innerWidth > 768) {
+    if (!isMobile()) {
       sidebar.classList.remove('open');
-      if (overlay) { overlay.classList.remove('show'); overlay.setAttribute('aria-hidden', 'true'); }
+      if (overlay) { overlay.classList.remove('show'); }
       document.body.style.overflow = '';
     }
   });

@@ -46,7 +46,7 @@
   --sidebar-active:  rgba(99,102,241,.25);
   --sidebar-text:    #94a3b8;
   --sidebar-section: rgba(148,163,184,.4);
-  --sidebar-w:       262px;
+  --sidebar-w:       240px;
 
   /* Surface */
   --bg:        #f1f5f9;
@@ -102,6 +102,7 @@ button { font-family: inherit; }
 .sidebar {
   width: var(--sidebar-w);
   min-height: 100vh;
+  height: 100%;
   background: var(--sidebar-bg);
   display: flex;
   flex-direction: column;
@@ -114,6 +115,10 @@ button { font-family: inherit; }
   overflow-x: hidden;
   scrollbar-width: thin;
   scrollbar-color: rgba(255,255,255,.08) transparent;
+  /* force exact width — prevents collapse */
+  min-width: var(--sidebar-w);
+  max-width: var(--sidebar-w);
+  flex-shrink: 0;
 }
 .sidebar::-webkit-scrollbar { width: 4px; }
 .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,.08); border-radius: 2px; }
@@ -141,19 +146,21 @@ button { font-family: inherit; }
 .brand-text {
   color: #fff;
   font-weight: 800;
-  font-size: .88rem;
+  font-size: .85rem;
   line-height: 1.2;
   letter-spacing: -.01em;
   min-width: 0;
+  overflow: hidden;
 }
 .brand-text span {
   display: block;
   font-weight: 400;
-  font-size: .65rem;
+  font-size: .63rem;
   color: var(--sidebar-text);
   text-transform: uppercase;
   letter-spacing: .1em;
   margin-top: .1rem;
+  white-space: nowrap;
 }
 
 /* Nav */
@@ -260,7 +267,9 @@ button { font-family: inherit; }
   display: flex;
   flex-direction: column;
   min-width: 0;
-  transition: margin-left .28s cubic-bezier(.4,0,.2,1);
+  width: calc(100% - var(--sidebar-w));
+  transition: margin-left .28s cubic-bezier(.4,0,.2,1),
+              width .28s cubic-bezier(.4,0,.2,1);
 }
 
 .topbar {
@@ -953,14 +962,25 @@ textarea.form-control-custom { resize: vertical; min-height: 80px; }
 }
 
 @media (max-width: 1024px) {
-  :root { --sidebar-w: 240px; }
+  :root { --sidebar-w: 220px; }
   .page-content { padding: 1.25rem 1.35rem; }
 }
 
 @media (max-width: 768px) {
-  .sidebar { transform: translateX(-100%); }
-  .sidebar.open { transform: translateX(0); box-shadow: var(--shadow-xl); }
-  .main-content { margin-left: 0 !important; }
+  .sidebar {
+    transform: translateX(-100%);
+    min-width: 240px;
+    max-width: 240px;
+    width: 240px;
+  }
+  .sidebar.open {
+    transform: translateX(0);
+    box-shadow: var(--shadow-xl);
+  }
+  .main-content {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
   .topbar-toggle { display: flex; }
   .topbar-date   { display: none; }
   .page-content  { padding: 1rem; }

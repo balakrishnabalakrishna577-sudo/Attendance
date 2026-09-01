@@ -1,10 +1,11 @@
 {% extends "attendance/hod/base_hod.html" %}
+{% load attendance_extras %}
 {% block title %}Timetable — Sections{% endblock %}
 {% block page_title %}Timetable{% endblock %}
 
 {% block content %}
 <div class="page-header">
-  <h1><i class="bi bi-grid-3x3-gap me-2"></i>Timetable — Select Section</h1>
+  <h1><i class="bi bi-grid-3x3-gap me-2" style="color:var(--primary);"></i>Timetable — Select Section</h1>
 </div>
 
 {% if classes %}
@@ -12,45 +13,81 @@
   {% for cls in classes %}
   <div class="col-12 col-sm-6 col-lg-4">
     <a href="{% url 'timetable_view' cls.id %}" class="text-decoration-none">
-      <div class="card p-4 text-center h-100" style="transition:transform .15s,box-shadow .15s;cursor:pointer;"
-           onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 20px rgba(0,0,0,.1)'"
-           onmouseout="this.style.transform='';this.style.boxShadow=''">
-        <div style="width:56px;height:56px;background:#ede9fe;border-radius:.75rem;display:grid;place-items:center;margin:0 auto .85rem;font-size:1.5rem;color:#4f46e5;">
+      <div class="card p-4 text-center h-100 section-card">
+
+        <div style="width:60px;height:60px;background:var(--primary-100);
+                    border-radius:var(--radius-lg);display:grid;place-items:center;
+                    margin:0 auto 1rem;font-size:1.5rem;color:var(--primary-dark);">
           <i class="bi bi-building"></i>
         </div>
-        <div class="fw-700" style="font-size:1.05rem;color:#1e293b;">{{ cls.name }}</div>
+
+        <div class="fw-700" style="font-size:1.05rem;color:var(--text);letter-spacing:-.01em;">
+          {{ cls.name }}
+        </div>
+
         {% if cls.description %}
-        <div class="text-muted-custom mt-1" style="font-size:.8rem;">{{ cls.description }}</div>
+        <div style="font-size:.8rem;color:var(--text-3);margin-top:.25rem;">
+          {{ cls.description }}
+        </div>
         {% endif %}
+
         <div class="mt-3">
-          {% with count=slot_counts|default:{} %}
-          <span style="background:#f1f5f9;color:#475569;padding:.3rem .75rem;border-radius:999px;font-size:.8rem;font-weight:600;">
-            <i class="bi bi-clock me-1"></i>{{ slot_counts|default:0 }} slots
+          <span style="background:var(--gray-100);color:var(--gray-600);
+                       padding:.3rem .85rem;border-radius:999px;
+                       font-size:.78rem;font-weight:600;border:1px solid var(--border);">
+            <i class="bi bi-clock me-1"></i>
+            {{ slot_counts|get_item:cls.id|default:0 }} slot{{ slot_counts|get_item:cls.id|default:0|pluralize }}
           </span>
-          {% endwith %}
         </div>
-        <div class="mt-3 btn-primary-custom justify-content-center" style="font-size:.82rem;padding:.4rem;">
-          <i class="bi bi-eye me-1"></i>View Timetable
+
+        <div class="mt-3">
+          <span class="btn-primary-custom w-100 justify-content-center"
+                style="font-size:.82rem;padding:.45rem;">
+            <i class="bi bi-eye me-1"></i>View Timetable
+          </span>
         </div>
+
       </div>
     </a>
   </div>
   {% endfor %}
 </div>
+
 {% else %}
 <div class="card p-5 text-center">
-  <i class="bi bi-building" style="font-size:2.5rem;color:#cbd5e1;display:block;margin-bottom:.75rem;"></i>
-  <p class="text-muted-custom mb-2">No classes found.</p>
-  <a href="{% url 'class_add' %}" class="btn-primary-custom" style="display:inline-flex;margin:0 auto;">
+  <div style="width:72px;height:72px;background:var(--gray-100);border-radius:50%;
+              display:grid;place-items:center;margin:0 auto 1rem;
+              font-size:1.8rem;color:var(--text-4);">
+    <i class="bi bi-building"></i>
+  </div>
+  <p style="color:var(--text-3);margin-bottom:.75rem;font-size:.875rem;">No classes found.</p>
+  <a href="{% url 'class_add' %}" class="btn-primary-custom"
+     style="display:inline-flex;margin:0 auto;">
     <i class="bi bi-plus-lg"></i> Add Class First
   </a>
 </div>
 {% endif %}
 {% endblock %}
 
-{% block extra_js %}
-<script>
-// Inject slot counts from Django context into cards
-var slotCounts = {{ slot_counts_json|default:"{}" }};
-</script>
+{% block extra_css %}
+<style>
+.section-card {
+  transition: transform .2s cubic-bezier(.4,0,.2,1),
+              box-shadow .2s cubic-bezier(.4,0,.2,1);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.section-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--violet));
+  opacity: 0;
+  transition: opacity .2s;
+}
+.section-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+.section-card:hover::before { opacity: 1; }
+</style>
 {% endblock %}
