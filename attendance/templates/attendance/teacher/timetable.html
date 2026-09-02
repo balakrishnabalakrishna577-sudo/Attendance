@@ -34,50 +34,65 @@
   </div>
 
   <!-- Desktop grid -->
-  <div class="card mb-3 d-none d-md-block">
+  <div class="card mb-3 d-none d-lg-block">
     <div class="table-container">
       <table style="width:100%;border-collapse:collapse;font-size:.82rem;">
         <thead>
           <tr>
-            <th style="background:var(--surface-2);padding:.65rem 1rem;
-                       font-weight:700;font-size:.7rem;text-transform:uppercase;
-                       letter-spacing:.06em;color:var(--text-3);
-                       border-bottom:2px solid var(--border);min-width:90px;">Day</th>
-            {% for h in hours %}
-            <th style="background:var(--surface-2);padding:.65rem .5rem;
+            <th style="background:var(--surface-2);padding:.7rem 1rem;
                        font-weight:700;font-size:.7rem;text-transform:uppercase;
                        letter-spacing:.06em;color:var(--text-3);
                        border-bottom:2px solid var(--border);
-                       text-align:center;min-width:115px;">Hour {{ h }}</th>
+                       min-width:90px;white-space:nowrap;">Day</th>
+            {% for h in hours %}
+            <th style="background:var(--surface-2);padding:.7rem .5rem;
+                       font-weight:700;font-size:.7rem;text-transform:uppercase;
+                       letter-spacing:.06em;color:var(--text-3);
+                       border-bottom:2px solid var(--border);
+                       text-align:center;min-width:130px;">
+              <div>Hour {{ h }}</div>
+              {% for slot in slots %}
+                {% if slot.class_id == class_id and slot.hour == h and slot.start_time %}
+                <div style="font-size:.65rem;color:var(--primary-light);font-weight:500;margin-top:.1rem;">
+                  {{ slot.start_time|time:"h:i A" }}–{{ slot.end_time|time:"h:i A" }}
+                </div>
+                {% endif %}
+              {% endfor %}
+            </th>
             {% endfor %}
           </tr>
         </thead>
         <tbody>
           {% for day in days %}
           <tr style="border-bottom:1px solid var(--border);">
-            <td style="padding:.55rem 1rem;font-weight:700;
+            <td style="padding:.6rem 1rem;font-weight:700;
                        background:var(--surface-2);white-space:nowrap;
-                       color:var(--text-2);font-size:.82rem;">{{ day }}</td>
+                       color:var(--text);border-right:2px solid var(--border);">
+              {{ day }}
+            </td>
             {% for hour in hours %}
-            <td style="padding:.4rem;text-align:center;vertical-align:middle;
-                       border-left:1px solid var(--border);">
+            <td style="padding:.4rem .35rem;text-align:center;
+                       vertical-align:middle;border-left:1px solid var(--border);">
               {% for slot in slots %}
               {% if slot.class_id == class_id and slot.day == day and slot.hour == hour %}
               <div style="background:linear-gradient(135deg,var(--primary-100),#ddd6fe);
                           border-radius:var(--radius-sm);padding:.5rem .55rem;
-                          font-size:.76rem;border-left:3px solid var(--primary);">
-                <div style="font-weight:700;color:var(--primary-dark);">
+                          font-size:.76rem;border-left:3px solid var(--primary);text-align:left;">
+                <div style="font-weight:700;color:var(--primary-dark);
+                            white-space:nowrap;overflow:hidden;
+                            text-overflow:ellipsis;max-width:110px;">
                   {{ slot.subject_name }}
                 </div>
+                {% if slot.start_time %}
+                <div style="color:var(--primary);font-size:.7rem;
+                            font-weight:600;margin-top:.15rem;">
+                  <i class="bi bi-clock" style="font-size:.62rem;"></i>
+                  {{ slot.start_time|time:"h:i" }}{% if slot.end_time %}–{{ slot.end_time|time:"h:i A" }}{% endif %}
+                </div>
+                {% endif %}
                 {% if slot.room %}
                 <div style="color:var(--text-4);font-size:.68rem;margin-top:.1rem;">
                   <i class="bi bi-door-open"></i> {{ slot.room }}
-                </div>
-                {% endif %}
-                {% if slot.start_time %}
-                <div style="color:var(--text-4);font-size:.68rem;">
-                  {{ slot.start_time|time:"h:i A" }}
-                  {% if slot.end_time %}&ndash;{{ slot.end_time|time:"h:i A" }}{% endif %}
                 </div>
                 {% endif %}
               </div>
@@ -93,39 +108,48 @@
   </div>
 
   <!-- Mobile list -->
-  <div class="d-md-none mb-3">
+  <div class="d-lg-none mb-4">
     {% for day in days %}
+    {% for slot in slots %}
+    {% if slot.class_id == class_id and slot.day == day %}
+    {% if forloop.first %}
     <div class="card mb-2">
       <div class="card-header-custom">
         <h6 class="mb-0 fw-700" style="color:var(--text);">{{ day }}</h6>
       </div>
-      {% for slot in slots %}
-      {% if slot.class_id == class_id and slot.day == day %}
+    {% endif %}
       <div class="d-flex align-items-start gap-3 p-3"
            style="border-bottom:1px solid var(--border);">
-        <div style="background:var(--primary);color:#fff;border-radius:var(--radius-sm);
-                    padding:.38rem .6rem;font-size:.78rem;font-weight:700;
-                    white-space:nowrap;flex-shrink:0;min-width:44px;text-align:center;">
+        <div style="background:var(--primary);color:#fff;
+                    border-radius:var(--radius-sm);padding:.4rem .6rem;
+                    font-size:.78rem;font-weight:700;
+                    white-space:nowrap;flex-shrink:0;
+                    min-width:52px;text-align:center;">
           Hr {{ slot.hour }}
-        </div>
-        <div>
-          <div class="fw-700" style="font-size:.875rem;">{{ slot.subject_name }}</div>
-          {% if slot.room %}
-          <div style="font-size:.76rem;color:var(--text-3);">
-            <i class="bi bi-door-open me-1"></i>{{ slot.room }}
+          {% if slot.start_time %}
+          <div style="font-size:.62rem;font-weight:400;opacity:.85;margin-top:.1rem;">
+            {{ slot.start_time|time:"h:i" }}
           </div>
           {% endif %}
+        </div>
+        <div>
+          <div class="fw-700" style="font-size:.9rem;">{{ slot.subject_name }}</div>
           {% if slot.start_time %}
-          <div style="font-size:.73rem;color:var(--text-4);">
-            {{ slot.start_time|time:"h:i A" }}
-            {% if slot.end_time %} – {{ slot.end_time|time:"h:i A" }}{% endif %}
+          <div style="font-size:.78rem;color:var(--primary);font-weight:600;margin-top:.1rem;">
+            <i class="bi bi-clock me-1"></i>
+            {{ slot.start_time|time:"h:i A" }}{% if slot.end_time %} – {{ slot.end_time|time:"h:i A" }}{% endif %}
+          </div>
+          {% endif %}
+          {% if slot.room %}
+          <div style="font-size:.74rem;color:var(--text-4);margin-top:.1rem;">
+            <i class="bi bi-door-open me-1"></i>{{ slot.room }}
           </div>
           {% endif %}
         </div>
       </div>
-      {% endif %}
-      {% endfor %}
-    </div>
+    {% if forloop.last %}</div>{% endif %}
+    {% endif %}
+    {% endfor %}
     {% endfor %}
   </div>
 

@@ -1,96 +1,289 @@
 {% extends "attendance/hod/base_hod.html" %}
-{% block title %}{% if slot %}Edit{% else %}Add{% endif %} Timetable Slot{% endblock %}
+{% block title %}{% if slot %}Edit{% else %}Add{% endif %} Timetable Slot — {{ cls.name }}{% endblock %}
 {% block page_title %}{% if slot %}Edit{% else %}Add{% endif %} Timetable Slot{% endblock %}
 
 {% block content %}
 <div class="page-header">
-  <h1>{% if slot %}Edit{% else %}Add{% endif %} Slot — {{ cls.name }}</h1>
-  <a href="{% url 'timetable_view' cls.id %}" class="btn-primary-custom" style="background:#64748b;">
-    <i class="bi bi-arrow-left"></i> Back
+  <div>
+    <h1>
+      <i class="bi bi-clock me-2" style="color:var(--primary);"></i>
+      {% if slot %}Edit{% else %}Add{% endif %} Slot — {{ cls.name }}
+    </h1>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item"><a href="{% url 'timetable_sections' %}">Sections</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'timetable_view' cls.id %}">{{ cls.name }}</a></li>
+        <li class="breadcrumb-item active">{% if slot %}Edit{% else %}Add{% endif %} Slot</li>
+      </ol>
+    </nav>
+  </div>
+  <a href="{% url 'timetable_view' cls.id %}" class="btn-primary-custom"
+     style="background:var(--gray-500);">
+    <i class="bi bi-arrow-left"></i>
+    <span class="d-none d-sm-inline">Back to Timetable</span>
   </a>
 </div>
 
-<div class="form-card" style="max-width:640px;">
-  <form method="post" novalidate>
-    {% csrf_token %}
+<div class="row g-3">
 
-    <div class="row g-3 mb-3">
-      <div class="col-sm-6">
-        <label class="form-label-custom">Day <span class="text-danger">*</span></label>
-        <select name="day" class="form-control-custom form-select-custom" required>
-          <option value="">— Select Day —</option>
-          {% for val,label in day_choices %}
-          <option value="{{ val }}" {% if slot.day == val %}selected{% endif %}>{{ label }}</option>
-          {% endfor %}
-        </select>
-      </div>
-      <div class="col-sm-6">
-        <label class="form-label-custom">Hour <span class="text-danger">*</span></label>
-        <select name="hour" class="form-control-custom form-select-custom" required>
-          <option value="">— Select Hour —</option>
-          {% for val,label in hour_choices %}
-          <option value="{{ val }}" {% if slot.hour == val %}selected{% endif %}>{{ label }}</option>
-          {% endfor %}
-        </select>
-      </div>
+  <!-- Main form -->
+  <div class="col-12 col-lg-8">
+    <div class="form-card" style="max-width:100%;">
+      <form method="post" novalidate>
+        {% csrf_token %}
+
+        <!-- Section: Class & Day/Hour -->
+        <div class="mb-4 pb-3" style="border-bottom:1px solid var(--border);">
+          <h6 class="fw-700 mb-3" style="font-size:.85rem;text-transform:uppercase;
+              letter-spacing:.05em;color:var(--text-3);">
+            <i class="bi bi-calendar-week me-2"></i>Schedule
+          </h6>
+          <div class="row g-3">
+            <div class="col-sm-6">
+              <label class="form-label-custom">Day <span class="text-danger">*</span></label>
+              <select name="day" class="form-control-custom form-select-custom" required>
+                <option value="">— Select Day —</option>
+                {% for val, label in day_choices %}
+                <option value="{{ val }}"
+                  {% if slot.day == val %}selected{% endif %}>
+                  {{ label }}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label-custom">Hour / Period <span class="text-danger">*</span></label>
+              <select name="hour" class="form-control-custom form-select-custom" required>
+                <option value="">— Select Hour —</option>
+                {% for val, label in hour_choices %}
+                <option value="{{ val }}"
+                  {% if slot.hour == val %}selected{% endif %}>
+                  {{ label }}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Teacher & Subject -->
+        <div class="mb-4 pb-3" style="border-bottom:1px solid var(--border);">
+          <h6 class="fw-700 mb-3" style="font-size:.85rem;text-transform:uppercase;
+              letter-spacing:.05em;color:var(--text-3);">
+            <i class="bi bi-person-badge me-2"></i>Teacher &amp; Subject
+          </h6>
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label-custom">Teacher <span class="text-danger">*</span></label>
+              <select name="teacher_id" class="form-control-custom form-select-custom" required
+                      id="teacher-select">
+                <option value="">— Select Teacher —</option>
+                {% for t in teachers %}
+                <option value="{{ t.id }}"
+                  {% if slot.teacher_id == t.id %}selected{% endif %}>
+                  {{ t.name }}{% if t.department %} &nbsp;·&nbsp; {{ t.department }}{% endif %}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-12">
+              <label class="form-label-custom">Subject <span class="text-danger">*</span></label>
+              <select name="subject_id" class="form-control-custom form-select-custom" required>
+                <option value="">— Select Subject —</option>
+                {% for s in subjects %}
+                <option value="{{ s.id }}"
+                  {% if slot.subject_id == s.id %}selected{% endif %}>
+                  {{ s.name }} &nbsp;({{ s.code }})
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Timings -->
+        <div class="mb-4 pb-3" style="border-bottom:1px solid var(--border);">
+          <h6 class="fw-700 mb-3" style="font-size:.85rem;text-transform:uppercase;
+              letter-spacing:.05em;color:var(--text-3);">
+            <i class="bi bi-clock me-2"></i>Timings
+          </h6>
+          <div class="row g-3">
+            <div class="col-sm-6">
+              <label class="form-label-custom">Start Time</label>
+              <input type="time" name="start_time" class="form-control-custom"
+                     value="{{ slot.start_time|default:'' }}"
+                     placeholder="e.g. 09:00">
+              <small style="color:var(--text-4);font-size:.74rem;">Optional — e.g. 09:00 AM</small>
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label-custom">End Time</label>
+              <input type="time" name="end_time" class="form-control-custom"
+                     value="{{ slot.end_time|default:'' }}"
+                     placeholder="e.g. 09:50">
+              <small style="color:var(--text-4);font-size:.74rem;">Optional — e.g. 09:50 AM</small>
+            </div>
+          </div>
+
+          <!-- Quick time presets -->
+          <div class="mt-3">
+            <label class="form-label-custom">Quick Time Presets</label>
+            <div class="d-flex flex-wrap gap-2" id="time-presets">
+              {% for label, start, end in time_presets %}
+              <button type="button" class="preset-btn"
+                      data-start="{{ start }}" data-end="{{ end }}"
+                      style="padding:.3rem .75rem;border:1.5px solid var(--border);
+                             border-radius:var(--radius-sm);background:var(--surface-2);
+                             font-size:.76rem;font-weight:600;cursor:pointer;
+                             color:var(--text-2);transition:all .15s;">
+                {{ label }} ({{ start }}–{{ end }})
+              </button>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Room & Academic Year -->
+        <div class="mb-4">
+          <h6 class="fw-700 mb-3" style="font-size:.85rem;text-transform:uppercase;
+              letter-spacing:.05em;color:var(--text-3);">
+            <i class="bi bi-door-open me-2"></i>Additional Details
+          </h6>
+          <div class="row g-3">
+            <div class="col-sm-6">
+              <label class="form-label-custom">Room / Lab</label>
+              <input type="text" name="room" class="form-control-custom"
+                     value="{{ slot.room|default:'' }}"
+                     placeholder="e.g. Room 204, CS Lab 1">
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label-custom">Academic Year</label>
+              <input type="text" name="academic_year" class="form-control-custom"
+                     value="{{ slot.academic_year|default:'2025-26' }}"
+                     placeholder="e.g. 2025-26">
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="d-flex gap-2 flex-wrap">
+          <button type="submit" class="btn-primary-custom" style="padding:.6rem 1.5rem;">
+            <i class="bi bi-check-lg"></i>
+            {% if slot %}Update{% else %}Add{% endif %} Slot
+          </button>
+          <a href="{% url 'timetable_view' cls.id %}" class="btn btn-light border">
+            Cancel
+          </a>
+        </div>
+
+      </form>
     </div>
+  </div>
 
-    <div class="mb-3">
-      <label class="form-label-custom">Teacher <span class="text-danger">*</span></label>
-      <select name="teacher_id" class="form-control-custom form-select-custom" required>
-        <option value="">— Select Teacher —</option>
+  <!-- Info panel -->
+  <div class="col-12 col-lg-4">
+    <div class="card p-4 h-100">
+      <h6 class="fw-700 mb-3" style="font-size:.88rem;">
+        <i class="bi bi-info-circle me-2" style="color:var(--cyan);"></i>Section Info
+      </h6>
+
+      <!-- Class badge -->
+      <div class="mb-3 p-3 rounded-3"
+           style="background:var(--primary-50);border:1px solid var(--primary-100);">
+        <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;
+                    color:var(--text-3);font-weight:600;margin-bottom:.2rem;">Section</div>
+        <div class="fw-700" style="font-size:1rem;color:var(--primary-dark);">
+          <i class="bi bi-building me-1"></i>{{ cls.name }}
+        </div>
+        {% if cls.description %}
+        <div style="font-size:.78rem;color:var(--text-3);margin-top:.2rem;">
+          {{ cls.description }}
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Typical schedule reference -->
+      <div class="mb-3">
+        <div style="font-size:.76rem;font-weight:600;color:var(--text-3);
+                    text-transform:uppercase;letter-spacing:.04em;margin-bottom:.6rem;">
+          Typical Hour Schedule
+        </div>
+        {% for label, start, end in time_presets %}
+        <div class="d-flex justify-content-between align-items-center py-1"
+             style="border-bottom:1px solid var(--border);font-size:.8rem;">
+          <span class="fw-700">{{ label }}</span>
+          <span style="color:var(--text-3);">{{ start }} – {{ end }}</span>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Teachers quick ref -->
+      <div>
+        <div style="font-size:.76rem;font-weight:600;color:var(--text-3);
+                    text-transform:uppercase;letter-spacing:.04em;margin-bottom:.6rem;">
+          Available Teachers ({{ teachers|length }})
+        </div>
         {% for t in teachers %}
-        <option value="{{ t.id }}" {% if slot.teacher_id == t.id %}selected{% endif %}>
-          {{ t.name }}{% if t.department %} ({{ t.department }}){% endif %}
-        </option>
+        <div class="d-flex align-items-center gap-2 py-1"
+             style="border-bottom:1px solid var(--border);">
+          <div style="width:28px;height:28px;background:var(--primary-100);
+                      border-radius:50%;display:grid;place-items:center;
+                      color:var(--primary-dark);font-weight:800;font-size:.72rem;flex-shrink:0;">
+            {{ t.name|first|upper }}
+          </div>
+          <div style="min-width:0;">
+            <div style="font-size:.8rem;font-weight:600;
+                        white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+              {{ t.name }}
+            </div>
+            {% if t.department %}
+            <div style="font-size:.72rem;color:var(--text-3);">{{ t.department }}</div>
+            {% endif %}
+          </div>
+        </div>
         {% endfor %}
-      </select>
-    </div>
-
-    <div class="mb-3">
-      <label class="form-label-custom">Subject <span class="text-danger">*</span></label>
-      <select name="subject_id" class="form-control-custom form-select-custom" required>
-        <option value="">— Select Subject —</option>
-        {% for s in subjects %}
-        <option value="{{ s.id }}" {% if slot.subject_id == s.id %}selected{% endif %}>
-          {{ s.name }} ({{ s.code }})
-        </option>
-        {% endfor %}
-      </select>
-    </div>
-
-    <div class="row g-3 mb-3">
-      <div class="col-sm-6">
-        <label class="form-label-custom">Start Time <span class="text-muted-custom">(optional)</span></label>
-        <input type="time" name="start_time" class="form-control-custom"
-               value="{{ slot.start_time|default:'' }}">
-      </div>
-      <div class="col-sm-6">
-        <label class="form-label-custom">End Time <span class="text-muted-custom">(optional)</span></label>
-        <input type="time" name="end_time" class="form-control-custom"
-               value="{{ slot.end_time|default:'' }}">
       </div>
     </div>
+  </div>
 
-    <div class="row g-3 mb-4">
-      <div class="col-sm-6">
-        <label class="form-label-custom">Room / Lab</label>
-        <input type="text" name="room" class="form-control-custom"
-               value="{{ slot.room|default:'' }}" placeholder="e.g. Room 204, Lab 1">
-      </div>
-      <div class="col-sm-6">
-        <label class="form-label-custom">Academic Year</label>
-        <input type="text" name="academic_year" class="form-control-custom"
-               value="{{ slot.academic_year|default:'2025-26' }}" placeholder="e.g. 2025-26">
-      </div>
-    </div>
-
-    <div class="d-flex gap-2">
-      <button type="submit" class="btn-primary-custom">
-        <i class="bi bi-check-lg"></i> {% if slot %}Update{% else %}Add{% endif %} Slot
-      </button>
-      <a href="{% url 'timetable_view' cls.id %}" class="btn btn-secondary">Cancel</a>
-    </div>
-  </form>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Quick time preset buttons
+document.querySelectorAll('.preset-btn').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    var start = this.getAttribute('data-start');
+    var end   = this.getAttribute('data-end');
+    document.querySelector('[name="start_time"]').value = start;
+    document.querySelector('[name="end_time"]').value   = end;
+
+    // Highlight active preset
+    document.querySelectorAll('.preset-btn').forEach(function (b) {
+      b.style.background   = 'var(--surface-2)';
+      b.style.borderColor  = 'var(--border)';
+      b.style.color        = 'var(--text-2)';
+    });
+    this.style.background  = 'var(--primary)';
+    this.style.borderColor = 'var(--primary)';
+    this.style.color       = '#fff';
+  });
+});
+
+// Highlight preset on load if times already set
+document.addEventListener('DOMContentLoaded', function () {
+  var startVal = document.querySelector('[name="start_time"]').value;
+  var endVal   = document.querySelector('[name="end_time"]').value;
+  if (startVal && endVal) {
+    document.querySelectorAll('.preset-btn').forEach(function (btn) {
+      if (btn.getAttribute('data-start') === startVal &&
+          btn.getAttribute('data-end')   === endVal) {
+        btn.style.background  = 'var(--primary)';
+        btn.style.borderColor = 'var(--primary)';
+        btn.style.color       = '#fff';
+      }
+    });
+  }
+});
+</script>
 {% endblock %}

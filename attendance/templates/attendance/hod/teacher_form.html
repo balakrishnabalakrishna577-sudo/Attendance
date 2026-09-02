@@ -1,25 +1,48 @@
 {% extends "attendance/hod/base_hod.html" %}
-{% block title %}{{ action }} Teacher{% endblock %}
-{% block page_title %}{{ action }} Teacher{% endblock %}
+{% block title %}{% if is_import %}Import{% else %}{{ action }}{% endif %} Teacher{% endblock %}
+{% block page_title %}{% if is_import %}Import{% else %}{{ action }}{% endif %} Teacher{% endblock %}
 
 {% block content %}
 <div class="page-header">
-  <h1>{{ action }} Teacher</h1>
+  <h1>
+    {% if is_import %}
+      <i class="bi bi-person-plus me-2" style="color:var(--cyan);"></i>Import Teacher
+    {% elif action == 'Add' %}
+      <i class="bi bi-person-plus me-2" style="color:var(--primary);"></i>Add Teacher
+    {% else %}
+      <i class="bi bi-pencil me-2" style="color:var(--primary);"></i>Edit Teacher
+    {% endif %}
+  </h1>
   <a href="{% url 'teacher_list' %}" class="btn-primary-custom"
      style="background:var(--gray-500);">
     <i class="bi bi-arrow-left"></i> Back
   </a>
 </div>
 
-<div class="form-card">
+<div class="form-card" style="max-width:580px;">
+
+  {% if is_import %}
+  <div class="mb-4 p-3 rounded-3"
+       style="background:var(--cyan-50);border:1px solid #a5f3fc;">
+    <p style="font-size:.82rem;color:#0c4a6e;margin:0;">
+      <i class="bi bi-info-circle me-1"></i>
+      Fill in the teacher details below to import this teacher into the system.
+    </p>
+  </div>
+  {% endif %}
+
   <form method="post" novalidate>
     {% csrf_token %}
+    <input type="hidden" name="form_type" value="manual">
 
     <div class="mb-3">
-      <label class="form-label-custom">Full Name <span class="text-danger">*</span></label>
+      <label class="form-label-custom">
+        Full Name <span class="text-danger">*</span>
+      </label>
       <input type="text" name="name" class="form-control-custom"
              value="{{ teacher.name|default:'' }}" required
-             placeholder="e.g. Dr. Priya Sharma">
+             placeholder="e.g. Dr. Priya Sharma"
+             autofocus>
     </div>
 
     <div class="row g-3 mb-3">
@@ -45,10 +68,12 @@
     </div>
 
     <div class="d-flex gap-2">
-      <button type="submit" class="btn-primary-custom">
-        <i class="bi bi-check-lg"></i> {{ action }} Teacher
+      <button type="submit" class="btn-primary-custom"
+              {% if is_import %}style="background:var(--cyan);"{% endif %}>
+        <i class="bi bi-check-lg"></i>
+        {% if is_import %}Import Teacher{% elif action == 'Add' %}Add Teacher{% else %}Update Teacher{% endif %}
       </button>
-      <a href="{% url 'teacher_list' %}" class="btn btn-secondary">Cancel</a>
+      <a href="{% url 'teacher_list' %}" class="btn btn-light border">Cancel</a>
     </div>
   </form>
 </div>

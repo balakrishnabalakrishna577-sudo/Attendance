@@ -4,12 +4,22 @@
 
 {% block content %}
 <div class="page-header">
-  <h1><i class="bi bi-book me-2"></i>Subjects</h1>
-  <a href="{% url 'subject_add' %}" class="btn-primary-custom">
-    <i class="bi bi-plus-lg"></i> Add Subject
-  </a>
+  <h1><i class="bi bi-book me-2" style="color:var(--primary);"></i>Subjects</h1>
+  <div class="d-flex gap-2 flex-wrap">
+    <!-- Import Subject button — opens modal -->
+    <button type="button" class="btn-primary-custom" style="background:var(--cyan);"
+            data-bs-toggle="modal" data-bs-target="#importSubjectModal">
+      <i class="bi bi-upload"></i>
+      <span class="d-none d-sm-inline">Import Subjects</span>
+    </button>
+    <a href="{% url 'subject_add' %}" class="btn-primary-custom">
+      <i class="bi bi-plus-lg"></i>
+      <span class="d-none d-sm-inline">Add</span> Subject
+    </a>
+  </div>
 </div>
 
+<!-- Subjects table -->
 <div class="card">
   <div class="card-header-custom">
     <h5>All Subjects ({{ subjects|length }})</h5>
@@ -19,15 +29,22 @@
   <div class="table-container">
     <table class="data-table">
       <thead>
-        <tr><th>#</th><th>Subject Name</th><th>Code</th><th>Description</th><th>Actions</th></tr>
+        <tr>
+          <th>#</th>
+          <th>Subject Name</th>
+          <th>Code</th>
+          <th class="hide-mobile">Description</th>
+          <th>Actions</th>
+        </tr>
       </thead>
       <tbody>
         {% for subj in subjects %}
         <tr class="searchable-row">
-          <td class="text-muted-custom">{{ forloop.counter }}</td>
+          <td style="color:var(--text-4);">{{ forloop.counter }}</td>
           <td class="fw-700">{{ subj.name }}</td>
-          <td><code>{{ subj.code }}</code></td>
-          <td>{{ subj.description|default:"—" }}</td>
+          <td><code style="background:var(--gray-100);padding:.15rem .45rem;
+                           border-radius:.3rem;font-size:.78rem;">{{ subj.code }}</code></td>
+          <td class="hide-mobile" style="color:var(--text-3);">{{ subj.description|default:"—" }}</td>
           <td>
             <div class="d-flex gap-1">
               <a href="{% url 'subject_edit' subj.id %}" class="btn-sm-icon btn-edit" title="Edit">
@@ -41,8 +58,16 @@
         </tr>
         {% empty %}
         <tr>
-          <td colspan="5" class="text-center py-4 text-muted-custom">
-            No subjects yet. <a href="{% url 'subject_add' %}">Add one</a>.
+          <td colspan="5" class="text-center py-5" style="color:var(--text-3);">
+            <i class="bi bi-book" style="font-size:2rem;display:block;margin-bottom:.5rem;"></i>
+            No subjects yet.
+            <a href="{% url 'subject_add' %}">Add one</a> or
+            <button type="button"
+                    style="background:none;border:none;color:var(--primary);
+                           cursor:pointer;padding:0;font-size:inherit;font-weight:600;"
+                    data-bs-toggle="modal" data-bs-target="#importSubjectModal">
+              import from CSV
+            </button>.
           </td>
         </tr>
         {% endfor %}
@@ -50,4 +75,216 @@
     </table>
   </div>
 </div>
+
+
+<!-- ══════════════════════════════════════════
+     Import Subjects CSV Modal
+     ══════════════════════════════════════════ -->
+<div class="modal fade" id="importSubjectModal" tabindex="-1"
+     aria-labelledby="importSubjectLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content"
+         style="border-radius:var(--radius-xl);border:none;overflow:hidden;">
+
+      <!-- Header -->
+      <div class="modal-header"
+           style="background:var(--sidebar-bg);border:none;padding:1.2rem 1.5rem;">
+        <h5 class="modal-title fw-700"
+            style="color:#fff;font-size:1rem;" id="importSubjectLabel">
+          <i class="bi bi-upload me-2" style="color:var(--cyan);"></i>
+          Import Subjects from CSV
+        </h5>
+        <button type="button" class="btn-close btn-close-white"
+                data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body p-0">
+        <div class="row g-0">
+
+          <!-- Upload form -->
+          <div class="col-12 col-md-6 p-4"
+               style="border-right:1px solid var(--border);">
+            <h6 class="fw-700 mb-3" style="font-size:.85rem;color:var(--text);">
+              <i class="bi bi-cloud-upload me-2" style="color:var(--cyan);"></i>Upload File
+            </h6>
+
+            <form method="post" action="{% url 'subject_import' %}"
+                  enctype="multipart/form-data" novalidate>
+              {% csrf_token %}
+
+              <div class="mb-3">
+                <label class="form-label-custom">
+                  Select CSV File <span class="text-danger">*</span>
+                </label>
+                <div id="subj-drop-zone"
+                     style="border:2px dashed var(--border);border-radius:var(--radius);
+                            padding:1.5rem;text-align:center;cursor:pointer;
+                            transition:border-color .15s,background .15s;
+                            background:var(--surface-2);"
+                     onclick="document.getElementById('subj-file-input').click()">
+                  <i class="bi bi-file-earmark-spreadsheet"
+                     style="font-size:2rem;color:var(--cyan);display:block;margin-bottom:.4rem;"></i>
+                  <div style="font-size:.82rem;font-weight:600;color:var(--text-2);">
+                    Click to browse or drag &amp; drop
+                  </div>
+                  <div id="subj-file-display"
+                       style="font-size:.76rem;color:var(--text-3);margin-top:.25rem;">
+                    No file chosen
+                  </div>
+                </div>
+                <input type="file" name="csv_file" id="subj-file-input"
+                       accept=".csv" required style="display:none;">
+              </div>
+
+              <div class="mb-4 p-2 rounded-3"
+                   style="background:var(--amber-50);border:1px solid #fde68a;">
+                <p style="font-size:.76rem;color:#92400e;margin:0;">
+                  <i class="bi bi-info-circle me-1"></i>
+                  <code>name</code> and <code>code</code> are required.
+                  Description is optional.
+                </p>
+              </div>
+
+              <div class="d-flex gap-2">
+                <button type="submit" class="btn-primary-custom"
+                        style="background:var(--cyan);flex:1;justify-content:center;">
+                  <i class="bi bi-cloud-upload"></i> Import
+                </button>
+                <button type="button" class="btn btn-light border"
+                        data-bs-dismiss="modal">Cancel</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Format guide -->
+          <div class="col-12 col-md-6 p-4" style="background:var(--surface-2);">
+            <h6 class="fw-700 mb-3" style="font-size:.85rem;color:var(--text);">
+              <i class="bi bi-file-earmark-text me-2" style="color:var(--primary);"></i>
+              CSV Format Guide
+            </h6>
+
+            <table style="width:100%;border-collapse:collapse;
+                          font-size:.78rem;margin-bottom:1rem;">
+              <thead>
+                <tr style="border-bottom:2px solid var(--border);">
+                  <th style="padding:.4rem .5rem;color:var(--text-3);
+                             font-size:.68rem;text-transform:uppercase;
+                             letter-spacing:.06em;">Column</th>
+                  <th style="padding:.4rem .5rem;color:var(--text-3);
+                             font-size:.68rem;text-transform:uppercase;
+                             letter-spacing:.06em;">Required</th>
+                  <th style="padding:.4rem .5rem;color:var(--text-3);
+                             font-size:.68rem;text-transform:uppercase;
+                             letter-spacing:.06em;">Example</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-bottom:1px solid var(--border);">
+                  <td style="padding:.5rem;"><code>name</code></td>
+                  <td style="padding:.5rem;">
+                    <span class="badge-absent" style="font-size:.68rem;">Yes</span>
+                  </td>
+                  <td style="padding:.5rem;color:var(--text-3);">Python Programming</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--border);">
+                  <td style="padding:.5rem;"><code>code</code></td>
+                  <td style="padding:.5rem;">
+                    <span class="badge-absent" style="font-size:.68rem;">Yes</span>
+                  </td>
+                  <td style="padding:.5rem;color:var(--text-3);">MCA101</td>
+                </tr>
+                <tr>
+                  <td style="padding:.5rem;"><code>description</code></td>
+                  <td style="padding:.5rem;">
+                    <span class="badge-present" style="font-size:.68rem;">No</span>
+                  </td>
+                  <td style="padding:.5rem;color:var(--text-3);">Core Python concepts</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- Sample preview -->
+            <div style="background:var(--gray-900);color:#a5f3fc;
+                        padding:.75rem 1rem;border-radius:var(--radius-sm);
+                        font-family:monospace;font-size:.74rem;
+                        line-height:1.8;overflow-x:auto;margin-bottom:1rem;">
+              name,code,description<br>
+              Python Programming,MCA101,Core Python and OOP<br>
+              Data Structures,MCA102,Arrays and Trees<br>
+              Database Management,MCA103,RDBMS and SQL
+            </div>
+
+            <!-- Download sample -->
+            <button id="download-subj-sample"
+                    class="btn-primary-custom w-100 justify-content-center"
+                    style="background:var(--gray-700);font-size:.8rem;">
+              <i class="bi bi-download"></i> Download Sample CSV
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// File drop zone
+var subjInput   = document.getElementById('subj-file-input');
+var subjZone    = document.getElementById('subj-drop-zone');
+var subjDisplay = document.getElementById('subj-file-display');
+
+if (subjInput) {
+  subjInput.addEventListener('change', function () {
+    if (this.files && this.files[0]) {
+      subjDisplay.textContent   = this.files[0].name;
+      subjZone.style.borderColor = 'var(--cyan)';
+      subjZone.style.background  = 'var(--cyan-50)';
+    }
+  });
+}
+if (subjZone) {
+  subjZone.addEventListener('dragover', function (e) {
+    e.preventDefault();
+    this.style.borderColor = 'var(--cyan)';
+    this.style.background  = 'var(--cyan-50)';
+  });
+  subjZone.addEventListener('dragleave', function () {
+    this.style.borderColor = 'var(--border)';
+    this.style.background  = 'var(--surface-2)';
+  });
+  subjZone.addEventListener('drop', function (e) {
+    e.preventDefault();
+    var file = e.dataTransfer.files[0];
+    if (file && file.name.endsWith('.csv')) {
+      subjInput.files        = e.dataTransfer.files;
+      subjDisplay.textContent = file.name;
+      this.style.borderColor = 'var(--cyan)';
+      this.style.background  = 'var(--cyan-50)';
+    } else {
+      subjDisplay.textContent = 'Please drop a .csv file';
+      this.style.borderColor  = 'var(--rose)';
+    }
+  });
+}
+
+// Download sample CSV
+document.getElementById('download-subj-sample').addEventListener('click', function () {
+  var content = 'name,code,description\n'
+    + 'Python Programming,MCA101,Core Python and OOP concepts\n'
+    + 'Data Structures,MCA102,Arrays lists trees graphs\n'
+    + 'Database Management,MCA103,RDBMS concepts and SQL\n'
+    + 'Web Technologies,BCA201,HTML CSS JavaScript basics\n';
+  var blob = new Blob([content], { type: 'text/csv' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'subjects_sample.csv';
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+</script>
 {% endblock %}

@@ -32,6 +32,7 @@ urlpatterns = [
     # Subjects
     path('hod/subjects/',                          views_hod.subject_list,   name='subject_list'),
     path('hod/subjects/add/',                      views_hod.subject_add,    name='subject_add'),
+    path('hod/subjects/import/',                   views_hod.subject_import, name='subject_import'),
     path('hod/subjects/<str:subject_id>/edit/',    views_hod.subject_edit,   name='subject_edit'),
     path('hod/subjects/<str:subject_id>/delete/',  views_hod.subject_delete, name='subject_delete'),
 

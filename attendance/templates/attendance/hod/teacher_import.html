@@ -1,0 +1,132 @@
+{% extends "attendance/hod/base_hod.html" %}
+{% block title %}Import Teachers{% endblock %}
+{% block page_title %}Import Teachers{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1><i class="bi bi-upload me-2" style="color:var(--primary);"></i>Import Teachers from CSV</h1>
+  <a href="{% url 'teacher_list' %}" class="btn-primary-custom" style="background:var(--gray-500);">
+    <i class="bi bi-arrow-left"></i> Back
+  </a>
+</div>
+
+<div class="row g-3">
+
+  <!-- Upload form -->
+  <div class="col-12 col-lg-6">
+    <div class="form-card" style="max-width:100%;">
+      <h5 class="fw-700 mb-4" style="font-size:.95rem;">
+        <i class="bi bi-cloud-upload me-2" style="color:var(--primary);"></i>Upload CSV File
+      </h5>
+      <form method="post" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+        <div class="mb-4">
+          <label class="form-label-custom">CSV File <span class="text-danger">*</span></label>
+          <input type="file" name="csv_file" class="form-control-custom"
+                 accept=".csv" required
+                 style="padding:.45rem .75rem;cursor:pointer;">
+          <small style="color:var(--text-3);font-size:.76rem;margin-top:.3rem;display:block;">
+            Accepted format: <code>.csv</code> · Encoding: UTF-8
+          </small>
+        </div>
+
+        <div class="mb-3 p-3 rounded-3"
+             style="background:var(--amber-50);border:1px solid #fde68a;">
+          <p style="font-size:.82rem;color:#92400e;margin:0;">
+            <i class="bi bi-info-circle me-1"></i>
+            Each row will create one teacher record.
+            Existing teachers will <strong>not</strong> be duplicated — a new record is always created.
+          </p>
+        </div>
+
+        <button type="submit" class="btn-primary-custom" style="padding:.6rem 1.4rem;">
+          <i class="bi bi-cloud-upload"></i> Import Teachers
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Instructions -->
+  <div class="col-12 col-lg-6">
+    <div class="card p-4 h-100">
+      <h5 class="fw-700 mb-3" style="font-size:.95rem;">
+        <i class="bi bi-file-earmark-text me-2" style="color:var(--cyan);"></i>CSV Format
+      </h5>
+
+      <p style="font-size:.82rem;color:var(--text-3);margin-bottom:.75rem;">
+        Your CSV must have these column headers in the first row:
+      </p>
+
+      <!-- Column reference table -->
+      <div class="table-container mb-3">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Column</th>
+              <th>Required</th>
+              <th>Example</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>name</code></td>
+              <td><span class="badge-absent" style="font-size:.72rem;">Required</span></td>
+              <td>Dr. Priya Sharma</td>
+            </tr>
+            <tr>
+              <td><code>email</code></td>
+              <td><span class="badge-present" style="font-size:.72rem;">Optional</span></td>
+              <td>priya@college.edu</td>
+            </tr>
+            <tr>
+              <td><code>phone</code></td>
+              <td><span class="badge-present" style="font-size:.72rem;">Optional</span></td>
+              <td>9876543210</td>
+            </tr>
+            <tr>
+              <td><code>department</code></td>
+              <td><span class="badge-present" style="font-size:.72rem;">Optional</span></td>
+              <td>Computer Science</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Sample CSV preview -->
+      <p style="font-size:.8rem;color:var(--text-3);margin-bottom:.4rem;">Sample file content:</p>
+      <div style="background:var(--gray-900);color:#a5f3fc;padding:.9rem 1rem;
+                  border-radius:var(--radius-sm);font-family:monospace;font-size:.78rem;
+                  line-height:1.7;overflow-x:auto;">
+        name,email,phone,department<br>
+        Dr. Priya Sharma,priya@college.edu,9876543210,Computer Science<br>
+        Prof. Ravi Kumar,ravi@college.edu,9876543211,Mathematics<br>
+        Dr. Anita Nair,,9876543212,Physics
+      </div>
+
+      <!-- Download sample button -->
+      <button id="download-sample" class="btn-primary-custom mt-3"
+              style="background:var(--cyan);font-size:.82rem;padding:.42rem .9rem;">
+        <i class="bi bi-download"></i> Download Sample CSV
+      </button>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('download-sample').addEventListener('click', function () {
+  var content = 'name,email,phone,department\n'
+    + 'Dr. Priya Sharma,priya@college.edu,9876543210,Computer Science\n'
+    + 'Prof. Ravi Kumar,ravi@college.edu,9876543211,Mathematics\n'
+    + 'Dr. Anita Nair,,9876543212,Physics\n';
+  var blob = new Blob([content], { type: 'text/csv' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'teachers_sample.csv';
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+</script>
+{% endblock %}

@@ -3,6 +3,8 @@ HOD views — dashboard, teachers, classes, subjects, assignments.
 Students and attendance reports have been removed.
 """
 
+import csv
+import io
 from datetime import date as dt_date
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -44,6 +46,43 @@ def teacher_list(request):
 @hod_required
 def teacher_add(request):
     if request.method == 'POST':
+        form_type = request.POST.get('form_type', 'manual')
+
+        # ── CSV import ─────────────────────────────────────────
+        if form_type == 'csv':
+            csv_file = request.FILES.get('csv_file')
+            if not csv_file:
+                messages.error(request, 'Please select a CSV file.')
+                return render(request, 'attendance/hod/teacher_form.html', {'action': 'Add'})
+            if not csv_file.name.endswith('.csv'):
+                messages.error(request, 'File must be a .csv file.')
+                return render(request, 'attendance/hod/teacher_form.html', {'action': 'Add'})
+            try:
+                decoded = csv_file.read().decode('utf-8-sig')
+                reader  = csv.DictReader(io.StringIO(decoded))
+                count, errors = 0, []
+                for i, row in enumerate(reader, start=2):
+                    name = row.get('name', '').strip()
+                    if not name:
+                        errors.append(f'Row {i}: name is required — skipped.')
+                        continue
+                    db.create_teacher_no_login(
+                        name,
+                        row.get('email', '').strip(),
+                        row.get('phone', '').strip(),
+                        row.get('department', '').strip(),
+                    )
+                    count += 1
+                if count:
+                    messages.success(request,
+                        f'{count} teacher{"s" if count != 1 else ""} imported successfully.')
+                for e in errors[:5]:
+                    messages.warning(request, e)
+            except Exception as exc:
+                messages.error(request, f'CSV parse error: {exc}')
+            return redirect('teacher_list')
+
+        # ── Manual add ─────────────────────────────────────────
         name       = request.POST.get('name', '').strip()
         email      = request.POST.get('email', '').strip()
         phone      = request.POST.get('phone', '').strip()
@@ -54,7 +93,10 @@ def teacher_add(request):
         db.create_teacher_no_login(name, email, phone, department)
         messages.success(request, f'Teacher {name} added successfully.')
         return redirect('teacher_list')
-    return render(request, 'attendance/hod/teacher_form.html', {'action': 'Add'})
+
+    is_import = request.GET.get('import') == '1'
+    return render(request, 'attendance/hod/teacher_form.html',
+                  {'action': 'Add', 'is_import': is_import})
 
 
 @hod_required
@@ -271,3 +313,42 @@ def assignment_delete(request, assignment_id):
     label = f"{t['name'] if t else '?'} → {c['name'] if c else '?'} → {s['name'] if s else '?'}"
     return render(request, 'attendance/hod/confirm_delete.html',
                   {'item': label, 'cancel_url': 'assignment_list'})
+
+
+
+# ─────────────────────────────────────────────
+# Subject CSV Import
+# ─────────────────────────────────────────────
+
+@hod_required
+def subject_import(request):
+    """Import subjects from CSV. Columns: name, code, description"""
+    if request.method == 'POST':
+        csv_file = request.FILES.get('csv_file')
+        if not csv_file:
+            messages.error(request, 'Please select a CSV file.')
+            return redirect('subject_list')
+        if not csv_file.name.endswith('.csv'):
+            messages.error(request, 'File must be a .csv file.')
+            return redirect('subject_list')
+        try:
+            decoded = csv_file.read().decode('utf-8-sig')
+            reader  = csv.DictReader(io.StringIO(decoded))
+            count, errors = 0, []
+            for i, row in enumerate(reader, start=2):
+                name = row.get('name', '').strip()
+                code = row.get('code', '').strip()
+                desc = row.get('description', '').strip()
+                if not name or not code:
+                    errors.append(f'Row {i}: name and code are required — skipped.')
+                    continue
+                db.create_subject(name, code, desc)
+                count += 1
+            if count:
+                messages.success(request,
+                    f'{count} subject{"s" if count != 1 else ""} imported successfully.')
+            for e in errors[:5]:
+                messages.warning(request, e)
+        except Exception as exc:
+            messages.error(request, f'CSV parse error: {exc}')
+    return redirect('subject_list')
