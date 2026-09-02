@@ -23,8 +23,7 @@ class Command(BaseCommand):
         if options['reset']:
             self.stdout.write(self.style.WARNING('Resetting all data files…'))
             for fname in [db.USERS_FILE, db.TEACHERS_FILE, db.CLASSES_FILE,
-                          db.SUBJECTS_FILE, db.STUDENTS_FILE,
-                          db.ASSIGNMENTS_FILE, db.ATTENDANCE_FILE]:
+                          db.SUBJECTS_FILE, db.ASSIGNMENTS_FILE]:
                 db.write_json(fname, [])
 
         # Ensure all data files exist (creates empty files if missing)

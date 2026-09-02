@@ -3,7 +3,6 @@
 {% block page_title %}Dashboard{% endblock %}
 
 {% block content %}
-<!-- Header -->
 <div class="page-header">
   <div>
     <h1>Good day, {{ request.session.name }} 👋</h1>
@@ -18,7 +17,7 @@
 
 <!-- Core stats -->
 <div class="row g-3 mb-3">
-  <div class="col-6 col-md-4 col-xl">
+  <div class="col-6 col-md-4">
     <div class="stat-card h-100">
       <div class="stat-icon purple"><i class="bi bi-person-badge"></i></div>
       <div class="stat-info">
@@ -27,7 +26,7 @@
       </div>
     </div>
   </div>
-  <div class="col-6 col-md-4 col-xl">
+  <div class="col-6 col-md-4">
     <div class="stat-card h-100">
       <div class="stat-icon cyan"><i class="bi bi-building"></i></div>
       <div class="stat-info">
@@ -36,30 +35,12 @@
       </div>
     </div>
   </div>
-  <div class="col-6 col-md-4 col-xl">
+  <div class="col-6 col-md-4">
     <div class="stat-card h-100">
       <div class="stat-icon amber"><i class="bi bi-book"></i></div>
       <div class="stat-info">
         <div class="stat-value">{{ total_subjects }}</div>
         <div class="stat-label">Subjects</div>
-      </div>
-    </div>
-  </div>
-  <div class="col-6 col-md-6 col-xl">
-    <div class="stat-card h-100">
-      <div class="stat-icon green"><i class="bi bi-people"></i></div>
-      <div class="stat-info">
-        <div class="stat-value">{{ total_students }}</div>
-        <div class="stat-label">Students</div>
-      </div>
-    </div>
-  </div>
-  <div class="col-6 col-md-6 col-xl">
-    <div class="stat-card h-100">
-      <div class="stat-icon rose"><i class="bi bi-calendar-check"></i></div>
-      <div class="stat-info">
-        <div class="stat-value">{{ today_attendance }}</div>
-        <div class="stat-label">Today's Marks</div>
       </div>
     </div>
   </div>
@@ -115,7 +96,6 @@
         <h5><i class="bi bi-lightning-charge me-2" style="color:var(--amber);"></i>Quick Actions</h5>
       </div>
       <div class="p-3 d-flex flex-column gap-2">
-        {% for icon, label, url, color in actions %}{% endfor %}
         <a href="{% url 'teacher_add' %}" class="btn-primary-custom w-100 justify-content-center">
           <i class="bi bi-person-plus"></i> Add Teacher
         </a>
@@ -147,56 +127,52 @@
     </div>
   </div>
 
-  <!-- Summary grid -->
+  <!-- Summary -->
   <div class="col-12 col-lg-8">
     <div class="card h-100">
       <div class="card-header-custom">
         <h5><i class="bi bi-bar-chart-line me-2" style="color:var(--primary);"></i>Department Summary</h5>
-        <a href="{% url 'attendance_report' %}" class="btn-primary-custom"
-           style="font-size:.76rem;padding:.35rem .75rem;">
-          View Reports <i class="bi bi-arrow-right ms-1"></i>
-        </a>
       </div>
       <div class="p-3">
         <div class="row g-3">
-          {% for val, label, color in summary_items %}{% endfor %}
-          {% for item in summary %}{% endfor %}
-
-          <!-- Manual summary cells -->
-          {% with items="|Teachers|"|add:total_teachers|add:"|var(--primary)" %}{% endwith %}
-
           <div class="col-6 col-md-4">
-            <div class="p-3 rounded-3 text-center" style="background:var(--primary-50);border:1px solid var(--primary-100);">
+            <div class="p-3 rounded-3 text-center"
+                 style="background:var(--primary-50);border:1px solid var(--primary-100);">
               <div style="font-size:1.6rem;font-weight:900;color:var(--primary-dark);">{{ total_teachers }}</div>
               <div style="font-size:.75rem;color:var(--text-3);font-weight:600;text-transform:uppercase;letter-spacing:.04em;">Teachers</div>
             </div>
           </div>
           <div class="col-6 col-md-4">
-            <div class="p-3 rounded-3 text-center" style="background:var(--green-50);border:1px solid #a7f3d0;">
-              <div style="font-size:1.6rem;font-weight:900;color:var(--green);">{{ total_students }}</div>
-              <div style="font-size:.75rem;color:var(--text-3);font-weight:600;text-transform:uppercase;letter-spacing:.04em;">Students</div>
-            </div>
-          </div>
-          <div class="col-6 col-md-4">
-            <div class="p-3 rounded-3 text-center" style="background:var(--amber-50);border:1px solid #fde68a;">
+            <div class="p-3 rounded-3 text-center"
+                 style="background:var(--amber-50);border:1px solid #fde68a;">
               <div style="font-size:1.6rem;font-weight:900;color:var(--amber);">{{ total_classes }}</div>
               <div style="font-size:.75rem;color:var(--text-3);font-weight:600;text-transform:uppercase;letter-spacing:.04em;">Classes</div>
             </div>
           </div>
           <div class="col-6 col-md-4">
-            <div class="p-3 rounded-3 text-center" style="background:var(--cyan-50);border:1px solid #a5f3fc;">
+            <div class="p-3 rounded-3 text-center"
+                 style="background:var(--cyan-50);border:1px solid #a5f3fc;">
               <div style="font-size:1.6rem;font-weight:900;color:var(--cyan);">{{ total_subjects }}</div>
               <div style="font-size:.75rem;color:var(--text-3);font-weight:600;text-transform:uppercase;letter-spacing:.04em;">Subjects</div>
             </div>
           </div>
           <div class="col-6 col-md-4">
-            <div class="p-3 rounded-3 text-center" style="background:var(--violet-50);border:1px solid #ddd6fe;">
+            <div class="p-3 rounded-3 text-center"
+                 style="background:var(--violet-50);border:1px solid #ddd6fe;">
               <div style="font-size:1.6rem;font-weight:900;color:var(--violet);">{{ upcoming_events }}</div>
-              <div style="font-size:.75rem;color:var(--text-3);font-weight:600;text-transform:uppercase;letter-spacing:.04em;">Events</div>
+              <div style="font-size:.75rem;color:var(--text-3);font-weight:600;text-transform:uppercase;letter-spacing:.04em;">Upcoming Events</div>
             </div>
           </div>
           <div class="col-6 col-md-4">
-            <div class="p-3 rounded-3 text-center" style="background:var(--rose-50);border:1px solid #fecdd3;">
+            <div class="p-3 rounded-3 text-center"
+                 style="background:var(--cyan-50);border:1px solid #a5f3fc;">
+              <div style="font-size:1.6rem;font-weight:900;color:var(--cyan);">{{ upcoming_meetings }}</div>
+              <div style="font-size:.75rem;color:var(--text-3);font-weight:600;text-transform:uppercase;letter-spacing:.04em;">Upcoming Meetings</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-4">
+            <div class="p-3 rounded-3 text-center"
+                 style="background:var(--rose-50);border:1px solid #fecdd3;">
               <div style="font-size:1.6rem;font-weight:900;color:var(--rose);">{{ pending_work }}</div>
               <div style="font-size:.75rem;color:var(--text-3);font-weight:600;text-transform:uppercase;letter-spacing:.04em;">Pending Tasks</div>
             </div>

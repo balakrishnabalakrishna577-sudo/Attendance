@@ -7,18 +7,19 @@
   <div>
     <h1>Welcome, {{ teacher.name }} 👋</h1>
     <p style="color:var(--text-3);font-size:.82rem;margin-top:.2rem;margin-bottom:0;">
-      Your teaching schedule and tasks for today.
+      Your schedule and tasks for today.
     </p>
   </div>
   <span style="background:var(--green-50);color:#065f46;padding:.25rem .7rem;
-               border-radius:999px;font-size:.75rem;font-weight:700;border:1px solid #a7f3d0;">
+               border-radius:999px;font-size:.75rem;font-weight:700;
+               border:1px solid #a7f3d0;">
     <i class="bi bi-person-badge me-1"></i>Teacher
   </span>
 </div>
 
 <!-- Stats -->
 <div class="row g-3 mb-4">
-  <div class="col-6 col-md-3">
+  <div class="col-6 col-md-4">
     <div class="stat-card h-100">
       <div class="stat-icon purple"><i class="bi bi-diagram-3"></i></div>
       <div class="stat-info">
@@ -27,44 +28,40 @@
       </div>
     </div>
   </div>
-  <div class="col-6 col-md-3">
-    <div class="stat-card h-100">
-      <div class="stat-icon green"><i class="bi bi-calendar-check"></i></div>
-      <div class="stat-info">
-        <div class="stat-value">{{ today_count }}</div>
-        <div class="stat-label">Marked Today</div>
+  <div class="col-6 col-md-4">
+    <a href="{% url 'teacher_timetable' %}" class="text-decoration-none">
+      <div class="stat-card h-100" style="border-top:3px solid var(--primary);">
+        <div class="stat-icon cyan"><i class="bi bi-grid-3x3-gap"></i></div>
+        <div class="stat-info">
+          <div class="stat-value" style="color:var(--primary);">
+            <i class="bi bi-arrow-right-circle" style="font-size:1.3rem;"></i>
+          </div>
+          <div class="stat-label">My Timetable</div>
+        </div>
       </div>
-    </div>
+    </a>
   </div>
-  <div class="col-6 col-md-3">
-    <div class="stat-card h-100">
-      <div class="stat-icon cyan"><i class="bi bi-people"></i></div>
-      <div class="stat-info">
-        <div class="stat-value">{{ total_records }}</div>
-        <div class="stat-label">Total Records</div>
+  <div class="col-6 col-md-4">
+    <a href="{% url 'teacher_work_assignments' %}" class="text-decoration-none">
+      <div class="stat-card h-100" style="border-top:3px solid var(--amber);">
+        <div class="stat-icon amber"><i class="bi bi-clipboard-check"></i></div>
+        <div class="stat-info">
+          <div class="stat-value" style="color:var(--amber);">
+            <i class="bi bi-arrow-right-circle" style="font-size:1.3rem;"></i>
+          </div>
+          <div class="stat-label">Work Assignments</div>
+        </div>
       </div>
-    </div>
-  </div>
-  <div class="col-6 col-md-3">
-    <div class="stat-card h-100">
-      <div class="stat-icon amber"><i class="bi bi-percent"></i></div>
-      <div class="stat-info">
-        <div class="stat-value">{{ overall_pct }}%</div>
-        <div class="stat-label">Attendance %</div>
-      </div>
-    </div>
+    </a>
   </div>
 </div>
 
-<!-- Assigned Classes -->
+<!-- Assigned classes -->
 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
   <h5 class="fw-700 mb-0" style="font-size:.95rem;letter-spacing:-.01em;">
-    <i class="bi bi-diagram-3 me-2" style="color:var(--primary);"></i>My Assigned Classes &amp; Subjects
+    <i class="bi bi-diagram-3 me-2" style="color:var(--primary);"></i>
+    My Assigned Classes &amp; Subjects
   </h5>
-  <a href="{% url 'my_attendance_records' %}" class="btn-primary-custom"
-     style="font-size:.78rem;padding:.38rem .85rem;">
-    <i class="bi bi-journal-check"></i> My Records
-  </a>
 </div>
 
 {% if assignments %}
@@ -72,13 +69,11 @@
   {% for a in assignments %}
   <div class="col-12 col-sm-6 col-lg-4">
     <div class="assignment-card">
-      <div class="class-badge"><i class="bi bi-building me-1"></i>{{ a.class_name }}</div>
+      <div class="class-badge">
+        <i class="bi bi-building me-1"></i>{{ a.class_name }}
+      </div>
       <div class="subject-name">{{ a.subject_name }}</div>
       <div class="subject-code"><code>{{ a.subject_code }}</code></div>
-      <a href="{% url 'mark_attendance' a.class_id a.subject_id %}?date={{ today }}"
-         class="btn-primary-custom w-100 justify-content-center mt-auto">
-        <i class="bi bi-pencil-square"></i> Mark Attendance
-      </a>
     </div>
   </div>
   {% endfor %}
@@ -86,7 +81,8 @@
 {% else %}
 <div class="card p-5 text-center">
   <div style="width:64px;height:64px;background:var(--gray-100);border-radius:50%;
-              display:grid;place-items:center;margin:0 auto 1rem;font-size:1.5rem;color:var(--text-4);">
+              display:grid;place-items:center;margin:0 auto 1rem;
+              font-size:1.5rem;color:var(--text-4);">
     <i class="bi bi-inbox"></i>
   </div>
   <p style="color:var(--text-3);margin:0;font-size:.875rem;">

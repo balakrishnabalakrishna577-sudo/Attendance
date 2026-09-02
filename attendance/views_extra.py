@@ -364,18 +364,11 @@ def teacher_profile(request, teacher_id):
     works = TeacherWorkAssignment.objects.filter(teacher_id=teacher_id).order_by('-assigned_date')
     timetable = TimetableSlot.objects.filter(teacher_id=teacher_id).order_by('day', 'hour')
 
-    # Attendance summary from JSON
-    all_att = db.get_attendance_by_filters(teacher_id=teacher_id)
-    total_sessions = len(all_att)
-    total_students_marked = sum(len(a.get('records', [])) for a in all_att)
-
     ctx = {
         'teacher': teacher,
         'assignments': assignments,
         'works': works,
         'timetable': timetable,
-        'total_sessions': total_sessions,
-        'total_students_marked': total_students_marked,
         'status_choices': dict(TeacherWorkAssignment._meta.get_field('status').choices),
         'priority_choices': dict(TeacherWorkAssignment._meta.get_field('priority').choices),
     }
