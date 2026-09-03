@@ -7,24 +7,24 @@
 
 /* ── Design tokens ──────────────────────────────────────────── */
 :root {
-  /* Brand colours */
-  --primary:        #6366f1;
-  --primary-dark:   #4f46e5;
-  --primary-darker: #3730a3;
-  --primary-light:  #a5b4fc;
-  --primary-50:     #eef2ff;
-  --primary-100:    #e0e7ff;
+  /* Brand colours — Deep Ocean Blue + Teal */
+  --primary:        #0284c7;
+  --primary-dark:   #0369a1;
+  --primary-darker: #075985;
+  --primary-light:  #38bdf8;
+  --primary-50:     #f0f9ff;
+  --primary-100:    #e0f2fe;
 
   /* Accent colours */
-  --cyan:     #06b6d4;
+  --cyan:     #0891b2;
   --cyan-50:  #ecfeff;
-  --green:    #10b981;
+  --green:    #059669;
   --green-50: #ecfdf5;
-  --amber:    #f59e0b;
+  --amber:    #d97706;
   --amber-50: #fffbeb;
-  --rose:     #f43f5e;
+  --rose:     #e11d48;
   --rose-50:  #fff1f2;
-  --violet:   #8b5cf6;
+  --violet:   #7c3aed;
   --violet-50:#f5f3ff;
 
   /* Neutrals */
@@ -37,26 +37,26 @@
   --gray-600: #475569;
   --gray-700: #334155;
   --gray-800: #1e293b;
-  --gray-900: #0f172a;
+  --gray-900: #0c1a2e;
 
-  /* Sidebar */
-  --sidebar-bg:      #0f172a;
+  /* Sidebar — Deep navy-blue */
+  --sidebar-bg:      #0c1a2e;
   --sidebar-border:  rgba(255,255,255,.06);
-  --sidebar-hover:   rgba(99,102,241,.15);
-  --sidebar-active:  rgba(99,102,241,.25);
+  --sidebar-hover:   rgba(2,132,199,.2);
+  --sidebar-active:  rgba(2,132,199,.3);
   --sidebar-text:    #94a3b8;
   --sidebar-section: rgba(148,163,184,.4);
   --sidebar-w:       240px;
 
   /* Surface */
-  --bg:        #f1f5f9;
+  --bg:        #f0f7ff;
   --surface:   #ffffff;
   --surface-2: #f8fafc;
-  --border:    #e2e8f0;
+  --border:    #e0eaf5;
 
   /* Typography */
-  --text:      #0f172a;
-  --text-2:    #334155;
+  --text:      #0c1a2e;
+  --text-2:    #1e3a5f;
   --text-3:    #64748b;
   --text-4:    #94a3b8;
 
@@ -139,7 +139,7 @@ button { font-family: inherit; }
   color: #fff;
   font-size: 1.1rem;
   flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(99,102,241,.4);
+  box-shadow: 0 4px 12px rgba(2,132,199,.4);
 }
 .brand-text {
   color: #fff;
@@ -225,7 +225,7 @@ button { font-family: inherit; }
 .sidebar-user { display: flex; align-items: center; gap: .65rem; }
 .sidebar-avatar {
   width: 34px; height: 34px;
-  background: linear-gradient(135deg, var(--primary), var(--violet));
+  background: linear-gradient(135deg, var(--primary), var(--cyan));
   border-radius: 50%;
   display: grid;
   place-items: center;
@@ -233,7 +233,7 @@ button { font-family: inherit; }
   font-weight: 800;
   font-size: .82rem;
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(99,102,241,.35);
+  box-shadow: 0 2px 8px rgba(2,132,199,.35);
 }
 .sidebar-user-info { flex: 1; min-width: 0; }
 .sidebar-user-name {
@@ -405,8 +405,7 @@ button { font-family: inherit; }
   position: relative;
   z-index: 1;
 }
-.stat-icon.purple  { background: var(--primary-100); color: var(--primary-dark); }
-.stat-icon.cyan    { background: var(--cyan-50);     color: var(--cyan); }
+.stat-icon.purple  { background: var(--primary-100); color: var(--primary-dark); }.stat-icon.cyan    { background: var(--cyan-50);     color: var(--cyan); }
 .stat-icon.green   { background: var(--green-50);    color: var(--green); }
 .stat-icon.amber   { background: var(--amber-50);    color: var(--amber); }
 .stat-icon.rose    { background: var(--rose-50);     color: var(--rose); }
@@ -505,13 +504,13 @@ button { font-family: inherit; }
   line-height: 1.4;
   letter-spacing: -.01em;
   transition: background .15s, transform .15s, box-shadow .15s;
-  box-shadow: 0 1px 3px rgba(99,102,241,.3);
+  box-shadow: 0 1px 3px rgba(2,132,199,.3);
 }
 .btn-primary-custom:hover {
   background: var(--primary-dark);
   color: #fff;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(99,102,241,.35);
+  box-shadow: 0 4px 12px rgba(2,132,199,.35);
 }
 .btn-primary-custom:active { transform: translateY(0); box-shadow: none; }
 
@@ -672,7 +671,7 @@ textarea.form-control-custom { resize: vertical; min-height: 80px; }
 .login-panel {
   flex: 1;
   display: none;
-  background: linear-gradient(145deg, #0f172a 0%, #1e1b4b 40%, #312e81 75%, var(--primary) 100%);
+  background: linear-gradient(145deg, #0c1a2e 0%, #0c2d4a 40%, #0369a1 75%, #0284c7 100%);
   position: relative;
   overflow: hidden;
   padding: 3rem;
@@ -684,8 +683,8 @@ textarea.form-control-custom { resize: vertical; min-height: 80px; }
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 20% 30%, rgba(99,102,241,.3) 0%, transparent 50%),
-    radial-gradient(circle at 80% 70%, rgba(139,92,246,.25) 0%, transparent 50%);
+    radial-gradient(circle at 20% 30%, rgba(2,132,199,.3) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(8,145,178,.25) 0%, transparent 50%);
 }
 .login-panel-content { position: relative; z-index: 1; }
 .login-panel-logo {
@@ -756,7 +755,7 @@ textarea.form-control-custom { resize: vertical; min-height: 80px; }
   color: #fff;
   font-size: 1.5rem;
   margin-bottom: 1.5rem;
-  box-shadow: 0 8px 24px rgba(99,102,241,.35);
+  box-shadow: 0 8px 24px rgba(2,132,199,.35);
 }
 .login-title h1 {
   font-size: 1.45rem;
@@ -828,7 +827,7 @@ textarea.form-control-custom { resize: vertical; min-height: 80px; }
   font-family: inherit;
   letter-spacing: -.01em;
   transition: opacity .15s, transform .15s, box-shadow .15s;
-  box-shadow: 0 4px 14px rgba(99,102,241,.4);
+    box-shadow: 0 4px 14px rgba(2,132,199,.4);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -837,7 +836,7 @@ textarea.form-control-custom { resize: vertical; min-height: 80px; }
 .login-btn:hover {
   opacity: .92;
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(99,102,241,.45);
+  box-shadow: 0 6px 20px rgba(2,132,199,.45);
 }
 .login-divider {
   display: flex;
@@ -1061,7 +1060,7 @@ textarea.form-control-custom { resize: vertical; min-height: 80px; }
    BEAUTIFUL DEPARTMENT HEADER
    ================================================================ */
 .dept-header {
-  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 55%, #312e81 100%);
+  background: linear-gradient(135deg, #0c1a2e 0%, #0c2d4a 50%, #0369a1 100%);
   border-bottom: 1px solid rgba(255,255,255,.06);
   flex-shrink: 0;
   position: sticky;
@@ -1108,14 +1107,14 @@ textarea.form-control-custom { resize: vertical; min-height: 80px; }
   text-transform: uppercase;
 }
 .dept-badge.bca {
-  background: rgba(99,102,241,.3);
-  color: #c7d2fe;
-  border: 1px solid rgba(99,102,241,.4);
+  background: rgba(2,132,199,.3);
+  color: #bae6fd;
+  border: 1px solid rgba(2,132,199,.4);
 }
 .dept-badge.mca {
-  background: rgba(16,185,129,.25);
+  background: rgba(5,150,105,.25);
   color: #6ee7b7;
-  border: 1px solid rgba(16,185,129,.35);
+  border: 1px solid rgba(5,150,105,.35);
 }
 
 .dept-divider { color: rgba(255,255,255,.3); font-size: .8rem; }
@@ -1144,7 +1143,7 @@ textarea.form-control-custom { resize: vertical; min-height: 80px; }
 }
 .user-chip-avatar {
   width: 26px; height: 26px;
-  background: linear-gradient(135deg, var(--primary), var(--violet));
+  background: linear-gradient(135deg, var(--primary), var(--cyan));
   border-radius: 50%;
   display: grid;
   place-items: center;
