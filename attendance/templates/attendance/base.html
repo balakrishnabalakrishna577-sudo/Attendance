@@ -16,7 +16,7 @@
 </head>
 <body>
 
-<!-- ── Toast notifications ─────────────────────────── -->
+<!-- Toast notifications -->
 {% if messages %}
 <div class="alert-container" id="alert-container">
   {% for message in messages %}
@@ -31,21 +31,14 @@
 
 <div class="app-wrapper" id="app-wrapper">
 
-  <!-- ── Sidebar ──────────────────────────────────────── -->
+  <!-- Sidebar -->
   <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
-
-    <!-- Brand -->
     <div class="sidebar-brand">
       <div class="brand-icon"><i class="bi bi-mortarboard-fill"></i></div>
       <div class="brand-text">
         Department Work
         <span>Automation</span>
       </div>
-      <!-- Desktop collapse button -->
-      <button class="sidebar-collapse-btn d-none d-lg-flex" id="sidebar-collapse-btn"
-              title="Collapse sidebar" aria-label="Collapse sidebar">
-        <i class="bi bi-chevron-left" id="collapse-icon"></i>
-      </button>
     </div>
 
     <nav class="sidebar-nav">
@@ -61,29 +54,25 @@
         </div>
       </div>
     </div>
-
   </aside>
 
   <!-- Mobile overlay -->
   <div class="sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
 
-  <!-- ── Main content ──────────────────────────────────── -->
+  <!-- Main content -->
   <div class="main-content" id="main-content">
 
-    <!-- ── Beautiful Header ──────────────────────────────── -->
-    <div class="dept-header" id="dept-header">
+    <!-- Department Header -->
+    <div class="dept-header">
       <div class="dept-header-inner">
-        <!-- Left: toggle + dept info -->
+        <!-- Left: hamburger + dept info -->
         <div class="d-flex align-items-center gap-3">
-          <!-- Hamburger (mobile) / expand (desktop collapsed) -->
-          <button class="sidebar-toggle-btn" id="sidebar-toggle"
-                  aria-label="Toggle navigation">
+          <button class="sidebar-toggle-btn" id="sidebar-toggle" aria-label="Toggle navigation">
             <i class="bi bi-list"></i>
           </button>
           <div class="dept-info">
             <div class="dept-title">
-              <i class="bi bi-building-fill me-2"></i>
-              Head of Department
+              <i class="bi bi-building-fill me-2"></i>Head of Department
             </div>
             <div class="dept-badges">
               <span class="dept-badge bca">BCA</span>
@@ -96,17 +85,13 @@
           </div>
         </div>
 
-        <!-- Right: date + user chip + logout -->
+        <!-- Right: date + user + logout -->
         <div class="d-flex align-items-center gap-2 flex-shrink-0">
           <div class="topbar-date d-none d-md-block" aria-live="polite"></div>
-
           <div class="d-none d-md-flex align-items-center gap-2 user-chip">
-            <div class="user-chip-avatar">
-              {{ request.session.name|first|upper }}
-            </div>
+            <div class="user-chip-avatar">{{ request.session.name|first|upper }}</div>
             <span class="user-chip-name">{{ request.session.name }}</span>
           </div>
-
           <a href="{% url 'logout' %}" class="topbar-logout" aria-label="Logout">
             <i class="bi bi-box-arrow-right"></i>
             <span class="logout-text">Logout</span>
@@ -114,7 +99,7 @@
         </div>
       </div>
 
-      <!-- Page title bar -->
+      <!-- Page title sub-bar -->
       <div class="page-title-bar">
         <span class="page-title-text">{% block page_title %}Dashboard{% endblock %}</span>
       </div>
@@ -125,8 +110,8 @@
       {% block content %}{% endblock %}
     </main>
 
-  </div><!-- /main-content -->
-</div><!-- /app-wrapper -->
+  </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{% static 'js/app.js' %}"></script>

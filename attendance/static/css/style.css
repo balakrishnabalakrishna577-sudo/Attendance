@@ -1027,121 +1027,8 @@ textarea.form-control-custom { resize: vertical; min-height: 80px; }
 
 
 /* ================================================================
-   SIDEBAR COLLAPSE (desktop) + TOGGLE BUTTON
+   SIDEBAR TOGGLE BUTTON (mobile only)
    ================================================================ */
-
-/* Collapse button inside sidebar brand */
-.sidebar-collapse-btn {
-  margin-left: auto;
-  width: 26px; height: 26px;
-  background: rgba(255,255,255,.08);
-  border: 1px solid rgba(255,255,255,.12);
-  border-radius: .4rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--sidebar-text);
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: background .15s, color .15s;
-  padding: 0;
-}
-.sidebar-collapse-btn:hover { background: rgba(255,255,255,.16); color: #fff; }
-.sidebar-collapse-btn i { font-size: .75rem; transition: transform .3s; }
-
-/* ── COLLAPSED STATE ─────────────────────────────────── */
-.app-wrapper.sidebar-collapsed .sidebar {
-  width: 62px !important;
-  min-width: 62px !important;
-  max-width: 62px !important;
-  overflow: hidden;
-  overflow-y: auto;
-}
-.app-wrapper.sidebar-collapsed .main-content {
-  margin-left: 62px !important;
-  width: calc(100% - 62px) !important;
-}
-
-/* Hide text elements */
-.app-wrapper.sidebar-collapsed .brand-text          { display: none !important; }
-.app-wrapper.sidebar-collapsed .sidebar-user-info   { display: none !important; }
-.app-wrapper.sidebar-collapsed .sidebar-section     { display: none !important; }
-
-/* Brand: center icon only */
-.app-wrapper.sidebar-collapsed .sidebar-brand {
-  justify-content: center !important;
-  padding: 1rem .5rem !important;
-  gap: 0 !important;
-  position: relative;
-}
-.app-wrapper.sidebar-collapsed .sidebar-collapse-btn {
-  margin-left: 0 !important;
-  position: absolute;
-  right: 4px;
-  top: 10px;
-}
-.app-wrapper.sidebar-collapsed .sidebar-collapse-btn i {
-  transform: rotate(180deg);
-}
-
-/* Nav links: icon only, centered */
-.app-wrapper.sidebar-collapsed .sidebar-nav {
-  padding: .5rem 0;
-}
-.app-wrapper.sidebar-collapsed .sidebar-nav a {
-  justify-content: center !important;
-  padding: .65rem 0 !important;
-  margin: .06rem .5rem !important;
-  overflow: hidden !important;
-  gap: 0 !important;
-}
-.app-wrapper.sidebar-collapsed .sidebar-nav a i {
-  width: auto !important;
-  font-size: 1.15rem !important;
-  flex-shrink: 0;
-}
-/* Hide ALL non-icon content inside nav links */
-.app-wrapper.sidebar-collapsed .sidebar-nav a *:not(i) {
-  display: none !important;
-}
-
-/* Footer: center avatar only */
-.app-wrapper.sidebar-collapsed .sidebar-footer {
-  padding: .75rem .5rem !important;
-  display: flex !important;
-  justify-content: center !important;
-}
-.app-wrapper.sidebar-collapsed .sidebar-user {
-  justify-content: center !important;
-}
-.app-wrapper.sidebar-collapsed .sidebar-avatar {
-  width: 34px !important;
-  height: 34px !important;
-}
-
-/* Tooltip on hover for collapsed nav */
-.app-wrapper.sidebar-collapsed .sidebar-nav a::after {
-  content: attr(data-label);
-  position: absolute;
-  left: calc(100% + 8px);
-  top: 50%;
-  transform: translateY(-50%);
-  background: var(--gray-900);
-  color: #fff;
-  padding: .3rem .65rem;
-  border-radius: .4rem;
-  font-size: .76rem;
-  font-weight: 600;
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-  z-index: 9999;
-  transition: opacity .15s;
-  box-shadow: 0 4px 12px rgba(0,0,0,.2);
-}
-.app-wrapper.sidebar-collapsed .sidebar-nav a:hover::after { opacity: 1; }
-
-/* Mobile toggle button */
 .sidebar-toggle-btn {
   background: rgba(255,255,255,.08);
   border: 1px solid rgba(255,255,255,.15);
@@ -1153,30 +1040,21 @@ textarea.form-control-custom { resize: vertical; min-height: 80px; }
   line-height: 1;
   flex-shrink: 0;
   transition: background .15s;
-  display: flex;
+  display: none;          /* hidden on desktop — shown on mobile via media query */
   align-items: center;
   justify-content: center;
 }
 .sidebar-toggle-btn:hover { background: rgba(255,255,255,.15); }
 
-/* Keep sidebar fixed width on mobile regardless of collapsed state */
 @media (max-width: 768px) {
-  .app-wrapper.sidebar-collapsed .sidebar {
-    width: var(--sidebar-w) !important;
-    min-width: var(--sidebar-w) !important;
-    max-width: var(--sidebar-w) !important;
-  }
-  .app-wrapper.sidebar-collapsed .main-content {
-    margin-left: 0 !important;
-    width: 100% !important;
-  }
-  .app-wrapper.sidebar-collapsed .brand-text          { display: block !important; }
-  .app-wrapper.sidebar-collapsed .sidebar-user-info   { display: block !important; }
-  .app-wrapper.sidebar-collapsed .sidebar-section     { display: block !important; }
-  .app-wrapper.sidebar-collapsed .sidebar-nav a > :not(i) { display: inline !important; }
-  .app-wrapper.sidebar-collapsed .sidebar-brand { justify-content: flex-start; padding: 1.1rem 1.25rem; gap: .8rem; }
-  .app-wrapper.sidebar-collapsed .sidebar-collapse-btn { display: none !important; }
-  .app-wrapper.sidebar-collapsed .sidebar-nav a { justify-content: flex-start; padding: .52rem 1.1rem .52rem 1.25rem; margin: .08rem .75rem; }
+  .sidebar-toggle-btn { display: flex; }
+  .dept-header-inner  { padding: .65rem .85rem; }
+  .page-title-bar     { padding: .4rem .85rem; }
+  .dept-title         { font-size: .82rem; }
+}
+@media (max-width: 576px) {
+  .dept-title  { font-size: .78rem; }
+  .dept-badges { gap: .3rem; }
 }
 
 /* ================================================================
@@ -1324,24 +1202,3 @@ textarea.form-control-custom { resize: vertical; min-height: 80px; }
 
 /* ── Page content top padding adjustment ───────── */
 .page-content { padding-top: 1.25rem; }
-
-/* ── Responsive adjustments ────────────────────── */
-@media (max-width: 768px) {
-  .dept-header-inner { padding: .65rem .85rem; }
-  .page-title-bar    { padding: .4rem .85rem; }
-  .dept-title        { font-size: .82rem; }
-  .app-wrapper.sidebar-collapsed .sidebar {
-    width: var(--sidebar-w);
-    min-width: var(--sidebar-w);
-    max-width: var(--sidebar-w);
-  }
-  .app-wrapper.sidebar-collapsed .main-content {
-    margin-left: 0;
-    width: 100%;
-  }
-}
-
-@media (max-width: 576px) {
-  .dept-title  { font-size: .78rem; }
-  .dept-badges { gap: .3rem; }
-}

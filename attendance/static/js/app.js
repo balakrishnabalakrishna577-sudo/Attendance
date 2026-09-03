@@ -80,51 +80,14 @@ function initActiveNav() {
   var links = document.querySelectorAll('.sidebar-nav a');
   var bestMatch = null;
   var bestLen = 0;
-
   links.forEach(function (a) {
     var href = a.getAttribute('href');
     if (href && href !== '/' && path.startsWith(href) && href.length > bestLen) {
       bestLen = href.length;
       bestMatch = a;
     }
-    // Add data-label for collapsed tooltip
-    if (!a.getAttribute('data-label')) {
-      var text = a.textContent.trim();
-      if (text) a.setAttribute('data-label', text);
-    }
   });
-
   if (bestMatch) bestMatch.classList.add('active');
-}
-
-// ── Sidebar desktop collapse ───────────────────────────
-function initSidebarCollapse() {
-  var wrapper     = document.getElementById('app-wrapper');
-  var collapseBtn = document.getElementById('sidebar-collapse-btn');
-  if (!collapseBtn || !wrapper) return;
-
-  // Set data-label on every nav link (text content stripped)
-  document.querySelectorAll('.sidebar-nav a').forEach(function (a) {
-    if (!a.getAttribute('data-label')) {
-      var clone = a.cloneNode(true);
-      // Remove icon element to get just the text
-      var icon = clone.querySelector('i');
-      if (icon) icon.remove();
-      var label = clone.textContent.trim().replace(/\s+/g, ' ');
-      if (label) a.setAttribute('data-label', label);
-    }
-  });
-
-  // Restore saved state
-  if (localStorage.getItem('sidebar-collapsed') === '1') {
-    wrapper.classList.add('sidebar-collapsed');
-  }
-
-  collapseBtn.addEventListener('click', function () {
-    wrapper.classList.toggle('sidebar-collapsed');
-    localStorage.setItem('sidebar-collapsed',
-      wrapper.classList.contains('sidebar-collapsed') ? '1' : '0');
-  });
 }
 
 // ── Confirm delete ─────────────────────────────────────
@@ -223,7 +186,6 @@ function initRowHighlights() {
 document.addEventListener('DOMContentLoaded', function () {
   initToasts();
   initSidebar();
-  initSidebarCollapse();
   initActiveNav();
   initConfirmDelete();
   initAttendanceBulk();

@@ -6,71 +6,63 @@
 <div class="page-header">
   <h1><i class="bi bi-person-badge me-2" style="color:var(--primary);"></i>Teachers</h1>
   <a href="{% url 'teacher_add' %}" class="btn-primary-custom">
-    <i class="bi bi-plus-lg"></i>
-    <span class="d-none d-sm-inline">Add</span> Teacher
+    <i class="bi bi-plus-lg"></i> <span class="d-none d-sm-inline">Add</span> Teacher
   </a>
 </div>
 
 <div class="card">
   <div class="card-header-custom">
     <h5>All Teachers ({{ teachers|length }})</h5>
-    <input type="text" id="table-search" class="form-control-custom"
-           placeholder="Search…" style="max-width:200px;">
+    <input type="text" id="table-search" class="form-control-custom" placeholder="Search…" style="max-width:200px;">
   </div>
   <div class="table-container">
     <table class="data-table">
       <thead>
-        <tr>
-          <th>#</th>
-          <th>Name</th>
-          <th class="hide-mobile">Department</th>
-          <th class="hide-mobile">Email</th>
-          <th class="hide-mobile">Phone</th>
-          <th>Actions</th>
-        </tr>
+        <tr><th>#</th><th>Name</th><th class="hide-mobile">Department</th><th class="hide-mobile">Email</th><th class="hide-mobile">Phone</th><th>Actions</th></tr>
       </thead>
       <tbody>
-        {% for teacher in teachers %}
+        {% for t in teachers %}
         <tr class="searchable-row">
           <td style="color:var(--text-4);">{{ forloop.counter }}</td>
           <td>
-            <div class="fw-700">{{ teacher.name }}</div>
-            <div class="d-sm-none" style="font-size:.75rem;color:var(--text-3);">
-              {{ teacher.department|default:"" }}
-            </div>
+            <div class="fw-700">{{ t.name }}</div>
+            <div class="d-sm-none" style="font-size:.75rem;color:var(--text-3);">{{ t.department|default:"" }}</div>
           </td>
-          <td class="hide-mobile">{{ teacher.department|default:"—" }}</td>
-          <td class="hide-mobile">{{ teacher.email|default:"—" }}</td>
-          <td class="hide-mobile">{{ teacher.phone|default:"—" }}</td>
+          <td class="hide-mobile">{{ t.department|default:"—" }}</td>
+          <td class="hide-mobile">{{ t.email|default:"—" }}</td>
+          <td class="hide-mobile">{{ t.phone|default:"—" }}</td>
           <td>
             <div class="d-flex gap-1">
-              <a href="{% url 'teacher_profile' teacher.id %}"
-                 class="btn-sm-icon btn-view" title="View Profile">
+              <button class="btn-sm-icon btn-view" title="View"
+                      onclick="showModal('teacher','{{ t.name|escapejs }}','{{ t.department|default:''|escapejs }}','{{ t.email|default:''|escapejs }}','{{ t.phone|default:''|escapejs }}','')">
                 <i class="bi bi-eye"></i>
-              </a>
-              <a href="{% url 'teacher_edit' teacher.id %}"
-                 class="btn-sm-icon btn-edit" title="Edit">
-                <i class="bi bi-pencil"></i>
-              </a>
-              <a href="{% url 'teacher_delete' teacher.id %}"
-                 class="btn-sm-icon btn-delete" title="Delete">
-                <i class="bi bi-trash"></i>
-              </a>
+              </button>
+              <a href="{% url 'teacher_profile' t.id %}" class="btn-sm-icon" style="background:var(--violet-50);color:var(--violet);" title="Profile"><i class="bi bi-person-lines-fill"></i></a>
+              <a href="{% url 'teacher_edit' t.id %}" class="btn-sm-icon btn-edit" title="Edit"><i class="bi bi-pencil"></i></a>
+              <a href="{% url 'teacher_delete' t.id %}" class="btn-sm-icon btn-delete" title="Delete"><i class="bi bi-trash"></i></a>
             </div>
           </td>
         </tr>
         {% empty %}
-        <tr>
-          <td colspan="6" class="text-center py-5" style="color:var(--text-3);">
-            <i class="bi bi-people"
-               style="font-size:2rem;display:block;margin-bottom:.5rem;"></i>
-            No teachers yet.
-            <a href="{% url 'teacher_add' %}">Add one</a>.
-          </td>
-        </tr>
+        <tr><td colspan="6" class="text-center py-4" style="color:var(--text-3);">No teachers yet. <a href="{% url 'teacher_add' %}">Add one</a>.</td></tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
 </div>
+
+<!-- View Modal -->
+{% include "attendance/hod/_view_modal.html" %}
 {% endblock %}
+{% block extra_js %}<script>
+function showModal(type,f1,f2,f3,f4,f5){
+  var labels={'teacher':['Name','Department','Email','Phone','']};
+  var vals=[f1,f2,f3,f4,f5];
+  var lb=labels[type]||['','','','',''];
+  var html='';
+  for(var i=0;i<lb.length;i++){if(lb[i]&&vals[i])html+='<div class="view-row"><span class="view-label">'+lb[i]+'</span><span class="view-val">'+vals[i]+'</span></div>';}
+  document.getElementById('view-modal-title').textContent=f1;
+  document.getElementById('view-modal-body').innerHTML=html;
+  new bootstrap.Modal(document.getElementById('viewModal')).show();
+}
+</script>{% endblock %}
