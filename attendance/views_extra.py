@@ -534,22 +534,22 @@ def timetable_slot_delete(request, pk):
 
 
 def _slot_ctx(cls, teachers, subjects):
-    # Standard college hour time presets
+    # College hour time presets — 12-hour display labels, 24h values for inputs
     time_presets = [
-        ('1st Hour',  '09:00', '09:50'),
-        ('2nd Hour',  '09:50', '10:40'),
-        ('3rd Hour',  '10:50', '11:40'),
-        ('4th Hour',  '11:40', '12:30'),
-        ('5th Hour',  '13:10', '14:00'),
-        ('6th Hour',  '14:00', '14:50'),
-        ('7th Hour',  '14:50', '15:40'),
-        ('8th Hour',  '15:40', '16:30'),
+        ('1st Hour',    '09:00', '10:00'),
+        ('2nd Hour',    '10:00', '11:00'),
+        ('Short Break', '11:00', '11:15'),
+        ('3rd Hour',    '11:15', '12:15'),
+        ('4th Hour',    '12:15', '13:15'),
+        ('Lunch Break', '13:15', '14:00'),
+        ('5th Hour',    '14:00', '15:00'),
+        ('6th Hour',    '15:00', '16:00'),
     ]
     return {
         'cls': cls,
         'teachers': teachers,
         'subjects': subjects,
-        'day_choices': TimetableSlot._meta.get_field('day').choices,
+        'day_choices':  TimetableSlot._meta.get_field('day').choices,
         'hour_choices': TimetableSlot._meta.get_field('hour').choices,
         'time_presets': time_presets,
     }

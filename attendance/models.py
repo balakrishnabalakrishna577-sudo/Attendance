@@ -37,8 +37,14 @@ DAY_CHOICES = [
     ('Saturday', 'Saturday'),
 ]
 
-HOUR_CHOICES = [(str(i), f'{i}{"st" if i==1 else "nd" if i==2 else "rd" if i==3 else "th"} Hour')
-                for i in range(1, 9)]
+HOUR_CHOICES = [
+    ('1', '1st Hour  (9:00–10:00 AM)'),
+    ('2', '2nd Hour  (10:00–11:00 AM)'),
+    ('3', '3rd Hour  (11:15 AM–12:15 PM)'),
+    ('4', '4th Hour  (12:15–1:15 PM)'),
+    ('5', '5th Hour  (2:00–3:00 PM)'),
+    ('6', '6th Hour  (3:00–4:00 PM)'),
+]
 
 PRIORITY_CHOICES = [
     ('low', 'Low'),

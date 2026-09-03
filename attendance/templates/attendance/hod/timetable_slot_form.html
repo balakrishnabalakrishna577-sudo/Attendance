@@ -128,16 +128,38 @@
           <div class="mt-3">
             <label class="form-label-custom">Quick Time Presets</label>
             <div class="d-flex flex-wrap gap-2" id="time-presets">
-              {% for label, start, end in time_presets %}
-              <button type="button" class="preset-btn"
-                      data-start="{{ start }}" data-end="{{ end }}"
-                      style="padding:.3rem .75rem;border:1.5px solid var(--border);
-                             border-radius:var(--radius-sm);background:var(--surface-2);
-                             font-size:.76rem;font-weight:600;cursor:pointer;
-                             color:var(--text-2);transition:all .15s;">
-                {{ label }} ({{ start }}–{{ end }})
+              <button type="button" class="preset-btn" data-start="09:00" data-end="10:00"
+                style="padding:.3rem .75rem;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-2);font-size:.76rem;font-weight:600;cursor:pointer;color:var(--text-2);transition:all .15s;">
+                1st Hour (9:00–10:00 AM)
               </button>
-              {% endfor %}
+              <button type="button" class="preset-btn" data-start="10:00" data-end="11:00"
+                style="padding:.3rem .75rem;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-2);font-size:.76rem;font-weight:600;cursor:pointer;color:var(--text-2);transition:all .15s;">
+                2nd Hour (10:00–11:00 AM)
+              </button>
+              <button type="button" class="preset-btn" data-start="11:00" data-end="11:15"
+                style="padding:.3rem .75rem;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--amber-50);font-size:.76rem;font-weight:600;cursor:pointer;color:#92400e;transition:all .15s;">
+                Short Break (11:00–11:15 AM)
+              </button>
+              <button type="button" class="preset-btn" data-start="11:15" data-end="12:15"
+                style="padding:.3rem .75rem;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-2);font-size:.76rem;font-weight:600;cursor:pointer;color:var(--text-2);transition:all .15s;">
+                3rd Hour (11:15 AM–12:15 PM)
+              </button>
+              <button type="button" class="preset-btn" data-start="12:15" data-end="13:15"
+                style="padding:.3rem .75rem;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-2);font-size:.76rem;font-weight:600;cursor:pointer;color:var(--text-2);transition:all .15s;">
+                4th Hour (12:15–1:15 PM)
+              </button>
+              <button type="button" class="preset-btn" data-start="13:15" data-end="14:00"
+                style="padding:.3rem .75rem;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--rose-50);font-size:.76rem;font-weight:600;cursor:pointer;color:#9f1239;transition:all .15s;">
+                Lunch Break (1:15–2:00 PM)
+              </button>
+              <button type="button" class="preset-btn" data-start="14:00" data-end="15:00"
+                style="padding:.3rem .75rem;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-2);font-size:.76rem;font-weight:600;cursor:pointer;color:var(--text-2);transition:all .15s;">
+                5th Hour (2:00–3:00 PM)
+              </button>
+              <button type="button" class="preset-btn" data-start="15:00" data-end="16:00"
+                style="padding:.3rem .75rem;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-2);font-size:.76rem;font-weight:600;cursor:pointer;color:var(--text-2);transition:all .15s;">
+                6th Hour (3:00–4:00 PM)
+              </button>
             </div>
           </div>
         </div>
@@ -205,7 +227,7 @@
       <div class="mb-3">
         <div style="font-size:.76rem;font-weight:600;color:var(--text-3);
                     text-transform:uppercase;letter-spacing:.04em;margin-bottom:.6rem;">
-          Typical Hour Schedule
+          College Hour Schedule
         </div>
         {% for label, start, end in time_presets %}
         <div class="d-flex justify-content-between align-items-center py-1"
