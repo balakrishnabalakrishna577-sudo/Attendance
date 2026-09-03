@@ -6,11 +6,11 @@
 <div class="page-header">
   <h1><i class="bi bi-book me-2" style="color:var(--primary);"></i>Subjects</h1>
   <div class="d-flex gap-2 flex-wrap">
-    <!-- Import Subject button — opens modal -->
-    <button type="button" class="btn-primary-custom" style="background:var(--cyan);"
-            data-bs-toggle="modal" data-bs-target="#importSubjectModal">
-      <i class="bi bi-upload"></i>
-      <span class="d-none d-sm-inline">Import Subjects</span>
+    <!-- Assign Teacher button -->
+    <button type="button" class="btn-primary-custom" style="background:var(--green);"
+            data-bs-toggle="modal" data-bs-target="#assignTeacherModal">
+      <i class="bi bi-person-plus"></i>
+      <span class="d-none d-sm-inline">Assign Teacher</span>
     </button>
     <a href="{% url 'subject_add' %}" class="btn-primary-custom">
       <i class="bi bi-plus-lg"></i>
@@ -47,6 +47,16 @@
           <td class="hide-mobile" style="color:var(--text-3);">{{ subj.description|default:"—" }}</td>
           <td>
             <div class="d-flex gap-1">
+              <!-- Quick assign from subject row -->
+              <button type="button"
+                      class="btn-sm-icon btn-view assign-btn"
+                      title="Assign Teacher"
+                      data-subject-id="{{ subj.id }}"
+                      data-subject-name="{{ subj.name }}"
+                      data-bs-toggle="modal"
+                      data-bs-target="#assignTeacherModal">
+                <i class="bi bi-person-plus"></i>
+              </button>
               <a href="{% url 'subject_edit' subj.id %}" class="btn-sm-icon btn-edit" title="Edit">
                 <i class="bi bi-pencil"></i>
               </a>
@@ -60,14 +70,7 @@
         <tr>
           <td colspan="5" class="text-center py-5" style="color:var(--text-3);">
             <i class="bi bi-book" style="font-size:2rem;display:block;margin-bottom:.5rem;"></i>
-            No subjects yet.
-            <a href="{% url 'subject_add' %}">Add one</a> or
-            <button type="button"
-                    style="background:none;border:none;color:var(--primary);
-                           cursor:pointer;padding:0;font-size:inherit;font-weight:600;"
-                    data-bs-toggle="modal" data-bs-target="#importSubjectModal">
-              import from CSV
-            </button>.
+            No subjects yet. <a href="{% url 'subject_add' %}">Add one</a>.
           </td>
         </tr>
         {% endfor %}
@@ -78,10 +81,10 @@
 
 
 <!-- ══════════════════════════════════════════
-     Import Subjects CSV Modal
+     Assign Teacher to Subject Modal
      ══════════════════════════════════════════ -->
-<div class="modal fade" id="importSubjectModal" tabindex="-1"
-     aria-labelledby="importSubjectLabel" aria-hidden="true">
+<div class="modal fade" id="assignTeacherModal" tabindex="-1"
+     aria-labelledby="assignTeacherLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content"
          style="border-radius:var(--radius-xl);border:none;overflow:hidden;">
@@ -90,9 +93,9 @@
       <div class="modal-header"
            style="background:var(--sidebar-bg);border:none;padding:1.2rem 1.5rem;">
         <h5 class="modal-title fw-700"
-            style="color:#fff;font-size:1rem;" id="importSubjectLabel">
-          <i class="bi bi-upload me-2" style="color:var(--cyan);"></i>
-          Import Subjects from CSV
+            style="color:#fff;font-size:1rem;" id="assignTeacherLabel">
+          <i class="bi bi-person-check me-2" style="color:#86efac;"></i>
+          Assign Teacher to Subject
         </h5>
         <button type="button" class="btn-close btn-close-white"
                 data-bs-dismiss="modal" aria-label="Close"></button>
@@ -102,125 +105,119 @@
       <div class="modal-body p-0">
         <div class="row g-0">
 
-          <!-- Upload form -->
-          <div class="col-12 col-md-6 p-4"
-               style="border-right:1px solid var(--border);">
-            <h6 class="fw-700 mb-3" style="font-size:.85rem;color:var(--text);">
-              <i class="bi bi-cloud-upload me-2" style="color:var(--cyan);"></i>Upload File
-            </h6>
+          <!-- Step 1: Select Teacher (left panel) -->
+          <div class="col-12 col-md-5 p-0"
+               style="border-right:1px solid var(--border);max-height:450px;overflow-y:auto;">
+            <div class="p-3" style="border-bottom:1px solid var(--border);background:var(--surface-2);">
+              <h6 class="fw-700 mb-1" style="font-size:.82rem;color:var(--text);">
+                <i class="bi bi-people me-2" style="color:var(--primary);"></i>
+                Step 1 — Select Teacher
+              </h6>
+              <input type="text" id="teacher-search-modal"
+                     class="form-control-custom mt-2"
+                     placeholder="Search teacher…"
+                     style="font-size:.8rem;padding:.4rem .75rem;">
+            </div>
 
-            <form method="post" action="{% url 'subject_import' %}"
-                  enctype="multipart/form-data" novalidate>
+            <div id="teacher-list-modal">
+              {% for t in teachers %}
+              <div class="teacher-item d-flex align-items-center gap-3 p-3"
+                   style="border-bottom:1px solid var(--border);cursor:pointer;
+                          transition:background .12s;"
+                   data-teacher-id="{{ t.id }}"
+                   data-teacher-name="{{ t.name }}"
+                   onmouseover="this.style.background='var(--primary-50)'"
+                   onmouseout="this.style.background=this.classList.contains('selected')?'var(--primary-100)':''"
+                   onclick="selectTeacher('{{ t.id }}','{{ t.name }}')">
+                <div style="width:36px;height:36px;background:var(--primary-100);
+                            border-radius:50%;display:grid;place-items:center;
+                            color:var(--primary-dark);font-weight:800;
+                            font-size:.82rem;flex-shrink:0;">
+                  {{ t.name|first|upper }}
+                </div>
+                <div style="min-width:0;flex:1;">
+                  <div class="fw-700" style="font-size:.85rem;white-space:nowrap;
+                              overflow:hidden;text-overflow:ellipsis;">
+                    {{ t.name }}
+                  </div>
+                  {% if t.department %}
+                  <div style="font-size:.73rem;color:var(--text-3);">{{ t.department }}</div>
+                  {% endif %}
+                </div>
+                <i class="bi bi-chevron-right" style="color:var(--text-4);font-size:.75rem;flex-shrink:0;"></i>
+              </div>
+              {% empty %}
+              <div class="p-4 text-center" style="color:var(--text-3);font-size:.82rem;">
+                No teachers found.
+                <a href="{% url 'teacher_add' %}">Add teachers first</a>.
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- Step 2: Assign Subject + Class (right panel) -->
+          <div class="col-12 col-md-7 p-4">
+            <!-- Selected teacher display -->
+            <div id="selected-teacher-display" class="mb-4 p-3 rounded-3"
+                 style="background:var(--primary-50);border:1px solid var(--primary-100);display:none;">
+              <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;
+                          color:var(--text-3);font-weight:600;margin-bottom:.2rem;">
+                Selected Teacher
+              </div>
+              <div class="fw-700" style="font-size:1rem;color:var(--primary-dark);">
+                <i class="bi bi-person-check me-1"></i>
+                <span id="selected-teacher-name">—</span>
+              </div>
+            </div>
+
+            <div id="no-teacher-hint" class="mb-4 p-3 rounded-3 text-center"
+                 style="background:var(--surface-2);border:1px dashed var(--border);">
+              <i class="bi bi-arrow-left-circle"
+                 style="font-size:1.5rem;color:var(--text-4);display:block;margin-bottom:.4rem;"></i>
+              <div style="font-size:.82rem;color:var(--text-3);">
+                Select a teacher from the left panel
+              </div>
+            </div>
+
+            <form method="post" action="{% url 'subject_assign_teacher' %}"
+                  id="assign-form" style="display:none;">
               {% csrf_token %}
+              <input type="hidden" name="teacher_id" id="assign-teacher-id">
 
               <div class="mb-3">
                 <label class="form-label-custom">
-                  Select CSV File <span class="text-danger">*</span>
+                  Step 2 — Select Subject <span class="text-danger">*</span>
                 </label>
-                <div id="subj-drop-zone"
-                     style="border:2px dashed var(--border);border-radius:var(--radius);
-                            padding:1.5rem;text-align:center;cursor:pointer;
-                            transition:border-color .15s,background .15s;
-                            background:var(--surface-2);"
-                     onclick="document.getElementById('subj-file-input').click()">
-                  <i class="bi bi-file-earmark-spreadsheet"
-                     style="font-size:2rem;color:var(--cyan);display:block;margin-bottom:.4rem;"></i>
-                  <div style="font-size:.82rem;font-weight:600;color:var(--text-2);">
-                    Click to browse or drag &amp; drop
-                  </div>
-                  <div id="subj-file-display"
-                       style="font-size:.76rem;color:var(--text-3);margin-top:.25rem;">
-                    No file chosen
-                  </div>
-                </div>
-                <input type="file" name="csv_file" id="subj-file-input"
-                       accept=".csv" required style="display:none;">
+                <select name="subject_id" id="assign-subject-id"
+                        class="form-control-custom form-select-custom" required>
+                  <option value="">— Select Subject —</option>
+                  {% for s in subjects %}
+                  <option value="{{ s.id }}">{{ s.name }} ({{ s.code }})</option>
+                  {% endfor %}
+                </select>
               </div>
 
-              <div class="mb-4 p-2 rounded-3"
-                   style="background:var(--amber-50);border:1px solid #fde68a;">
-                <p style="font-size:.76rem;color:#92400e;margin:0;">
-                  <i class="bi bi-info-circle me-1"></i>
-                  <code>name</code> and <code>code</code> are required.
-                  Description is optional.
-                </p>
+              <div class="mb-4">
+                <label class="form-label-custom">
+                  Step 3 — Select Class <span class="text-danger">*</span>
+                </label>
+                <select name="class_id" class="form-control-custom form-select-custom" required>
+                  <option value="">— Select Class —</option>
+                  {% for c in classes %}
+                  <option value="{{ c.id }}">{{ c.name }}</option>
+                  {% endfor %}
+                </select>
               </div>
 
               <div class="d-flex gap-2">
                 <button type="submit" class="btn-primary-custom"
-                        style="background:var(--cyan);flex:1;justify-content:center;">
-                  <i class="bi bi-cloud-upload"></i> Import
+                        style="background:var(--green);flex:1;justify-content:center;">
+                  <i class="bi bi-check-lg"></i> Assign Teacher
                 </button>
                 <button type="button" class="btn btn-light border"
                         data-bs-dismiss="modal">Cancel</button>
               </div>
             </form>
-          </div>
-
-          <!-- Format guide -->
-          <div class="col-12 col-md-6 p-4" style="background:var(--surface-2);">
-            <h6 class="fw-700 mb-3" style="font-size:.85rem;color:var(--text);">
-              <i class="bi bi-file-earmark-text me-2" style="color:var(--primary);"></i>
-              CSV Format Guide
-            </h6>
-
-            <table style="width:100%;border-collapse:collapse;
-                          font-size:.78rem;margin-bottom:1rem;">
-              <thead>
-                <tr style="border-bottom:2px solid var(--border);">
-                  <th style="padding:.4rem .5rem;color:var(--text-3);
-                             font-size:.68rem;text-transform:uppercase;
-                             letter-spacing:.06em;">Column</th>
-                  <th style="padding:.4rem .5rem;color:var(--text-3);
-                             font-size:.68rem;text-transform:uppercase;
-                             letter-spacing:.06em;">Required</th>
-                  <th style="padding:.4rem .5rem;color:var(--text-3);
-                             font-size:.68rem;text-transform:uppercase;
-                             letter-spacing:.06em;">Example</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr style="border-bottom:1px solid var(--border);">
-                  <td style="padding:.5rem;"><code>name</code></td>
-                  <td style="padding:.5rem;">
-                    <span class="badge-absent" style="font-size:.68rem;">Yes</span>
-                  </td>
-                  <td style="padding:.5rem;color:var(--text-3);">Python Programming</td>
-                </tr>
-                <tr style="border-bottom:1px solid var(--border);">
-                  <td style="padding:.5rem;"><code>code</code></td>
-                  <td style="padding:.5rem;">
-                    <span class="badge-absent" style="font-size:.68rem;">Yes</span>
-                  </td>
-                  <td style="padding:.5rem;color:var(--text-3);">MCA101</td>
-                </tr>
-                <tr>
-                  <td style="padding:.5rem;"><code>description</code></td>
-                  <td style="padding:.5rem;">
-                    <span class="badge-present" style="font-size:.68rem;">No</span>
-                  </td>
-                  <td style="padding:.5rem;color:var(--text-3);">Core Python concepts</td>
-                </tr>
-              </tbody>
-            </table>
-
-            <!-- Sample preview -->
-            <div style="background:var(--gray-900);color:#a5f3fc;
-                        padding:.75rem 1rem;border-radius:var(--radius-sm);
-                        font-family:monospace;font-size:.74rem;
-                        line-height:1.8;overflow-x:auto;margin-bottom:1rem;">
-              name,code,description<br>
-              Python Programming,MCA101,Core Python and OOP<br>
-              Data Structures,MCA102,Arrays and Trees<br>
-              Database Management,MCA103,RDBMS and SQL
-            </div>
-
-            <!-- Download sample -->
-            <button id="download-subj-sample"
-                    class="btn-primary-custom w-100 justify-content-center"
-                    style="background:var(--gray-700);font-size:.8rem;">
-              <i class="bi bi-download"></i> Download Sample CSV
-            </button>
           </div>
 
         </div>
@@ -233,58 +230,71 @@
 
 {% block extra_js %}
 <script>
-// File drop zone
-var subjInput   = document.getElementById('subj-file-input');
-var subjZone    = document.getElementById('subj-drop-zone');
-var subjDisplay = document.getElementById('subj-file-display');
+// ── Teacher selection ──────────────────────────────────
+function selectTeacher(id, name) {
+  // Update hidden input
+  document.getElementById('assign-teacher-id').value = id;
 
-if (subjInput) {
-  subjInput.addEventListener('change', function () {
-    if (this.files && this.files[0]) {
-      subjDisplay.textContent   = this.files[0].name;
-      subjZone.style.borderColor = 'var(--cyan)';
-      subjZone.style.background  = 'var(--cyan-50)';
-    }
+  // Update display
+  document.getElementById('selected-teacher-name').textContent = name;
+  document.getElementById('selected-teacher-display').style.display = 'block';
+  document.getElementById('no-teacher-hint').style.display = 'none';
+  document.getElementById('assign-form').style.display = 'block';
+
+  // Highlight selected row
+  document.querySelectorAll('.teacher-item').forEach(function (el) {
+    el.classList.remove('selected');
+    el.style.background = '';
   });
-}
-if (subjZone) {
-  subjZone.addEventListener('dragover', function (e) {
-    e.preventDefault();
-    this.style.borderColor = 'var(--cyan)';
-    this.style.background  = 'var(--cyan-50)';
-  });
-  subjZone.addEventListener('dragleave', function () {
-    this.style.borderColor = 'var(--border)';
-    this.style.background  = 'var(--surface-2)';
-  });
-  subjZone.addEventListener('drop', function (e) {
-    e.preventDefault();
-    var file = e.dataTransfer.files[0];
-    if (file && file.name.endsWith('.csv')) {
-      subjInput.files        = e.dataTransfer.files;
-      subjDisplay.textContent = file.name;
-      this.style.borderColor = 'var(--cyan)';
-      this.style.background  = 'var(--cyan-50)';
-    } else {
-      subjDisplay.textContent = 'Please drop a .csv file';
-      this.style.borderColor  = 'var(--rose)';
+  document.querySelectorAll('.teacher-item').forEach(function (el) {
+    if (el.getAttribute('data-teacher-id') === id) {
+      el.classList.add('selected');
+      el.style.background = 'var(--primary-100)';
     }
   });
 }
 
-// Download sample CSV
-document.getElementById('download-subj-sample').addEventListener('click', function () {
-  var content = 'name,code,description\n'
-    + 'Python Programming,MCA101,Core Python and OOP concepts\n'
-    + 'Data Structures,MCA102,Arrays lists trees graphs\n'
-    + 'Database Management,MCA103,RDBMS concepts and SQL\n'
-    + 'Web Technologies,BCA201,HTML CSS JavaScript basics\n';
-  var blob = new Blob([content], { type: 'text/csv' });
-  var a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'subjects_sample.csv';
-  a.click();
-  URL.revokeObjectURL(a.href);
+// ── Teacher search filter ──────────────────────────────
+var teacherSearchInput = document.getElementById('teacher-search-modal');
+if (teacherSearchInput) {
+  teacherSearchInput.addEventListener('input', function () {
+    var q = this.value.toLowerCase().trim();
+    document.querySelectorAll('.teacher-item').forEach(function (el) {
+      var name = el.getAttribute('data-teacher-name').toLowerCase();
+      el.style.display = (!q || name.includes(q)) ? 'flex' : 'none';
+    });
+  });
+}
+
+// ── Pre-select subject when clicking assign icon in table row ──
+document.querySelectorAll('.assign-btn').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    var sid  = this.getAttribute('data-subject-id');
+    var sname = this.getAttribute('data-subject-name');
+    // Pre-select subject in dropdown after modal opens
+    setTimeout(function () {
+      var sel = document.getElementById('assign-subject-id');
+      if (sel) sel.value = sid;
+    }, 300);
+  });
 });
+
+// ── Reset modal on close ──────────────────────────────
+var assignModal = document.getElementById('assignTeacherModal');
+if (assignModal) {
+  assignModal.addEventListener('hidden.bs.modal', function () {
+    document.getElementById('assign-teacher-id').value = '';
+    document.getElementById('selected-teacher-name').textContent = '—';
+    document.getElementById('selected-teacher-display').style.display = 'none';
+    document.getElementById('no-teacher-hint').style.display = 'block';
+    document.getElementById('assign-form').style.display = 'none';
+    document.querySelectorAll('.teacher-item').forEach(function (el) {
+      el.classList.remove('selected');
+      el.style.background = '';
+      el.style.display = 'flex';
+    });
+    if (teacherSearchInput) teacherSearchInput.value = '';
+  });
+}
 </script>
 {% endblock %}

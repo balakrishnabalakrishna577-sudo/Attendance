@@ -30,11 +30,12 @@ urlpatterns = [
     path('hod/classes/<str:class_id>/delete/',     views_hod.class_delete, name='class_delete'),
 
     # Subjects
-    path('hod/subjects/',                          views_hod.subject_list,   name='subject_list'),
-    path('hod/subjects/add/',                      views_hod.subject_add,    name='subject_add'),
-    path('hod/subjects/import/',                   views_hod.subject_import, name='subject_import'),
-    path('hod/subjects/<str:subject_id>/edit/',    views_hod.subject_edit,   name='subject_edit'),
-    path('hod/subjects/<str:subject_id>/delete/',  views_hod.subject_delete, name='subject_delete'),
+    path('hod/subjects/',                          views_hod.subject_list,            name='subject_list'),
+    path('hod/subjects/add/',                      views_hod.subject_add,             name='subject_add'),
+    path('hod/subjects/import/',                   views_hod.subject_import,          name='subject_import'),
+    path('hod/subjects/assign-teacher/',           views_hod.subject_assign_teacher,  name='subject_assign_teacher'),
+    path('hod/subjects/<str:subject_id>/edit/',    views_hod.subject_edit,            name='subject_edit'),
+    path('hod/subjects/<str:subject_id>/delete/',  views_hod.subject_delete,          name='subject_delete'),
 
     # Class Assignments (teacher → class → subject)
     path('hod/assignments/',                              views_hod.assignment_list,   name='assignment_list'),

@@ -198,8 +198,11 @@ def class_delete(request, class_id):
 
 @hod_required
 def subject_list(request):
-    return render(request, 'attendance/hod/subject_list.html',
-                  {'subjects': db.get_all_subjects()})
+    return render(request, 'attendance/hod/subject_list.html', {
+        'subjects': db.get_all_subjects(),
+        'teachers': db.get_all_teachers(),
+        'classes':  db.get_all_classes(),
+    })
 
 
 @hod_required
@@ -352,3 +355,47 @@ def subject_import(request):
         except Exception as exc:
             messages.error(request, f'CSV parse error: {exc}')
     return redirect('subject_list')
+
+
+# ─────────────────────────────────────────────
+# Quick Assign: Teacher → Subject (from Subjects page)
+# ─────────────────────────────────────────────
+
+@hod_required
+def subject_assign_teacher(request):
+    """
+    GET  → Returns JSON list of teachers (for modal AJAX).
+    POST → Assigns selected teacher to selected subject+class.
+    """
+    import json as _json
+    from django.http import JsonResponse
+
+    if request.method == 'GET':
+        teachers = db.get_all_teachers()
+        subjects = db.get_all_subjects()
+        classes  = db.get_all_classes()
+        return render(request, 'attendance/hod/subject_assign_teacher.html', {
+            'teachers': teachers,
+            'subjects': subjects,
+            'classes':  classes,
+        })
+
+    if request.method == 'POST':
+        teacher_id = request.POST.get('teacher_id', '').strip()
+        subject_id = request.POST.get('subject_id', '').strip()
+        class_id   = request.POST.get('class_id', '').strip()
+
+        if not all([teacher_id, subject_id, class_id]):
+            messages.error(request, 'Teacher, subject and class are all required.')
+            return redirect('subject_assign_teacher')
+
+        result = db.create_assignment(teacher_id, class_id, subject_id)
+        if result is None:
+            messages.warning(request, 'This assignment already exists.')
+        else:
+            t = db.get_teacher(teacher_id)
+            s = db.get_subject(subject_id)
+            c = db.get_class(class_id)
+            messages.success(request,
+                f'{t["name"]} assigned to {s["name"]} ({c["name"]}) successfully.')
+        return redirect('subject_list')
