@@ -664,7 +664,6 @@ def timetable_pdf(request, class_id):
     """Render a printable/PDF-ready timetable page."""
     cls = db.get_class(class_id)
     if not cls:
-        from django.contrib import messages
         messages.error(request, 'Class not found.')
         return redirect('timetable_sections')
 

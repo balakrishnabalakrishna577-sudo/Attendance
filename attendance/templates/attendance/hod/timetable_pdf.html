@@ -228,24 +228,15 @@
   <table class="tt-table">
     <thead>
       <tr>
-        <th style="width:70px;">Period</th>
-        <th class="header-period">I</th>
-        <th class="header-period">II</th>
-        <th class="break-cell" rowspan="2" style="width:30px;">SHORT<br>BREAK</th>
-        <th class="header-period">III</th>
-        <th class="header-period">IV</th>
-        <th class="break-cell" rowspan="2" style="width:30px;">LUNCH<br>BREAK</th>
-        <th class="header-period">V</th>
-        <th class="header-period">VI</th>
-      </tr>
-      <tr>
-        <th class="header-time">Day / Time</th>
-        <th class="header-time">09:00 AM<br>10:00 AM</th>
-        <th class="header-time">10:00 AM<br>11:00 AM</th>
-        <th class="header-time">11:15 AM<br>12:15 PM</th>
-        <th class="header-time">12:15 PM<br>01:15 PM</th>
-        <th class="header-time">02:00 PM<br>03:00 PM</th>
-        <th class="header-time">03:00 PM<br>04:00 PM</th>
+        <th style="width:70px;background:#e8e8e8;">Day / Time</th>
+        <th class="header-period">I<br><span class="header-time">9:00–10:00 AM</span></th>
+        <th class="header-period">II<br><span class="header-time">10:00–11:00 AM</span></th>
+        <th style="background:#f0f0f0;font-weight:700;font-size:8pt;width:40px;">SHORT<br>BREAK<br><span style="font-size:7pt;font-weight:400;">11:00–11:15</span></th>
+        <th class="header-period">III<br><span class="header-time">11:15 AM–12:15 PM</span></th>
+        <th class="header-period">IV<br><span class="header-time">12:15–1:15 PM</span></th>
+        <th style="background:#f0f0f0;font-weight:700;font-size:8pt;width:40px;">LUNCH<br>BREAK<br><span style="font-size:7pt;font-weight:400;">1:15–2:00</span></th>
+        <th class="header-period">V<br><span class="header-time">2:00–3:00 PM</span></th>
+        <th class="header-period">VI<br><span class="header-time">3:00–4:00 PM</span></th>
       </tr>
     </thead>
     <tbody>
@@ -253,20 +244,22 @@
       <tr>
         <td class="day-cell">{{ day }}</td>
         {% for hour in hours %}
-        {% if hour == '3' %}
-          {% if forloop.first %}<td class="break-cell" rowspan="{{ days|length }}">S<br>H<br>O<br>R<br>T</td>{% endif %}
-        {% endif %}
-        {% if hour == '5' %}
-          {% if forloop.first %}<td class="break-cell" rowspan="{{ days|length }}">L<br>U<br>N<br>C<br>H</td>{% endif %}
-        {% endif %}
-        {% with slot=grid|default:{} %}
         <td>
           {% for s in slots %}{% if s.day == day and s.hour == hour %}
           <div class="subject-cell">{{ s.subject_name }}</div>
           <div class="teacher-cell">{{ s.teacher_name }}</div>
           {% endif %}{% endfor %}
         </td>
-        {% endwith %}
+        {% if hour == '2' %}
+        <td class="break-cell" style="background:#f9f9f9;font-weight:700;font-size:8pt;text-align:center;vertical-align:middle;width:30px;">
+          SHORT<br>BREAK
+        </td>
+        {% endif %}
+        {% if hour == '4' %}
+        <td class="break-cell" style="background:#f9f9f9;font-weight:700;font-size:8pt;text-align:center;vertical-align:middle;width:30px;">
+          LUNCH<br>BREAK
+        </td>
+        {% endif %}
         {% endfor %}
       </tr>
       {% endfor %}
