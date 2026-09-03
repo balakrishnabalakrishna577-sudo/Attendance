@@ -87,9 +87,31 @@ function initActiveNav() {
       bestLen = href.length;
       bestMatch = a;
     }
+    // Add data-label for collapsed tooltip
+    if (!a.getAttribute('data-label')) {
+      var text = a.textContent.trim();
+      if (text) a.setAttribute('data-label', text);
+    }
   });
 
   if (bestMatch) bestMatch.classList.add('active');
+}
+
+// ── Sidebar desktop collapse ───────────────────────────
+function initSidebarCollapse() {
+  var wrapper   = document.getElementById('app-wrapper');
+  var collapseBtn = document.getElementById('sidebar-collapse-btn');
+  if (!collapseBtn || !wrapper) return;
+
+  // Restore saved state
+  var saved = localStorage.getItem('sidebar-collapsed');
+  if (saved === '1') wrapper.classList.add('sidebar-collapsed');
+
+  collapseBtn.addEventListener('click', function () {
+    wrapper.classList.toggle('sidebar-collapsed');
+    var isCollapsed = wrapper.classList.contains('sidebar-collapsed');
+    localStorage.setItem('sidebar-collapsed', isCollapsed ? '1' : '0');
+  });
 }
 
 // ── Confirm delete ─────────────────────────────────────
@@ -177,7 +199,6 @@ function initTopbarDate() {
     weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
   });
 }
-
 // ── Initial row highlights (attendance page) ───────────
 function initRowHighlights() {
   document.querySelectorAll('.att-radio-present:checked, .att-radio-absent:checked').forEach(function (r) {
@@ -189,6 +210,7 @@ function initRowHighlights() {
 document.addEventListener('DOMContentLoaded', function () {
   initToasts();
   initSidebar();
+  initSidebarCollapse();
   initActiveNav();
   initConfirmDelete();
   initAttendanceBulk();

@@ -16,7 +16,7 @@
 </head>
 <body>
 
-<!-- ── Toast notifications ─────────────────────────────────── -->
+<!-- ── Toast notifications ─────────────────────────── -->
 {% if messages %}
 <div class="alert-container" id="alert-container">
   {% for message in messages %}
@@ -29,17 +29,23 @@
 </div>
 {% endif %}
 
-<div class="app-wrapper">
+<div class="app-wrapper" id="app-wrapper">
 
-  <!-- ── Sidebar ──────────────────────────────────────────── -->
+  <!-- ── Sidebar ──────────────────────────────────────── -->
   <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
 
+    <!-- Brand -->
     <div class="sidebar-brand">
       <div class="brand-icon"><i class="bi bi-mortarboard-fill"></i></div>
       <div class="brand-text">
         Department Work
         <span>Automation</span>
       </div>
+      <!-- Desktop collapse button -->
+      <button class="sidebar-collapse-btn d-none d-lg-flex" id="sidebar-collapse-btn"
+              title="Collapse sidebar" aria-label="Collapse sidebar">
+        <i class="bi bi-chevron-left" id="collapse-icon"></i>
+      </button>
     </div>
 
     <nav class="sidebar-nav">
@@ -61,39 +67,58 @@
   <!-- Mobile overlay -->
   <div class="sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
 
-  <!-- ── Main content ──────────────────────────────────────── -->
-  <div class="main-content">
+  <!-- ── Main content ──────────────────────────────────── -->
+  <div class="main-content" id="main-content">
 
-    <!-- Topbar -->
-    <header class="topbar" role="banner">
-      <button class="topbar-toggle" id="sidebar-toggle"
-              aria-label="Open navigation" aria-expanded="false" aria-controls="sidebar">
-        <i class="bi bi-list"></i>
-      </button>
-
-      <div class="topbar-title">{% block page_title %}Dashboard{% endblock %}</div>
-      <div class="topbar-date" aria-live="polite"></div>
-
-      <!-- User chip -->
-      <div class="d-flex align-items-center gap-2">
-        <div class="d-none d-md-flex align-items-center gap-2"
-             style="background:var(--gray-100);border:1px solid var(--border);
-                    border-radius:999px;padding:.3rem .75rem .3rem .4rem;">
-          <div style="width:26px;height:26px;background:linear-gradient(135deg,var(--primary),var(--violet));
-                      border-radius:50%;display:grid;place-items:center;
-                      color:#fff;font-size:.72rem;font-weight:800;flex-shrink:0;">
-            {{ request.session.name|first|upper }}
+    <!-- ── Beautiful Header ──────────────────────────────── -->
+    <div class="dept-header" id="dept-header">
+      <div class="dept-header-inner">
+        <!-- Left: toggle + dept info -->
+        <div class="d-flex align-items-center gap-3">
+          <!-- Hamburger (mobile) / expand (desktop collapsed) -->
+          <button class="sidebar-toggle-btn" id="sidebar-toggle"
+                  aria-label="Toggle navigation">
+            <i class="bi bi-list"></i>
+          </button>
+          <div class="dept-info">
+            <div class="dept-title">
+              <i class="bi bi-building-fill me-2"></i>
+              Head of Department
+            </div>
+            <div class="dept-badges">
+              <span class="dept-badge bca">BCA</span>
+              <span class="dept-divider">·</span>
+              <span class="dept-badge mca">MCA</span>
+              <span class="dept-sub d-none d-sm-inline">
+                Bachelor &amp; Master of Computer Applications
+              </span>
+            </div>
           </div>
-          <span style="font-size:.78rem;font-weight:600;color:var(--text-2);">
-            {{ request.session.name }}
-          </span>
         </div>
-        <a href="{% url 'logout' %}" class="topbar-logout" aria-label="Logout">
-          <i class="bi bi-box-arrow-right"></i>
-          <span class="logout-text">Logout</span>
-        </a>
+
+        <!-- Right: date + user chip + logout -->
+        <div class="d-flex align-items-center gap-2 flex-shrink-0">
+          <div class="topbar-date d-none d-md-block" aria-live="polite"></div>
+
+          <div class="d-none d-md-flex align-items-center gap-2 user-chip">
+            <div class="user-chip-avatar">
+              {{ request.session.name|first|upper }}
+            </div>
+            <span class="user-chip-name">{{ request.session.name }}</span>
+          </div>
+
+          <a href="{% url 'logout' %}" class="topbar-logout" aria-label="Logout">
+            <i class="bi bi-box-arrow-right"></i>
+            <span class="logout-text">Logout</span>
+          </a>
+        </div>
       </div>
-    </header>
+
+      <!-- Page title bar -->
+      <div class="page-title-bar">
+        <span class="page-title-text">{% block page_title %}Dashboard{% endblock %}</span>
+      </div>
+    </div>
 
     <!-- Page body -->
     <main class="page-content" role="main">
