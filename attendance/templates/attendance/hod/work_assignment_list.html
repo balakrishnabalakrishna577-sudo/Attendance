@@ -67,12 +67,12 @@
       <tbody>
         {% for w in works %}
         <tr>
-          <td class="text-muted-custom">{{ forloop.counter }}</td>
+          <td style="color:var(--text-4);">{{ forloop.counter }}</td>
           <td class="fw-700">{{ w.teacher_name }}</td>
           <td>
             <div class="fw-700">{{ w.title }}</div>
             {% if w.description %}
-            <div class="text-muted-custom" style="font-size:.75rem;">{{ w.description|truncatechars:50 }}</div>
+            <div style="font-size:.75rem;color:var(--text-3);">{{ w.description|truncatechars:50 }}</div>
             {% endif %}
           </td>
           <td>
@@ -97,16 +97,52 @@
           <td class="hide-mobile" style="font-size:.82rem;">{{ w.due_date|default:"—" }}</td>
           <td>
             <div class="d-flex gap-1">
+              <button class="btn-sm-icon btn-view" title="View"
+                      data-bs-toggle="modal" data-bs-target="#viewModal"
+                      data-title="{{ w.title }}"
+                      data-r0="{{ w.teacher_name }}"
+                      data-r1="{{ w.title }}"
+                      data-r2="{{ w.priority|capfirst }}"
+                      data-r3="{{ w.status|capfirst }}"
+                      data-r4="{{ w.assigned_date }}"
+                      data-r5="{{ w.due_date|default:'—' }}"
+                      data-r6="{{ w.description }}"
+                      data-r7="{{ w.remarks }}">
+                <i class="bi bi-eye"></i>
+              </button>
               <a href="{% url 'work_assignment_edit' w.pk %}" class="btn-sm-icon btn-edit"><i class="bi bi-pencil"></i></a>
               <a href="{% url 'work_assignment_delete' w.pk %}" class="btn-sm-icon btn-delete"><i class="bi bi-trash"></i></a>
             </div>
           </td>
         </tr>
         {% empty %}
-        <tr><td colspan="8" class="text-center py-4 text-muted-custom">No work assignments yet. <a href="{% url 'work_assignment_add' %}">Assign one</a>.</td></tr>
+        <tr>
+          <td colspan="8" class="text-center py-4" style="color:var(--text-3);">
+            No work assignments yet. <a href="{% url 'work_assignment_add' %}">Assign one</a>.
+          </td>
+        </tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
 </div>
+
+{% include "attendance/hod/_view_modal.html" %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+var wLabels = ['Teacher','Task','Priority','Status','Assigned','Due Date','Description','Remarks'];
+document.querySelectorAll('[data-bs-target="#viewModal"]').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var title = this.getAttribute('data-title');
+    var vals  = [this.dataset.r0,this.dataset.r1,this.dataset.r2,this.dataset.r3,
+                 this.dataset.r4,this.dataset.r5,this.dataset.r6,this.dataset.r7];
+    document.getElementById('view-modal-title').textContent = title;
+    var html = '';
+    wLabels.forEach(function(l,i){ if(vals[i]) html += '<div class="view-row"><span class="view-label">'+l+'</span><span class="view-val">'+vals[i]+'</span></div>'; });
+    document.getElementById('view-modal-body').innerHTML = html || '<div class="p-4 text-center" style="color:var(--text-3);">No details.</div>';
+  });
+});
+</script>
 {% endblock %}

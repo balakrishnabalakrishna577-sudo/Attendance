@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="page-header">
-  <h1><i class="bi bi-building me-2"></i>Classes</h1>
+  <h1><i class="bi bi-building me-2" style="color:var(--primary);"></i>Classes</h1>
   <a href="{% url 'class_add' %}" class="btn-primary-custom">
     <i class="bi bi-plus-lg"></i> Add Class
   </a>
@@ -13,40 +13,46 @@
 <div class="card">
   <div class="card-header-custom">
     <h5>All Classes ({{ classes|length }})</h5>
-    <input type="text" id="table-search" class="form-control-custom"
-           placeholder="Search…" style="max-width:220px;">
+    <input type="text" id="table-search" class="form-control-custom" placeholder="Search…" style="max-width:220px;">
   </div>
   <div class="table-container">
     <table class="data-table">
       <thead>
-        <tr><th>#</th><th>Class Name</th><th>Description</th><th>Actions</th></tr>
+        <tr><th>#</th><th>Class Name</th><th class="hide-mobile">Description</th><th>Actions</th></tr>
       </thead>
       <tbody>
         {% for cls in classes %}
         <tr class="searchable-row">
-          <td class="text-muted-custom">{{ forloop.counter }}</td>
+          <td style="color:var(--text-4);">{{ forloop.counter }}</td>
           <td class="fw-700">{{ cls.name }}</td>
-          <td>{{ cls.description|default:"—" }}</td>
+          <td class="hide-mobile" style="color:var(--text-3);">{{ cls.description|default:"—" }}</td>
           <td>
             <div class="d-flex gap-1">
-              <a href="{% url 'class_edit' cls.id %}" class="btn-sm-icon btn-edit" title="Edit">
-                <i class="bi bi-pencil"></i>
-              </a>
-              <a href="{% url 'class_delete' cls.id %}" class="btn-sm-icon btn-delete" title="Delete">
-                <i class="bi bi-trash"></i>
-              </a>
+              <button class="btn-sm-icon btn-view" title="View"
+                      data-bs-toggle="modal" data-bs-target="#viewModal"
+                      onclick="viewDetails('{{ cls.name|escapejs }}', [['Class Name','{{ cls.name|escapejs }}'],['Description','{{ cls.description|default:''|escapejs }}']])">
+                <i class="bi bi-eye"></i>
+              </button>
+              <a href="{% url 'class_edit' cls.id %}" class="btn-sm-icon btn-edit" title="Edit"><i class="bi bi-pencil"></i></a>
+              <a href="{% url 'class_delete' cls.id %}" class="btn-sm-icon btn-delete" title="Delete"><i class="bi bi-trash"></i></a>
             </div>
           </td>
         </tr>
         {% empty %}
-        <tr>
-          <td colspan="4" class="text-center py-4 text-muted-custom">
-            No classes yet. <a href="{% url 'class_add' %}">Add one</a>.
-          </td>
-        </tr>
+        <tr><td colspan="4" class="text-center py-4" style="color:var(--text-3);">No classes yet. <a href="{% url 'class_add' %}">Add one</a>.</td></tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
 </div>
+
+{% include "attendance/hod/_view_modal.html" %}
 {% endblock %}
+{% block extra_js %}<script>
+function viewDetails(title, rows) {
+  document.getElementById('view-modal-title').textContent = title;
+  var html = '';
+  rows.forEach(function(r) { if(r[1]) html += '<div class="view-row"><span class="view-label">'+r[0]+'</span><span class="view-val">'+r[1]+'</span></div>'; });
+  document.getElementById('view-modal-body').innerHTML = html || '<div class="p-4 text-center" style="color:var(--text-3);">No details.</div>';
+}
+</script>{% endblock %}

@@ -57,7 +57,7 @@
     <table class="data-table">
       <thead>
         <tr>
-          <th>#</th><th>Title</th><th>Type</th><th>Date & Time</th>
+          <th>#</th><th>Title</th><th>Type</th><th>Date &amp; Time</th>
           <th class="hide-mobile">Venue</th><th class="hide-mobile">Programme</th>
           <th>Actions</th>
         </tr>
@@ -65,19 +65,20 @@
       <tbody>
         {% for m in meetings %}
         <tr>
-          <td class="text-muted-custom">{{ forloop.counter }}</td>
+          <td style="color:var(--text-4);">{{ forloop.counter }}</td>
           <td>
             <div class="fw-700">{{ m.title }}</div>
-            <div class="text-muted-custom d-md-none" style="font-size:.75rem;">{{ m.venue }}</div>
+            <div class="d-md-none" style="font-size:.75rem;color:var(--text-3);">{{ m.venue }}</div>
           </td>
           <td>
-            <span style="background:#e0f2fe;color:#0c4a6e;padding:.15rem .5rem;border-radius:.3rem;font-size:.75rem;white-space:nowrap;">
+            <span style="background:#e0f2fe;color:#0c4a6e;padding:.15rem .5rem;
+                         border-radius:.3rem;font-size:.75rem;white-space:nowrap;">
               {{ m.get_meeting_type_display }}
             </span>
           </td>
           <td style="white-space:nowrap;font-size:.82rem;">
             <div class="fw-700">{{ m.meeting_date }}</div>
-            <div class="text-muted-custom">{{ m.meeting_time|time:"h:i A" }}</div>
+            <div style="color:var(--text-3);">{{ m.meeting_time|time:"h:i A" }}</div>
           </td>
           <td class="hide-mobile">{{ m.venue|default:"—" }}</td>
           <td class="hide-mobile">
@@ -91,16 +92,51 @@
           </td>
           <td>
             <div class="d-flex gap-1">
+              <button class="btn-sm-icon btn-view" title="View"
+                      data-bs-toggle="modal" data-bs-target="#viewModal"
+                      data-title="{{ m.title }}"
+                      data-r0="{{ m.title }}"
+                      data-r1="{{ m.get_meeting_type_display }}"
+                      data-r2="{{ m.meeting_date }}"
+                      data-r3="{{ m.meeting_time|time:'h:i A' }}"
+                      data-r4="{{ m.venue|default:'—' }}"
+                      data-r5="{{ m.programme }}"
+                      data-r6="{{ m.description }}">
+                <i class="bi bi-eye"></i>
+              </button>
               <a href="{% url 'meeting_edit' m.pk %}" class="btn-sm-icon btn-edit"><i class="bi bi-pencil"></i></a>
               <a href="{% url 'meeting_delete' m.pk %}" class="btn-sm-icon btn-delete"><i class="bi bi-trash"></i></a>
             </div>
           </td>
         </tr>
         {% empty %}
-        <tr><td colspan="7" class="text-center py-4 text-muted-custom">No meetings yet. <a href="{% url 'meeting_add' %}">Schedule one</a>.</td></tr>
+        <tr>
+          <td colspan="7" class="text-center py-4" style="color:var(--text-3);">
+            No meetings yet. <a href="{% url 'meeting_add' %}">Schedule one</a>.
+          </td>
+        </tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
 </div>
+
+{% include "attendance/hod/_view_modal.html" %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+var labels = ['Title','Type','Date','Time','Venue','Programme','Description'];
+document.querySelectorAll('[data-bs-target="#viewModal"]').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var title = this.getAttribute('data-title');
+    var vals  = [this.dataset.r0,this.dataset.r1,this.dataset.r2,
+                 this.dataset.r3,this.dataset.r4,this.dataset.r5,this.dataset.r6];
+    document.getElementById('view-modal-title').textContent = title;
+    var html = '';
+    labels.forEach(function(l,i){ if(vals[i]) html += '<div class="view-row"><span class="view-label">'+l+'</span><span class="view-val">'+vals[i]+'</span></div>'; });
+    document.getElementById('view-modal-body').innerHTML = html || '<div class="p-4 text-center" style="color:var(--text-3);">No details.</div>';
+  });
+});
+</script>
 {% endblock %}

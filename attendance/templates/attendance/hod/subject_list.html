@@ -63,6 +63,11 @@
               <a href="{% url 'subject_delete' subj.id %}" class="btn-sm-icon btn-delete" title="Delete">
                 <i class="bi bi-trash"></i>
               </a>
+              <button class="btn-sm-icon btn-view" title="View"
+                      data-bs-toggle="modal" data-bs-target="#subjectViewModal"
+                      onclick="viewSubject('{{ subj.name|escapejs }}','{{ subj.code|escapejs }}','{{ subj.description|default:''|escapejs }}')">
+                <i class="bi bi-eye"></i>
+              </button>
             </div>
           </td>
         </tr>
@@ -297,10 +302,20 @@
   </div>
 </div>
 
+{% include "attendance/hod/_view_modal.html" with modal_id="viewModal" %}
+
 {% endblock %}
 
 {% block extra_js %}
 <script>
+function viewSubject(name, code, desc) {
+  document.getElementById('view-modal-title').textContent = name;
+  var html = '<div class="view-row"><span class="view-label">Subject Name</span><span class="view-val fw-700">'+name+'</span></div>'
+           + '<div class="view-row"><span class="view-label">Code</span><span class="view-val"><code style="background:var(--gray-100);padding:.15rem .45rem;border-radius:.3rem;">'+code+'</code></span></div>';
+  if(desc) html += '<div class="view-row"><span class="view-label">Description</span><span class="view-val">'+desc+'</span></div>';
+  document.getElementById('view-modal-body').innerHTML = html;
+  new bootstrap.Modal(document.getElementById('viewModal')).show();
+}
 // ── Teacher selection ──────────────────────────────────
 function selectTeacher(id, name) {
   // Update hidden input

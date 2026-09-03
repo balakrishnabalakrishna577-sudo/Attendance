@@ -1,0 +1,57 @@
+<!-- Reusable View Detail Modal -->
+<div class="modal fade" id="viewModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border-radius:var(--radius-xl);border:none;overflow:hidden;">
+      <div class="modal-header"
+           style="background:var(--sidebar-bg);border:none;padding:1.1rem 1.5rem;">
+        <h5 class="modal-title fw-700" id="viewModalTitle"
+            style="color:#fff;font-size:.95rem;">
+          <i class="bi bi-eye me-2" style="color:var(--primary-light);"></i>
+          <span id="view-modal-title">Details</span>
+        </h5>
+        <button type="button" class="btn-close btn-close-white"
+                data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-0" id="view-modal-body"></div>
+      <div class="modal-footer" style="border-top:1px solid var(--border);padding:.75rem 1.25rem;">
+        <button type="button" class="btn btn-light border"
+                data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.view-row {
+  display: flex;
+  align-items: flex-start;
+  padding: .65rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  gap: 1rem;
+}
+.view-row:last-child { border-bottom: none; }
+.view-label {
+  font-size: .74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--text-3);
+  min-width: 110px;
+  flex-shrink: 0;
+  padding-top: .1rem;
+}
+.view-val {
+  font-size: .875rem;
+  color: var(--text);
+  font-weight: 500;
+  flex: 1;
+  word-break: break-word;
+}
+.view-badge {
+  display: inline-block;
+  padding: .2rem .65rem;
+  border-radius: 999px;
+  font-size: .75rem;
+  font-weight: 700;
+}
+</style>

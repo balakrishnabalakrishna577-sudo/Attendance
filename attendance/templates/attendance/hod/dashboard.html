@@ -2,85 +2,265 @@
 {% block title %}Dashboard — Department Work Automation{% endblock %}
 {% block page_title %}Dashboard{% endblock %}
 
+{% block extra_css %}
+<style>
+/* ── Dashboard specific ─────────────────────────────── */
+.dash-hero {
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4f46e5 100%);
+  border-radius: var(--radius-xl);
+  padding: 1.75rem 2rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.dash-hero::before {
+  content: '';
+  position: absolute;
+  top: -40px; right: -40px;
+  width: 200px; height: 200px;
+  background: rgba(255,255,255,.05);
+  border-radius: 50%;
+}
+.dash-hero::after {
+  content: '';
+  position: absolute;
+  bottom: -60px; right: 60px;
+  width: 140px; height: 140px;
+  background: rgba(255,255,255,.04);
+  border-radius: 50%;
+}
+.dash-hero-text { position: relative; z-index: 1; }
+.dash-hero-text h1 {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -.03em;
+  margin-bottom: .3rem;
+}
+.dash-hero-text p {
+  font-size: .875rem;
+  color: rgba(255,255,255,.65);
+  margin: 0;
+}
+.dash-hero-badge {
+  position: relative; z-index: 1;
+  background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: var(--radius-lg);
+  padding: .85rem 1.25rem;
+  text-align: center;
+  backdrop-filter: blur(8px);
+}
+.dash-hero-badge .badge-val {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
+}
+.dash-hero-badge .badge-lbl {
+  font-size: .7rem;
+  color: rgba(255,255,255,.6);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin-top: .2rem;
+}
+
+/* Metric cards — gradient top border */
+.metric-card {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  padding: 1.25rem;
+  position: relative;
+  overflow: hidden;
+  transition: transform .2s, box-shadow .2s;
+}
+.metric-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+.metric-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  border-radius: 4px 4px 0 0;
+}
+.metric-card.c1::before { background: linear-gradient(90deg,#6366f1,#818cf8); }
+.metric-card.c2::before { background: linear-gradient(90deg,#06b6d4,#67e8f9); }
+.metric-card.c3::before { background: linear-gradient(90deg,#f59e0b,#fcd34d); }
+.metric-card.c4::before { background: linear-gradient(90deg,#10b981,#6ee7b7); }
+.metric-card.c5::before { background: linear-gradient(90deg,#f43f5e,#fda4af); }
+.metric-card.c6::before { background: linear-gradient(90deg,#8b5cf6,#c4b5fd); }
+
+.metric-icon {
+  width: 44px; height: 44px;
+  border-radius: var(--radius);
+  display: grid; place-items: center;
+  font-size: 1.2rem;
+  margin-bottom: .85rem;
+}
+.metric-card.c1 .metric-icon { background:#eef2ff; color:#4f46e5; }
+.metric-card.c2 .metric-icon { background:#ecfeff; color:#06b6d4; }
+.metric-card.c3 .metric-icon { background:#fffbeb; color:#f59e0b; }
+.metric-card.c4 .metric-icon { background:#ecfdf5; color:#10b981; }
+.metric-card.c5 .metric-icon { background:#fff1f2; color:#f43f5e; }
+.metric-card.c6 .metric-icon { background:#f5f3ff; color:#8b5cf6; }
+
+.metric-val {
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: -.04em;
+  line-height: 1;
+  color: var(--text);
+}
+.metric-card.c1 .metric-val { color:#4f46e5; }
+.metric-card.c2 .metric-val { color:#06b6d4; }
+.metric-card.c3 .metric-val { color:#f59e0b; }
+.metric-card.c4 .metric-val { color:#10b981; }
+.metric-card.c5 .metric-val { color:#f43f5e; }
+.metric-card.c6 .metric-val { color:#8b5cf6; }
+
+.metric-lbl {
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: var(--text-3);
+  margin-top: .2rem;
+}
+
+/* Action buttons grid */
+.action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .65rem; }
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  padding: .65rem .85rem;
+  border-radius: var(--radius);
+  font-size: .82rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform .15s, box-shadow .15s;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+}
+.action-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); color:#fff; }
+.action-btn i { font-size: 1rem; flex-shrink: 0; }
+.action-btn.ab1 { background:linear-gradient(135deg,#6366f1,#4f46e5); }
+.action-btn.ab2 { background:linear-gradient(135deg,#06b6d4,#0891b2); }
+.action-btn.ab3 { background:linear-gradient(135deg,#10b981,#059669); }
+.action-btn.ab4 { background:linear-gradient(135deg,#8b5cf6,#7c3aed); }
+.action-btn.ab5 { background:linear-gradient(135deg,#0ea5e9,#0284c7); }
+.action-btn.ab6 { background:linear-gradient(135deg,#f59e0b,#d97706); }
+.action-btn.ab7 { background:linear-gradient(135deg,#475569,#334155); grid-column:span 2; justify-content:center; }
+
+/* Summary tiles */
+.summary-tile {
+  border-radius: var(--radius);
+  padding: 1rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.summary-tile .s-val {
+  font-size: 1.8rem;
+  font-weight: 900;
+  letter-spacing: -.04em;
+  line-height: 1;
+}
+.summary-tile .s-lbl {
+  font-size: .68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin-top: .25rem;
+  opacity: .7;
+}
+.st1 { background:linear-gradient(135deg,#eef2ff,#e0e7ff); color:#3730a3; }
+.st2 { background:linear-gradient(135deg,#fffbeb,#fef3c7); color:#92400e; }
+.st3 { background:linear-gradient(135deg,#ecfeff,#cffafe); color:#0e7490; }
+.st4 { background:linear-gradient(135deg,#f5f3ff,#ede9fe); color:#5b21b6; }
+.st5 { background:linear-gradient(135deg,#ecfeff,#cffafe); color:#0e7490; }
+.st6 { background:linear-gradient(135deg,#fff1f2,#ffe4e6); color:#9f1239; }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="page-header">
-  <div>
+
+<!-- Hero banner -->
+<div class="dash-hero">
+  <div class="dash-hero-text">
     <h1>Good day, {{ request.session.name }} 👋</h1>
-    <p style="color:var(--text-3);font-size:.82rem;margin-top:.2rem;margin-bottom:0;">
-      Here's what's happening in your department today.
-    </p>
+    <p>Here's your department overview for today.</p>
   </div>
-  <span class="badge-role">
-    <i class="bi bi-shield-check me-1"></i>HOD
-  </span>
-</div>
-
-<!-- Core stats -->
-<div class="row g-3 mb-3">
-  <div class="col-6 col-md-4">
-    <div class="stat-card h-100">
-      <div class="stat-icon purple"><i class="bi bi-person-badge"></i></div>
-      <div class="stat-info">
-        <div class="stat-value">{{ total_teachers }}</div>
-        <div class="stat-label">Teachers</div>
-      </div>
+  <div class="d-flex gap-2 flex-wrap" style="position:relative;z-index:1;">
+    <div class="dash-hero-badge">
+      <div class="badge-val">{{ total_teachers }}</div>
+      <div class="badge-lbl">Teachers</div>
     </div>
-  </div>
-  <div class="col-6 col-md-4">
-    <div class="stat-card h-100">
-      <div class="stat-icon cyan"><i class="bi bi-building"></i></div>
-      <div class="stat-info">
-        <div class="stat-value">{{ total_classes }}</div>
-        <div class="stat-label">Classes</div>
-      </div>
+    <div class="dash-hero-badge">
+      <div class="badge-val">{{ total_classes }}</div>
+      <div class="badge-lbl">Classes</div>
     </div>
-  </div>
-  <div class="col-6 col-md-4">
-    <div class="stat-card h-100">
-      <div class="stat-icon amber"><i class="bi bi-book"></i></div>
-      <div class="stat-info">
-        <div class="stat-value">{{ total_subjects }}</div>
-        <div class="stat-label">Subjects</div>
-      </div>
+    <div class="dash-hero-badge">
+      <div class="badge-val">{{ total_subjects }}</div>
+      <div class="badge-lbl">Subjects</div>
     </div>
   </div>
 </div>
 
-<!-- Feature stats -->
+<!-- Metric cards row -->
 <div class="row g-3 mb-4">
-  <div class="col-12 col-sm-4">
-    <a href="{% url 'event_list' %}" class="text-decoration-none">
-      <div class="stat-card h-100" style="border-top:3px solid var(--violet);">
-        <div class="stat-icon violet"><i class="bi bi-calendar-event"></i></div>
-        <div class="stat-info">
-          <div class="stat-value" style="color:var(--violet);">{{ upcoming_events }}</div>
-          <div class="stat-label">Upcoming Events</div>
-        </div>
-        <i class="bi bi-arrow-right-short ms-auto" style="color:var(--text-4);font-size:1.2rem;"></i>
+  <div class="col-6 col-md-4 col-lg-2">
+    <div class="metric-card c1 h-100">
+      <div class="metric-icon"><i class="bi bi-person-badge"></i></div>
+      <div class="metric-val">{{ total_teachers }}</div>
+      <div class="metric-lbl">Teachers</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4 col-lg-2">
+    <div class="metric-card c2 h-100">
+      <div class="metric-icon"><i class="bi bi-building"></i></div>
+      <div class="metric-val">{{ total_classes }}</div>
+      <div class="metric-lbl">Classes</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4 col-lg-2">
+    <div class="metric-card c3 h-100">
+      <div class="metric-icon"><i class="bi bi-book"></i></div>
+      <div class="metric-val">{{ total_subjects }}</div>
+      <div class="metric-lbl">Subjects</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4 col-lg-2">
+    <a href="{% url 'event_list' %}" style="text-decoration:none;">
+      <div class="metric-card c4 h-100">
+        <div class="metric-icon"><i class="bi bi-calendar-event"></i></div>
+        <div class="metric-val">{{ upcoming_events }}</div>
+        <div class="metric-lbl">Events</div>
       </div>
     </a>
   </div>
-  <div class="col-12 col-sm-4">
-    <a href="{% url 'meeting_list' %}" class="text-decoration-none">
-      <div class="stat-card h-100" style="border-top:3px solid var(--cyan);">
-        <div class="stat-icon cyan"><i class="bi bi-people-fill"></i></div>
-        <div class="stat-info">
-          <div class="stat-value" style="color:var(--cyan);">{{ upcoming_meetings }}</div>
-          <div class="stat-label">Upcoming Meetings</div>
-        </div>
-        <i class="bi bi-arrow-right-short ms-auto" style="color:var(--text-4);font-size:1.2rem;"></i>
+  <div class="col-6 col-md-4 col-lg-2">
+    <a href="{% url 'meeting_list' %}" style="text-decoration:none;">
+      <div class="metric-card c5 h-100">
+        <div class="metric-icon"><i class="bi bi-people-fill"></i></div>
+        <div class="metric-val">{{ upcoming_meetings }}</div>
+        <div class="metric-lbl">Meetings</div>
       </div>
     </a>
   </div>
-  <div class="col-12 col-sm-4">
-    <a href="{% url 'work_assignment_list' %}" class="text-decoration-none">
-      <div class="stat-card h-100" style="border-top:3px solid var(--amber);">
-        <div class="stat-icon amber"><i class="bi bi-clipboard-check"></i></div>
-        <div class="stat-info">
-          <div class="stat-value" style="color:var(--amber);">{{ pending_work }}</div>
-          <div class="stat-label">Pending Work</div>
-        </div>
-        <i class="bi bi-arrow-right-short ms-auto" style="color:var(--text-4);font-size:1.2rem;"></i>
+  <div class="col-6 col-md-4 col-lg-2">
+    <a href="{% url 'work_assignment_list' %}" style="text-decoration:none;">
+      <div class="metric-card c6 h-100">
+        <div class="metric-icon"><i class="bi bi-clipboard-check"></i></div>
+        <div class="metric-val">{{ pending_work }}</div>
+        <div class="metric-lbl">Pending Work</div>
       </div>
     </a>
   </div>
@@ -89,92 +269,88 @@
 <!-- Quick Actions + Summary -->
 <div class="row g-3">
 
-  <!-- Quick actions -->
+  <!-- Quick Actions -->
   <div class="col-12 col-lg-4">
     <div class="card h-100">
       <div class="card-header-custom">
-        <h5><i class="bi bi-lightning-charge me-2" style="color:var(--amber);"></i>Quick Actions</h5>
+        <h5>
+          <i class="bi bi-lightning-charge me-2" style="color:#f59e0b;"></i>
+          Quick Actions
+        </h5>
       </div>
-      <div class="p-3 d-flex flex-column gap-2">
-        <a href="{% url 'teacher_add' %}" class="btn-primary-custom w-100 justify-content-center">
-          <i class="bi bi-person-plus"></i> Add Teacher
-        </a>
-        <a href="{% url 'class_add' %}" class="btn-primary-custom w-100 justify-content-center"
-           style="background:var(--cyan);">
-          <i class="bi bi-plus-circle"></i> Add Class
-        </a>
-        <a href="{% url 'assignment_add' %}" class="btn-primary-custom w-100 justify-content-center"
-           style="background:var(--green);">
-          <i class="bi bi-diagram-3"></i> Assign Teacher
-        </a>
-        <a href="{% url 'event_add' %}" class="btn-primary-custom w-100 justify-content-center"
-           style="background:var(--violet);">
-          <i class="bi bi-calendar-plus"></i> Add Event
-        </a>
-        <a href="{% url 'meeting_add' %}" class="btn-primary-custom w-100 justify-content-center"
-           style="background:var(--cyan);filter:brightness(.9);">
-          <i class="bi bi-people-fill"></i> Schedule Meeting
-        </a>
-        <a href="{% url 'work_assignment_add' %}" class="btn-primary-custom w-100 justify-content-center"
-           style="background:var(--amber);">
-          <i class="bi bi-clipboard-plus"></i> Assign Work
-        </a>
-        <a href="{% url 'timetable_sections' %}" class="btn-primary-custom w-100 justify-content-center"
-           style="background:var(--gray-600);">
-          <i class="bi bi-grid-3x3-gap"></i> Manage Timetable
-        </a>
+      <div class="p-3">
+        <div class="action-grid">
+          <a href="{% url 'teacher_add' %}" class="action-btn ab1">
+            <i class="bi bi-person-plus"></i> Add Teacher
+          </a>
+          <a href="{% url 'class_add' %}" class="action-btn ab2">
+            <i class="bi bi-plus-circle"></i> Add Class
+          </a>
+          <a href="{% url 'assignment_add' %}" class="action-btn ab3">
+            <i class="bi bi-diagram-3"></i> Assign
+          </a>
+          <a href="{% url 'event_add' %}" class="action-btn ab4">
+            <i class="bi bi-calendar-plus"></i> Event
+          </a>
+          <a href="{% url 'meeting_add' %}" class="action-btn ab5">
+            <i class="bi bi-people-fill"></i> Meeting
+          </a>
+          <a href="{% url 'work_assignment_add' %}" class="action-btn ab6">
+            <i class="bi bi-clipboard-plus"></i> Assign Work
+          </a>
+          <a href="{% url 'timetable_sections' %}" class="action-btn ab7">
+            <i class="bi bi-grid-3x3-gap"></i> Manage Timetable
+          </a>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Summary -->
+  <!-- Summary tiles -->
   <div class="col-12 col-lg-8">
     <div class="card h-100">
       <div class="card-header-custom">
-        <h5><i class="bi bi-bar-chart-line me-2" style="color:var(--primary);"></i>Department Summary</h5>
+        <h5>
+          <i class="bi bi-bar-chart-line me-2" style="color:var(--primary);"></i>
+          Department Summary
+        </h5>
       </div>
       <div class="p-3">
         <div class="row g-3">
           <div class="col-6 col-md-4">
-            <div class="p-3 rounded-3 text-center"
-                 style="background:var(--primary-50);border:1px solid var(--primary-100);">
-              <div style="font-size:1.6rem;font-weight:900;color:var(--primary-dark);">{{ total_teachers }}</div>
-              <div style="font-size:.75rem;color:var(--text-3);font-weight:600;text-transform:uppercase;letter-spacing:.04em;">Teachers</div>
+            <div class="summary-tile st1">
+              <div class="s-val">{{ total_teachers }}</div>
+              <div class="s-lbl">Active Teachers</div>
             </div>
           </div>
           <div class="col-6 col-md-4">
-            <div class="p-3 rounded-3 text-center"
-                 style="background:var(--amber-50);border:1px solid #fde68a;">
-              <div style="font-size:1.6rem;font-weight:900;color:var(--amber);">{{ total_classes }}</div>
-              <div style="font-size:.75rem;color:var(--text-3);font-weight:600;text-transform:uppercase;letter-spacing:.04em;">Classes</div>
+            <div class="summary-tile st2">
+              <div class="s-val">{{ total_classes }}</div>
+              <div class="s-lbl">Total Classes</div>
             </div>
           </div>
           <div class="col-6 col-md-4">
-            <div class="p-3 rounded-3 text-center"
-                 style="background:var(--cyan-50);border:1px solid #a5f3fc;">
-              <div style="font-size:1.6rem;font-weight:900;color:var(--cyan);">{{ total_subjects }}</div>
-              <div style="font-size:.75rem;color:var(--text-3);font-weight:600;text-transform:uppercase;letter-spacing:.04em;">Subjects</div>
+            <div class="summary-tile st3">
+              <div class="s-val">{{ total_subjects }}</div>
+              <div class="s-lbl">Subjects</div>
             </div>
           </div>
           <div class="col-6 col-md-4">
-            <div class="p-3 rounded-3 text-center"
-                 style="background:var(--violet-50);border:1px solid #ddd6fe;">
-              <div style="font-size:1.6rem;font-weight:900;color:var(--violet);">{{ upcoming_events }}</div>
-              <div style="font-size:.75rem;color:var(--text-3);font-weight:600;text-transform:uppercase;letter-spacing:.04em;">Upcoming Events</div>
+            <div class="summary-tile st4">
+              <div class="s-val">{{ upcoming_events }}</div>
+              <div class="s-lbl">Upcoming Events</div>
             </div>
           </div>
           <div class="col-6 col-md-4">
-            <div class="p-3 rounded-3 text-center"
-                 style="background:var(--cyan-50);border:1px solid #a5f3fc;">
-              <div style="font-size:1.6rem;font-weight:900;color:var(--cyan);">{{ upcoming_meetings }}</div>
-              <div style="font-size:.75rem;color:var(--text-3);font-weight:600;text-transform:uppercase;letter-spacing:.04em;">Upcoming Meetings</div>
+            <div class="summary-tile st5">
+              <div class="s-val">{{ upcoming_meetings }}</div>
+              <div class="s-lbl">Upcoming Meetings</div>
             </div>
           </div>
           <div class="col-6 col-md-4">
-            <div class="p-3 rounded-3 text-center"
-                 style="background:var(--rose-50);border:1px solid #fecdd3;">
-              <div style="font-size:1.6rem;font-weight:900;color:var(--rose);">{{ pending_work }}</div>
-              <div style="font-size:.75rem;color:var(--text-3);font-weight:600;text-transform:uppercase;letter-spacing:.04em;">Pending Tasks</div>
+            <div class="summary-tile st6">
+              <div class="s-val">{{ pending_work }}</div>
+              <div class="s-lbl">Pending Tasks</div>
             </div>
           </div>
         </div>

@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="page-header">
-  <h1><i class="bi bi-diagram-3 me-2"></i>Teacher Assignments</h1>
+  <h1><i class="bi bi-diagram-3 me-2" style="color:var(--primary);"></i>Teacher Assignments</h1>
   <a href="{% url 'assignment_add' %}" class="btn-primary-custom">
     <i class="bi bi-plus-lg"></i> New Assignment
   </a>
@@ -13,48 +13,53 @@
 <div class="card">
   <div class="card-header-custom">
     <h5>All Assignments ({{ assignments|length }})</h5>
-    <input type="text" id="table-search" class="form-control-custom"
-           placeholder="Search…" style="max-width:220px;">
+    <input type="text" id="table-search" class="form-control-custom" placeholder="Search…" style="max-width:220px;">
   </div>
   <div class="table-container">
     <table class="data-table">
       <thead>
-        <tr>
-          <th>#</th>
-          <th>Teacher</th>
-          <th>Class</th>
-          <th>Subject</th>
-          <th>Code</th>
-          <th>Actions</th>
-        </tr>
+        <tr><th>#</th><th>Teacher</th><th>Class</th><th>Subject</th><th class="hide-mobile">Code</th><th>Actions</th></tr>
       </thead>
       <tbody>
         {% for a in assignments %}
         <tr class="searchable-row">
-          <td class="text-muted-custom">{{ forloop.counter }}</td>
-          <td class="fw-700"><i class="bi bi-person-badge me-1 text-muted-custom"></i>{{ a.teacher }}</td>
+          <td style="color:var(--text-4);">{{ forloop.counter }}</td>
+          <td class="fw-700"><i class="bi bi-person-badge me-1" style="color:var(--text-4);"></i>{{ a.teacher }}</td>
           <td>
-            <span style="background:#ede9fe;color:#5b21b6;padding:.2rem .6rem;border-radius:.4rem;font-size:.8rem;font-weight:600;">
+            <span style="background:var(--primary-100);color:var(--primary-dark);padding:.2rem .6rem;border-radius:.4rem;font-size:.8rem;font-weight:700;">
               {{ a.class_name }}
             </span>
           </td>
           <td>{{ a.subject }}</td>
-          <td><code>{{ a.subject_code }}</code></td>
+          <td class="hide-mobile"><code style="background:var(--gray-100);padding:.15rem .45rem;border-radius:.3rem;font-size:.78rem;">{{ a.subject_code }}</code></td>
           <td>
-            <a href="{% url 'assignment_delete' a.id %}" class="btn-sm-icon btn-delete" title="Remove">
-              <i class="bi bi-trash"></i>
-            </a>
+            <div class="d-flex gap-1">
+              <button class="btn-sm-icon btn-view" title="View"
+                      data-bs-toggle="modal" data-bs-target="#viewModal"
+                      onclick="viewDetails('Assignment Details',[['Teacher','{{ a.teacher|escapejs }}'],['Class','{{ a.class_name|escapejs }}'],['Subject','{{ a.subject|escapejs }}'],['Subject Code','{{ a.subject_code|escapejs }}']])">
+                <i class="bi bi-eye"></i>
+              </button>
+              <a href="{% url 'assignment_delete' a.id %}" class="btn-sm-icon btn-delete" title="Remove">
+                <i class="bi bi-trash"></i>
+              </a>
+            </div>
           </td>
         </tr>
         {% empty %}
-        <tr>
-          <td colspan="6" class="text-center py-4 text-muted-custom">
-            No assignments yet. <a href="{% url 'assignment_add' %}">Assign a teacher</a>.
-          </td>
-        </tr>
+        <tr><td colspan="6" class="text-center py-4" style="color:var(--text-3);">No assignments yet. <a href="{% url 'assignment_add' %}">Assign a teacher</a>.</td></tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
 </div>
+
+{% include "attendance/hod/_view_modal.html" %}
 {% endblock %}
+{% block extra_js %}<script>
+function viewDetails(title, rows) {
+  document.getElementById('view-modal-title').textContent = title;
+  var html = '';
+  rows.forEach(function(r){ if(r[1]) html += '<div class="view-row"><span class="view-label">'+r[0]+'</span><span class="view-val">'+r[1]+'</span></div>'; });
+  document.getElementById('view-modal-body').innerHTML = html || '<div class="p-4 text-center" style="color:var(--text-3);">No details.</div>';
+}
+</script>{% endblock %}

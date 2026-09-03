@@ -58,16 +58,16 @@
   </div>
 </div>
 
-<!-- UG Events -->
-{% with ug_events=events|dictsort:"start_date" %}
 <div class="row g-3 mb-3">
 
-  <!-- UG Section -->
+  <!-- UG Events -->
   <div class="col-12 col-lg-6">
     <div class="card h-100">
       <div class="card-header-custom" style="background:#ede9fe;">
-        <h5><span style="background:#7c3aed;color:#fff;padding:.2rem .6rem;border-radius:.35rem;font-size:.8rem;margin-right:.5rem;">UG</span>Under Graduate Events</h5>
-        <span class="text-muted-custom">{{ events|length }} total</span>
+        <h5>
+          <span style="background:#7c3aed;color:#fff;padding:.2rem .6rem;border-radius:.35rem;font-size:.8rem;margin-right:.5rem;">UG</span>
+          Under Graduate Events
+        </h5>
       </div>
       <div class="table-container">
         <table class="data-table">
@@ -80,22 +80,28 @@
             <tr>
               <td>
                 <div class="fw-700">{{ e.title }}</div>
-                {% if e.is_next_year %}<span style="background:#fef3c7;color:#92400e;padding:.1rem .4rem;border-radius:.3rem;font-size:.7rem;">Next Year Plan</span>{% endif %}
+                {% if e.is_next_year %}<span style="background:#fef3c7;color:#92400e;padding:.1rem .4rem;border-radius:.3rem;font-size:.7rem;">Next Year</span>{% endif %}
               </td>
-              <td>
-                <span style="background:#e0f2fe;color:#0c4a6e;padding:.15rem .5rem;border-radius:.3rem;font-size:.75rem;">
-                  {{ e.get_event_type_display }}
-                </span>
-              </td>
+              <td><span style="background:#e0f2fe;color:#0c4a6e;padding:.15rem .5rem;border-radius:.3rem;font-size:.75rem;">{{ e.get_event_type_display }}</span></td>
               <td style="white-space:nowrap;font-size:.82rem;">
                 {{ e.start_date }}
-                {% if e.end_date and e.end_date != e.start_date %}
-                <br><span class="text-muted-custom">→ {{ e.end_date }}</span>
-                {% endif %}
+                {% if e.end_date and e.end_date != e.start_date %}<br><span style="color:var(--text-3);">→ {{ e.end_date }}</span>{% endif %}
               </td>
               <td><code style="font-size:.78rem;">{{ e.academic_year }}</code></td>
               <td>
                 <div class="d-flex gap-1">
+                  <button class="btn-sm-icon btn-view" title="View"
+                          data-bs-toggle="modal" data-bs-target="#viewModal"
+                          data-title="{{ e.title }}"
+                          data-r0="{{ e.title }}"
+                          data-r1="{{ e.get_event_type_display }}"
+                          data-r2="{{ e.programme }}"
+                          data-r3="{{ e.start_date }}"
+                          data-r4="{{ e.end_date|default:'' }}"
+                          data-r5="{{ e.academic_year }}"
+                          data-r6="{{ e.description }}">
+                    <i class="bi bi-eye"></i>
+                  </button>
                   <a href="{% url 'event_edit' e.pk %}" class="btn-sm-icon btn-edit"><i class="bi bi-pencil"></i></a>
                   <a href="{% url 'event_delete' e.pk %}" class="btn-sm-icon btn-delete"><i class="bi bi-trash"></i></a>
                 </div>
@@ -103,7 +109,7 @@
             </tr>
             {% endif %}
             {% empty %}
-            <tr><td colspan="5" class="text-center py-3 text-muted-custom">No UG events.</td></tr>
+            <tr><td colspan="5" class="text-center py-3" style="color:var(--text-3);">No UG events.</td></tr>
             {% endfor %}
           </tbody>
         </table>
@@ -111,11 +117,14 @@
     </div>
   </div>
 
-  <!-- PG Section -->
+  <!-- PG Events -->
   <div class="col-12 col-lg-6">
     <div class="card h-100">
       <div class="card-header-custom" style="background:#d1fae5;">
-        <h5><span style="background:#059669;color:#fff;padding:.2rem .6rem;border-radius:.35rem;font-size:.8rem;margin-right:.5rem;">PG</span>Post Graduate Events</h5>
+        <h5>
+          <span style="background:#059669;color:#fff;padding:.2rem .6rem;border-radius:.35rem;font-size:.8rem;margin-right:.5rem;">PG</span>
+          Post Graduate Events
+        </h5>
       </div>
       <div class="table-container">
         <table class="data-table">
@@ -128,20 +137,28 @@
             <tr>
               <td>
                 <div class="fw-700">{{ e.title }}</div>
-                {% if e.is_next_year %}<span style="background:#fef3c7;color:#92400e;padding:.1rem .4rem;border-radius:.3rem;font-size:.7rem;">Next Year Plan</span>{% endif %}
+                {% if e.is_next_year %}<span style="background:#fef3c7;color:#92400e;padding:.1rem .4rem;border-radius:.3rem;font-size:.7rem;">Next Year</span>{% endif %}
               </td>
-              <td>
-                <span style="background:#e0f2fe;color:#0c4a6e;padding:.15rem .5rem;border-radius:.3rem;font-size:.75rem;">
-                  {{ e.get_event_type_display }}
-                </span>
-              </td>
+              <td><span style="background:#e0f2fe;color:#0c4a6e;padding:.15rem .5rem;border-radius:.3rem;font-size:.75rem;">{{ e.get_event_type_display }}</span></td>
               <td style="white-space:nowrap;font-size:.82rem;">
                 {{ e.start_date }}
-                {% if e.end_date and e.end_date != e.start_date %}<br><span class="text-muted-custom">→ {{ e.end_date }}</span>{% endif %}
+                {% if e.end_date and e.end_date != e.start_date %}<br><span style="color:var(--text-3);">→ {{ e.end_date }}</span>{% endif %}
               </td>
               <td><code style="font-size:.78rem;">{{ e.academic_year }}</code></td>
               <td>
                 <div class="d-flex gap-1">
+                  <button class="btn-sm-icon btn-view" title="View"
+                          data-bs-toggle="modal" data-bs-target="#viewModal"
+                          data-title="{{ e.title }}"
+                          data-r0="{{ e.title }}"
+                          data-r1="{{ e.get_event_type_display }}"
+                          data-r2="{{ e.programme }}"
+                          data-r3="{{ e.start_date }}"
+                          data-r4="{{ e.end_date|default:'' }}"
+                          data-r5="{{ e.academic_year }}"
+                          data-r6="{{ e.description }}">
+                    <i class="bi bi-eye"></i>
+                  </button>
                   <a href="{% url 'event_edit' e.pk %}" class="btn-sm-icon btn-edit"><i class="bi bi-pencil"></i></a>
                   <a href="{% url 'event_delete' e.pk %}" class="btn-sm-icon btn-delete"><i class="bi bi-trash"></i></a>
                 </div>
@@ -149,7 +166,7 @@
             </tr>
             {% endif %}
             {% empty %}
-            <tr><td colspan="5" class="text-center py-3 text-muted-custom">No PG events.</td></tr>
+            <tr><td colspan="5" class="text-center py-3" style="color:var(--text-3);">No PG events.</td></tr>
             {% endfor %}
           </tbody>
         </table>
@@ -157,5 +174,23 @@
     </div>
   </div>
 </div>
-{% endwith %}
+
+{% include "attendance/hod/_view_modal.html" %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+var eLabels = ['Title','Type','Programme','Start Date','End Date','Academic Year','Description'];
+document.querySelectorAll('[data-bs-target="#viewModal"]').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var title = this.getAttribute('data-title');
+    var vals  = [this.dataset.r0,this.dataset.r1,this.dataset.r2,this.dataset.r3,
+                 this.dataset.r4,this.dataset.r5,this.dataset.r6];
+    document.getElementById('view-modal-title').textContent = title;
+    var html = '';
+    eLabels.forEach(function(l,i){ if(vals[i]) html += '<div class="view-row"><span class="view-label">'+l+'</span><span class="view-val">'+vals[i]+'</span></div>'; });
+    document.getElementById('view-modal-body').innerHTML = html || '<div class="p-4 text-center" style="color:var(--text-3);">No details.</div>';
+  });
+});
+</script>
 {% endblock %}

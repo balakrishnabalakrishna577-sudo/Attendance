@@ -34,7 +34,8 @@
           <td>
             <div class="d-flex gap-1">
               <button class="btn-sm-icon btn-view" title="View"
-                      onclick="showModal('teacher','{{ t.name|escapejs }}','{{ t.department|default:''|escapejs }}','{{ t.email|default:''|escapejs }}','{{ t.phone|default:''|escapejs }}','')">
+                      data-bs-toggle="modal" data-bs-target="#viewModal"
+                      onclick="viewDetails('{{ t.name|escapejs }}', [['Name','{{ t.name|escapejs }}'],['Department','{{ t.department|default:''|escapejs }}'],['Email','{{ t.email|default:''|escapejs }}'],['Phone','{{ t.phone|default:''|escapejs }}']])">
                 <i class="bi bi-eye"></i>
               </button>
               <a href="{% url 'teacher_profile' t.id %}" class="btn-sm-icon" style="background:var(--violet-50);color:var(--violet);" title="Profile"><i class="bi bi-person-lines-fill"></i></a>
@@ -51,18 +52,15 @@
   </div>
 </div>
 
-<!-- View Modal -->
 {% include "attendance/hod/_view_modal.html" %}
 {% endblock %}
 {% block extra_js %}<script>
-function showModal(type,f1,f2,f3,f4,f5){
-  var labels={'teacher':['Name','Department','Email','Phone','']};
-  var vals=[f1,f2,f3,f4,f5];
-  var lb=labels[type]||['','','','',''];
-  var html='';
-  for(var i=0;i<lb.length;i++){if(lb[i]&&vals[i])html+='<div class="view-row"><span class="view-label">'+lb[i]+'</span><span class="view-val">'+vals[i]+'</span></div>';}
-  document.getElementById('view-modal-title').textContent=f1;
-  document.getElementById('view-modal-body').innerHTML=html;
-  new bootstrap.Modal(document.getElementById('viewModal')).show();
+function viewDetails(title, rows) {
+  document.getElementById('view-modal-title').textContent = title;
+  var html = '';
+  rows.forEach(function(r) {
+    if (r[1]) html += '<div class="view-row"><span class="view-label">'+r[0]+'</span><span class="view-val">'+r[1]+'</span></div>';
+  });
+  document.getElementById('view-modal-body').innerHTML = html || '<div class="p-4 text-center" style="color:var(--text-3);">No details available.</div>';
 }
 </script>{% endblock %}
