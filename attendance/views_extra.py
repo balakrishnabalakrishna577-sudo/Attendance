@@ -653,3 +653,65 @@ def teacher_timetable(request):
         'slots': slots,
     }
     return render(request, 'attendance/teacher/timetable.html', ctx)
+
+
+# ══════════════════════════════════════════════════════════
+# ── TIMETABLE PDF (printable page) ────────────────────────
+# ══════════════════════════════════════════════════════════
+
+@hod_required
+def timetable_pdf(request, class_id):
+    """Render a printable/PDF-ready timetable page."""
+    cls = db.get_class(class_id)
+    if not cls:
+        from django.contrib import messages
+        messages.error(request, 'Class not found.')
+        return redirect('timetable_sections')
+
+    year   = request.GET.get('year', '2025-26')
+    slots  = TimetableSlot.objects.filter(class_id=class_id, academic_year=year)
+    days   = [d[0] for d in TimetableSlot._meta.get_field('day').choices]
+    hours  = [h[0] for h in TimetableSlot._meta.get_field('hour').choices]
+
+    # Hour timing labels
+    hour_times = {
+        '1': ('09:00 AM', '10:00 AM'),
+        '2': ('10:00 AM', '11:00 AM'),
+        '3': ('11:15 AM', '12:15 PM'),
+        '4': ('12:15 PM', '01:15 PM'),
+        '5': ('02:00 PM', '03:00 PM'),
+        '6': ('03:00 PM', '04:00 PM'),
+    }
+
+    # Build grid
+    grid = {day: {hour: None for hour in hours} for day in days}
+    for s in slots:
+        grid[s.day][s.hour] = s
+
+    # Subject-faculty summary (unique subject+teacher combos)
+    seen = set()
+    summary = []
+    for s in slots:
+        key = (s.subject_id, s.teacher_id)
+        if key not in seen:
+            seen.add(key)
+            # Count hours for this subject
+            count = slots.filter(subject_id=s.subject_id).count()
+            summary.append({
+                'subject': s.subject_name,
+                'teacher': s.teacher_name,
+                'hours':   count,
+            })
+    summary.sort(key=lambda x: x['subject'])
+
+    ctx = {
+        'cls':        cls,
+        'year':       year,
+        'slots':      slots,
+        'days':       days,
+        'hours':      hours,
+        'hour_times': hour_times,
+        'grid':       grid,
+        'summary':    summary,
+    }
+    return render(request, 'attendance/hod/timetable_pdf.html', ctx)

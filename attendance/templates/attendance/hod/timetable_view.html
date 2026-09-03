@@ -31,6 +31,11 @@
       <i class="bi bi-plus-lg"></i>
       <span class="d-none d-sm-inline">Add Slot</span>
     </a>
+    <a href="{% url 'timetable_pdf' cls.id %}?year={{ year }}" class="btn-primary-custom"
+       style="background:var(--rose);" target="_blank">
+      <i class="bi bi-file-earmark-pdf"></i>
+      <span class="d-none d-sm-inline">Download PDF</span>
+    </a>
     <a href="{% url 'timetable_sections' %}" class="btn-primary-custom"
        style="background:var(--gray-500);">
       <i class="bi bi-arrow-left"></i>

@@ -63,6 +63,7 @@ urlpatterns = [
     # ── Timetable (HOD) ───────────────────────────────────
     path('hod/timetable/',                       views_extra.timetable_sections,    name='timetable_sections'),
     path('hod/timetable/<str:class_id>/',        views_extra.timetable_view,        name='timetable_view'),
+    path('hod/timetable/<str:class_id>/pdf/',    views_extra.timetable_pdf,         name='timetable_pdf'),
     path('hod/timetable/<str:class_id>/add/',    views_extra.timetable_slot_add,    name='timetable_slot_add'),
     path('hod/timetable/slot/<int:pk>/edit/',    views_extra.timetable_slot_edit,   name='timetable_slot_edit'),
     path('hod/timetable/slot/<int:pk>/delete/',  views_extra.timetable_slot_delete, name='timetable_slot_delete'),

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Timetable — {{ cls.name }} ({{ year }})</title>
+  <style>
+    /* ── Base reset ─────────────────────────── */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Times New Roman', Times, serif;
+      font-size: 11pt;
+      color: #000;
+      background: #fff;
+      padding: 20px;
+    }
+
+    /* ── Print settings ─────────────────────── */
+    @page {
+      size: A4 landscape;
+      margin: 15mm 10mm;
+    }
+    @media print {
+      body { padding: 0; }
+      .no-print { display: none !important; }
+      .page-break { page-break-before: always; }
+    }
+
+    /* ── Download button (screen only) ──────── */
+    .no-print {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .btn-download {
+      background: #4f46e5;
+      color: #fff;
+      border: none;
+      padding: 10px 28px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Segoe UI', sans-serif;
+      margin-right: 8px;
+    }
+    .btn-back {
+      background: #64748b;
+      color: #fff;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Segoe UI', sans-serif;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    /* ── Paper container ─────────────────────── */
+    .paper {
+      max-width: 1050px;
+      margin: 0 auto;
+      border: 2px solid #000;
+    }
+
+    /* ── Institution header ──────────────────── */
+    .inst-header {
+      display: flex;
+      align-items: center;
+      border-bottom: 2px solid #000;
+      padding: 8px 12px;
+      gap: 12px;
+    }
+    .inst-logo {
+      width: 70px; height: 70px;
+      border: 1px solid #ccc;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 700; color: #4f46e5; text-align: center;
+      flex-shrink: 0;
+      background: #eef2ff;
+    }
+    .inst-info { flex: 1; text-align: center; }
+    .inst-name {
+      font-size: 18pt;
+      font-weight: 900;
+      letter-spacing: .02em;
+      line-height: 1.2;
+    }
+    .inst-sub {
+      font-size: 9.5pt;
+      color: #333;
+      margin-top: 2px;
+    }
+    .inst-badge {
+      background: #000;
+      color: #fff;
+      padding: 3px 16px;
+      display: inline-block;
+      font-size: 10.5pt;
+      font-weight: 700;
+      margin-top: 5px;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    /* ── Meta row ────────────────────────────── */
+    .meta-table {
+      width: 100%;
+      border-collapse: collapse;
+      border-bottom: 1.5px solid #000;
+      font-size: 10pt;
+    }
+    .meta-table td {
+      padding: 4px 10px;
+      border-right: 1px solid #000;
+    }
+    .meta-table td:last-child { border-right: none; }
+    .meta-label { font-weight: 700; width: 100px; }
+
+    /* ── Timetable grid ─────────────────────── */
+    .tt-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 9pt;
+    }
+    .tt-table th, .tt-table td {
+      border: 1px solid #000;
+      padding: 4px 5px;
+      text-align: center;
+      vertical-align: middle;
+    }
+    .tt-table th {
+      background: #f0f0f0;
+      font-weight: 700;
+    }
+    .tt-table .header-period { background: #e8e8e8; font-weight: 700; font-size: 9.5pt; }
+    .tt-table .header-time   { font-size: 8pt; font-weight: 600; color: #333; }
+    .tt-table .day-cell      { font-weight: 700; background: #f5f5f5; text-align: left; padding-left: 8px; }
+    .tt-table .break-cell    { background: #f9f9f9; writing-mode: vertical-rl; font-weight: 700; font-size: 8pt; letter-spacing: .1em; }
+    .tt-table .subject-cell  { font-weight: 700; font-size: 9pt; }
+    .tt-table .teacher-cell  { font-size: 8pt; color: #333; }
+    .empty-cell              { background: #fafafa; }
+
+    /* ── Subject-Faculty table ──────────────── */
+    .sf-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 10pt;
+      margin-top: 0;
+    }
+    .sf-table th {
+      background: #e0e0e0;
+      font-weight: 700;
+      border: 1px solid #000;
+      padding: 5px 8px;
+      text-align: center;
+    }
+    .sf-table td {
+      border: 1px solid #000;
+      padding: 5px 8px;
+    }
+    .sf-table .sl-col { text-align: center; width: 50px; }
+    .sf-table .hrs-col { text-align: center; width: 80px; }
+
+    /* ── Signature row ──────────────────────── */
+    .sig-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding: 18px 20px 8px;
+      border-top: 1.5px solid #000;
+      font-size: 9.5pt;
+    }
+    .sig-block { text-align: center; }
+    .sig-line {
+      border-top: 1px solid #000;
+      width: 160px;
+      margin: 30px auto 4px;
+    }
+    .sig-label { font-weight: 700; }
+  </style>
+</head>
+<body>
+
+<!-- Download / Back buttons (screen only) -->
+<div class="no-print">
+  <button class="btn-download" onclick="window.print()">
+    ⬇ Download / Print PDF
+  </button>
+  <a class="btn-back" href="javascript:history.back()">← Back</a>
+</div>
+
+<div class="paper">
+
+  <!-- Institution Header -->
+  <div class="inst-header">
+    <div class="inst-logo">
+      <div>BCA<br>&amp;<br>MCA</div>
+    </div>
+    <div class="inst-info">
+      <div class="inst-name">Department of Computer Applications</div>
+      <div class="inst-sub">BCA &amp; MCA Programme</div>
+      <div class="inst-badge">Class Time Table</div>
+    </div>
+    <div class="inst-logo">
+      <div style="font-size:9px;font-weight:700;color:#10b981;">DEPT<br>WORK<br>AUTO</div>
+    </div>
+  </div>
+
+  <!-- Meta info -->
+  <table class="meta-table">
+    <tr>
+      <td><span class="meta-label">Department</span> Computer Applications</td>
+      <td><span class="meta-label">Class / Section</span> {{ cls.name }}</td>
+      <td><span class="meta-label">Semester</span> {{ cls.name }}</td>
+    </tr>
+    <tr>
+      <td><span class="meta-label">Academic Year</span> {{ year }}</td>
+      <td><span class="meta-label">Total Slots</span> {{ slots|length }}</td>
+      <td><span class="meta-label">Class Coordinator</span> &nbsp;</td>
+    </tr>
+  </table>
+
+  <!-- Timetable Grid -->
+  <table class="tt-table">
+    <thead>
+      <tr>
+        <th style="width:70px;">Period</th>
+        <th class="header-period">I</th>
+        <th class="header-period">II</th>
+        <th class="break-cell" rowspan="2" style="width:30px;">SHORT<br>BREAK</th>
+        <th class="header-period">III</th>
+        <th class="header-period">IV</th>
+        <th class="break-cell" rowspan="2" style="width:30px;">LUNCH<br>BREAK</th>
+        <th class="header-period">V</th>
+        <th class="header-period">VI</th>
+      </tr>
+      <tr>
+        <th class="header-time">Day / Time</th>
+        <th class="header-time">09:00 AM<br>10:00 AM</th>
+        <th class="header-time">10:00 AM<br>11:00 AM</th>
+        <th class="header-time">11:15 AM<br>12:15 PM</th>
+        <th class="header-time">12:15 PM<br>01:15 PM</th>
+        <th class="header-time">02:00 PM<br>03:00 PM</th>
+        <th class="header-time">03:00 PM<br>04:00 PM</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for day in days %}
+      <tr>
+        <td class="day-cell">{{ day }}</td>
+        {% for hour in hours %}
+        {% if hour == '3' %}
+          {% if forloop.first %}<td class="break-cell" rowspan="{{ days|length }}">S<br>H<br>O<br>R<br>T</td>{% endif %}
+        {% endif %}
+        {% if hour == '5' %}
+          {% if forloop.first %}<td class="break-cell" rowspan="{{ days|length }}">L<br>U<br>N<br>C<br>H</td>{% endif %}
+        {% endif %}
+        {% with slot=grid|default:{} %}
+        <td>
+          {% for s in slots %}{% if s.day == day and s.hour == hour %}
+          <div class="subject-cell">{{ s.subject_name }}</div>
+          <div class="teacher-cell">{{ s.teacher_name }}</div>
+          {% endif %}{% endfor %}
+        </td>
+        {% endwith %}
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- Subject-Faculty Summary Table -->
+  {% if summary %}
+  <table class="sf-table">
+    <thead>
+      <tr>
+        <th class="sl-col">SL.NO</th>
+        <th>Course Name</th>
+        <th class="hrs-col">No. of Hrs.</th>
+        <th>Faculty Name</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in summary %}
+      <tr>
+        <td class="sl-col">{{ forloop.counter }}.</td>
+        <td>{{ item.subject }}</td>
+        <td class="hrs-col">{{ item.hours }}</td>
+        <td>{{ item.teacher }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+
+  <!-- Signature row -->
+  <div class="sig-row">
+    <div class="sig-block">
+      <div class="sig-line"></div>
+      <div class="sig-label">Prepared by Timetable committee:</div>
+    </div>
+    <div class="sig-block">
+      <div class="sig-line"></div>
+      <div class="sig-label">Verified by HOD:</div>
+    </div>
+    <div class="sig-block">
+      <div class="sig-line"></div>
+      <div class="sig-label">Approved by Principal:</div>
+    </div>
+  </div>
+
+</div><!-- /paper -->
+
+</body>
+</html>
