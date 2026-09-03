@@ -99,18 +99,31 @@ function initActiveNav() {
 
 // ── Sidebar desktop collapse ───────────────────────────
 function initSidebarCollapse() {
-  var wrapper   = document.getElementById('app-wrapper');
+  var wrapper     = document.getElementById('app-wrapper');
   var collapseBtn = document.getElementById('sidebar-collapse-btn');
   if (!collapseBtn || !wrapper) return;
 
+  // Set data-label on every nav link (text content stripped)
+  document.querySelectorAll('.sidebar-nav a').forEach(function (a) {
+    if (!a.getAttribute('data-label')) {
+      var clone = a.cloneNode(true);
+      // Remove icon element to get just the text
+      var icon = clone.querySelector('i');
+      if (icon) icon.remove();
+      var label = clone.textContent.trim().replace(/\s+/g, ' ');
+      if (label) a.setAttribute('data-label', label);
+    }
+  });
+
   // Restore saved state
-  var saved = localStorage.getItem('sidebar-collapsed');
-  if (saved === '1') wrapper.classList.add('sidebar-collapsed');
+  if (localStorage.getItem('sidebar-collapsed') === '1') {
+    wrapper.classList.add('sidebar-collapsed');
+  }
 
   collapseBtn.addEventListener('click', function () {
     wrapper.classList.toggle('sidebar-collapsed');
-    var isCollapsed = wrapper.classList.contains('sidebar-collapsed');
-    localStorage.setItem('sidebar-collapsed', isCollapsed ? '1' : '0');
+    localStorage.setItem('sidebar-collapsed',
+      wrapper.classList.contains('sidebar-collapsed') ? '1' : '0');
   });
 }
 

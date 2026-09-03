@@ -1046,53 +1046,77 @@ textarea.form-control-custom { resize: vertical; min-height: 80px; }
   padding: 0;
 }
 .sidebar-collapse-btn:hover { background: rgba(255,255,255,.16); color: #fff; }
-.sidebar-collapse-btn i { font-size: .75rem; transition: transform .28s; }
+.sidebar-collapse-btn i { font-size: .75rem; transition: transform .3s; }
 
-/* Collapsed state */
+/* ── COLLAPSED STATE ─────────────────────────────────── */
 .app-wrapper.sidebar-collapsed .sidebar {
-  width: 64px;
-  min-width: 64px;
-  max-width: 64px;
+  width: 62px !important;
+  min-width: 62px !important;
+  max-width: 62px !important;
+  overflow: hidden;
 }
 .app-wrapper.sidebar-collapsed .main-content {
-  margin-left: 64px;
-  width: calc(100% - 64px);
+  margin-left: 62px !important;
+  width: calc(100% - 62px) !important;
 }
-.app-wrapper.sidebar-collapsed .brand-text,
-.app-wrapper.sidebar-collapsed .sidebar-user-info,
-.app-wrapper.sidebar-collapsed .sidebar-nav a span,
-.app-wrapper.sidebar-collapsed .sidebar-section {
-  display: none !important;
-}
+
+/* Hide text elements */
+.app-wrapper.sidebar-collapsed .brand-text          { display: none !important; }
+.app-wrapper.sidebar-collapsed .sidebar-user-info   { display: none !important; }
+.app-wrapper.sidebar-collapsed .sidebar-section     { display: none !important; }
+
+/* Brand: center icon only */
 .app-wrapper.sidebar-collapsed .sidebar-brand {
   justify-content: center;
-  padding: 1rem .75rem;
+  padding: 1rem .5rem;
+  gap: 0;
 }
 .app-wrapper.sidebar-collapsed .sidebar-collapse-btn {
   margin-left: 0;
+  position: absolute;
+  right: 6px;
+  top: 12px;
 }
 .app-wrapper.sidebar-collapsed .sidebar-collapse-btn i {
   transform: rotate(180deg);
 }
+
+/* Nav links: icon only, centered */
+.app-wrapper.sidebar-collapsed .sidebar-nav {
+  padding: .5rem 0;
+}
 .app-wrapper.sidebar-collapsed .sidebar-nav a {
   justify-content: center;
-  padding: .62rem 0;
-  margin: .08rem .5rem;
+  padding: .65rem 0;
+  margin: .06rem .5rem;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  white-space: nowrap;
 }
 .app-wrapper.sidebar-collapsed .sidebar-nav a i {
   width: auto;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
+  margin: 0;
 }
+/* Hide all text nodes inside nav links */
+.app-wrapper.sidebar-collapsed .sidebar-nav a > :not(i) {
+  display: none !important;
+}
+
+/* Footer: center avatar only */
 .app-wrapper.sidebar-collapsed .sidebar-footer {
   padding: .75rem .5rem;
   display: flex;
   justify-content: center;
 }
+.app-wrapper.sidebar-collapsed .sidebar-user {
+  justify-content: center;
+}
 .app-wrapper.sidebar-collapsed .sidebar-avatar {
-  width: 36px; height: 36px;
+  width: 34px; height: 34px;
 }
 
-/* Tooltip for collapsed nav items */
+/* Tooltip on hover for collapsed nav */
 .app-wrapper.sidebar-collapsed .sidebar-nav a {
   position: relative;
 }
@@ -1111,8 +1135,9 @@ textarea.form-control-custom { resize: vertical; min-height: 80px; }
   white-space: nowrap;
   pointer-events: none;
   opacity: 0;
-  transition: opacity .15s;
   z-index: 9999;
+  transition: opacity .15s;
+  box-shadow: 0 4px 12px rgba(0,0,0,.2);
 }
 .app-wrapper.sidebar-collapsed .sidebar-nav a:hover::after { opacity: 1; }
 
@@ -1133,6 +1158,26 @@ textarea.form-control-custom { resize: vertical; min-height: 80px; }
   justify-content: center;
 }
 .sidebar-toggle-btn:hover { background: rgba(255,255,255,.15); }
+
+/* Keep sidebar fixed width on mobile regardless of collapsed state */
+@media (max-width: 768px) {
+  .app-wrapper.sidebar-collapsed .sidebar {
+    width: var(--sidebar-w) !important;
+    min-width: var(--sidebar-w) !important;
+    max-width: var(--sidebar-w) !important;
+  }
+  .app-wrapper.sidebar-collapsed .main-content {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+  .app-wrapper.sidebar-collapsed .brand-text          { display: block !important; }
+  .app-wrapper.sidebar-collapsed .sidebar-user-info   { display: block !important; }
+  .app-wrapper.sidebar-collapsed .sidebar-section     { display: block !important; }
+  .app-wrapper.sidebar-collapsed .sidebar-nav a > :not(i) { display: inline !important; }
+  .app-wrapper.sidebar-collapsed .sidebar-brand { justify-content: flex-start; padding: 1.1rem 1.25rem; gap: .8rem; }
+  .app-wrapper.sidebar-collapsed .sidebar-collapse-btn { display: none !important; }
+  .app-wrapper.sidebar-collapsed .sidebar-nav a { justify-content: flex-start; padding: .52rem 1.1rem .52rem 1.25rem; margin: .08rem .75rem; }
+}
 
 /* ================================================================
    BEAUTIFUL DEPARTMENT HEADER
