@@ -97,7 +97,7 @@ button { font-family: inherit; }
 .app-wrapper { display: flex; min-height: 100vh; }
 
 /* ================================================================
-   SIDEBAR
+   SIDEBAR BASE
    ================================================================ */
 .sidebar {
   width: var(--sidebar-w);
@@ -109,15 +109,13 @@ button { font-family: inherit; }
   position: fixed;
   top: 0; left: 0;
   z-index: 1040;
-  transition: transform .28s cubic-bezier(.4,0,.2,1),
-              box-shadow .28s cubic-bezier(.4,0,.2,1);
+  transition: width .28s cubic-bezier(.4,0,.2,1),
+              min-width .28s cubic-bezier(.4,0,.2,1),
+              transform .28s cubic-bezier(.4,0,.2,1);
+  overflow: hidden;           /* KEY: prevents text overflow in both states */
   overflow-y: auto;
-  overflow-x: hidden;
   scrollbar-width: thin;
   scrollbar-color: rgba(255,255,255,.08) transparent;
-  /* force exact width — prevents collapse */
-  min-width: var(--sidebar-w);
-  max-width: var(--sidebar-w);
   flex-shrink: 0;
 }
 .sidebar::-webkit-scrollbar { width: 4px; }
@@ -188,6 +186,9 @@ button { font-family: inherit; }
   position: relative;
   margin: .08rem .75rem;
   border-radius: var(--radius-sm);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
 }
 .sidebar-nav a:hover {
   background: var(--sidebar-hover);
@@ -1054,6 +1055,7 @@ textarea.form-control-custom { resize: vertical; min-height: 80px; }
   min-width: 62px !important;
   max-width: 62px !important;
   overflow: hidden;
+  overflow-y: auto;
 }
 .app-wrapper.sidebar-collapsed .main-content {
   margin-left: 62px !important;
@@ -1067,15 +1069,16 @@ textarea.form-control-custom { resize: vertical; min-height: 80px; }
 
 /* Brand: center icon only */
 .app-wrapper.sidebar-collapsed .sidebar-brand {
-  justify-content: center;
-  padding: 1rem .5rem;
-  gap: 0;
+  justify-content: center !important;
+  padding: 1rem .5rem !important;
+  gap: 0 !important;
+  position: relative;
 }
 .app-wrapper.sidebar-collapsed .sidebar-collapse-btn {
-  margin-left: 0;
+  margin-left: 0 !important;
   position: absolute;
-  right: 6px;
-  top: 12px;
+  right: 4px;
+  top: 10px;
 }
 .app-wrapper.sidebar-collapsed .sidebar-collapse-btn i {
   transform: rotate(180deg);
@@ -1086,44 +1089,41 @@ textarea.form-control-custom { resize: vertical; min-height: 80px; }
   padding: .5rem 0;
 }
 .app-wrapper.sidebar-collapsed .sidebar-nav a {
-  justify-content: center;
-  padding: .65rem 0;
-  margin: .06rem .5rem;
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-  white-space: nowrap;
+  justify-content: center !important;
+  padding: .65rem 0 !important;
+  margin: .06rem .5rem !important;
+  overflow: hidden !important;
+  gap: 0 !important;
 }
 .app-wrapper.sidebar-collapsed .sidebar-nav a i {
-  width: auto;
-  font-size: 1.15rem;
-  margin: 0;
+  width: auto !important;
+  font-size: 1.15rem !important;
+  flex-shrink: 0;
 }
-/* Hide all text nodes inside nav links */
-.app-wrapper.sidebar-collapsed .sidebar-nav a > :not(i) {
+/* Hide ALL non-icon content inside nav links */
+.app-wrapper.sidebar-collapsed .sidebar-nav a *:not(i) {
   display: none !important;
 }
 
 /* Footer: center avatar only */
 .app-wrapper.sidebar-collapsed .sidebar-footer {
-  padding: .75rem .5rem;
-  display: flex;
-  justify-content: center;
+  padding: .75rem .5rem !important;
+  display: flex !important;
+  justify-content: center !important;
 }
 .app-wrapper.sidebar-collapsed .sidebar-user {
-  justify-content: center;
+  justify-content: center !important;
 }
 .app-wrapper.sidebar-collapsed .sidebar-avatar {
-  width: 34px; height: 34px;
+  width: 34px !important;
+  height: 34px !important;
 }
 
 /* Tooltip on hover for collapsed nav */
-.app-wrapper.sidebar-collapsed .sidebar-nav a {
-  position: relative;
-}
 .app-wrapper.sidebar-collapsed .sidebar-nav a::after {
   content: attr(data-label);
   position: absolute;
-  left: calc(100% + 10px);
+  left: calc(100% + 8px);
   top: 50%;
   transform: translateY(-50%);
   background: var(--gray-900);
