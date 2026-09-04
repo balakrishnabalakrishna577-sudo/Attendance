@@ -1,0 +1,122 @@
+{% extends "attendance/hod/base_hod.html" %}
+{% block title %}Set Class Teacher — {{ cls.name }}{% endblock %}
+{% block page_title %}Set Class Teacher{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1><i class="bi bi-person-check me-2" style="color:var(--primary);"></i>
+      Set Class Teacher — {{ cls.name }}
+    </h1>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item"><a href="{% url 'timetable_sections' %}">Sections</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'timetable_view' cls.id %}">{{ cls.name }}</a></li>
+        <li class="breadcrumb-item active">Class Teacher</li>
+      </ol>
+    </nav>
+  </div>
+  <a href="{% url 'timetable_view' cls.id %}" class="btn-primary-custom"
+     style="background:var(--gray-500);">
+    <i class="bi bi-arrow-left"></i> Back
+  </a>
+</div>
+
+<div class="row g-3">
+  <div class="col-12 col-lg-6">
+    <div class="form-card" style="max-width:100%;">
+
+      {% if existing %}
+      <div class="mb-3 p-3 rounded-3"
+           style="background:var(--primary-50);border:1px solid var(--primary-100);">
+        <div style="font-size:.76rem;font-weight:700;color:var(--text-3);
+                    text-transform:uppercase;letter-spacing:.05em;margin-bottom:.2rem;">
+          Current Class Teacher
+        </div>
+        <div class="fw-700" style="color:var(--primary-dark);font-size:1rem;">
+          <i class="bi bi-person-fill me-1"></i>{{ existing.teacher_name }}
+        </div>
+        <div style="font-size:.75rem;color:var(--text-3);">
+          Academic Year: {{ existing.academic_year }}
+        </div>
+      </div>
+      {% endif %}
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+
+        <div class="mb-3">
+          <label class="form-label-custom">
+            Class Teacher Name <span class="text-danger">*</span>
+          </label>
+          <!-- Quick select from existing teachers -->
+          <select id="teacher-quick-select"
+                  class="form-control-custom form-select-custom mb-2"
+                  onchange="document.getElementById('teacher-name-input').value=this.value">
+            <option value="">— Quick select from teachers list —</option>
+            {% for t in teachers %}
+            <option value="{{ t.name }}"
+              {% if existing and existing.teacher_name == t.name %}selected{% endif %}>
+              {{ t.name }}{% if t.department %} ({{ t.department }}){% endif %}
+            </option>
+            {% endfor %}
+          </select>
+          <input type="text" name="teacher_name" id="teacher-name-input"
+                 class="form-control-custom" required
+                 value="{{ existing.teacher_name|default:'' }}"
+                 placeholder="Or type name manually e.g. Dr. Priya Sharma">
+          <small style="color:var(--text-4);font-size:.74rem;">
+            Select from dropdown or type a custom name
+          </small>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label-custom">Academic Year</label>
+          <input type="text" name="academic_year" class="form-control-custom"
+                 value="{{ existing.academic_year|default:year }}"
+                 placeholder="e.g. 2025-26">
+        </div>
+
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn-primary-custom" style="padding:.6rem 1.5rem;">
+            <i class="bi bi-check-lg"></i>
+            {% if existing %}Update{% else %}Set{% endif %} Class Teacher
+          </button>
+          <a href="{% url 'timetable_view' cls.id %}" class="btn btn-light border">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Info panel -->
+  <div class="col-12 col-lg-6">
+    <div class="card p-4">
+      <h6 class="fw-700 mb-3" style="font-size:.9rem;">
+        <i class="bi bi-info-circle me-2" style="color:var(--cyan);"></i>
+        About Class Teacher
+      </h6>
+      <p style="font-size:.83rem;color:var(--text-3);line-height:1.7;">
+        The <strong>Class Teacher</strong> is the faculty member responsible
+        for a particular section/class. Their name will appear on:
+      </p>
+      <ul style="font-size:.83rem;color:var(--text-3);line-height:2;padding-left:1.25rem;">
+        <li>The timetable grid header</li>
+        <li>The PDF timetable download</li>
+        <li>The section info card</li>
+      </ul>
+      <div class="mt-3 p-3 rounded-3"
+           style="background:var(--primary-50);border:1px solid var(--primary-100);">
+        <div style="font-size:.8rem;color:var(--primary-dark);">
+          <i class="bi bi-building me-1"></i>
+          <strong>Section:</strong> {{ cls.name }}
+        </div>
+        {% if cls.description %}
+        <div style="font-size:.76rem;color:var(--text-3);margin-top:.2rem;">
+          {{ cls.description }}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

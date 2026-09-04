@@ -211,3 +211,24 @@ class OfficialDocument(models.Model):
         import os
         _, ext = os.path.splitext(self.file_name or str(self.file))
         return ext.lower().lstrip('.')
+
+
+class ClassTeacher(models.Model):
+    """
+    Class Teacher assigned to a section by the HOD.
+    One class teacher per class per academic year.
+    """
+    class_id      = models.CharField(max_length=50)
+    class_name    = models.CharField(max_length=200)
+    teacher_name  = models.CharField(max_length=200,
+                                     help_text='Name of the class teacher')
+    academic_year = models.CharField(max_length=20, default='2025-26')
+    created_at    = models.DateTimeField(auto_now_add=True)
+    updated_at    = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = [['class_id', 'academic_year']]
+        ordering = ['class_name']
+
+    def __str__(self):
+        return f"{self.class_name} — {self.teacher_name} ({self.academic_year})"

@@ -426,6 +426,11 @@ def timetable_view(request, class_id):
     # Distinct years for filter
     years = TimetableSlot.objects.values_list('academic_year', flat=True).distinct()
 
+    # Class teacher for this section
+    from attendance.models import ClassTeacher
+    class_teacher = ClassTeacher.objects.filter(
+        class_id=class_id, academic_year=year).first()
+
     ctx = {
         'cls': cls,
         'grid': grid,
@@ -434,6 +439,7 @@ def timetable_view(request, class_id):
         'slots': slots,
         'year': year,
         'years': years,
+        'class_teacher': class_teacher,
     }
     return render(request, 'attendance/hod/timetable_view.html', ctx)
 
@@ -687,14 +693,13 @@ def timetable_pdf(request, class_id):
     for s in slots:
         grid[s.day][s.hour] = s
 
-    # Subject-faculty summary (unique subject+teacher combos)
+    # Subject-faculty summary
     seen = set()
     summary = []
     for s in slots:
         key = (s.subject_id, s.teacher_id)
         if key not in seen:
             seen.add(key)
-            # Count hours for this subject
             count = slots.filter(subject_id=s.subject_id).count()
             summary.append({
                 'subject': s.subject_name,
@@ -703,15 +708,21 @@ def timetable_pdf(request, class_id):
             })
     summary.sort(key=lambda x: x['subject'])
 
+    # Class teacher
+    from attendance.models import ClassTeacher
+    class_teacher = ClassTeacher.objects.filter(
+        class_id=class_id, academic_year=year).first()
+
     ctx = {
-        'cls':        cls,
-        'year':       year,
-        'slots':      slots,
-        'days':       days,
-        'hours':      hours,
-        'hour_times': hour_times,
-        'grid':       grid,
-        'summary':    summary,
+        'cls':          cls,
+        'year':         year,
+        'slots':        slots,
+        'days':         days,
+        'hours':        hours,
+        'hour_times':   hour_times,
+        'grid':         grid,
+        'summary':      summary,
+        'class_teacher': class_teacher,
     }
     return render(request, 'attendance/hod/timetable_pdf.html', ctx)
 
@@ -841,3 +852,62 @@ def _doc_ctx():
         'categories':  OfficialDocument._meta.get_field('category').choices,
         'today':       __import__('datetime').date.today().isoformat(),
     }
+
+
+# ══════════════════════════════════════════════════════════
+# ── CLASS TEACHER ──────────────────────────────────────────
+# ══════════════════════════════════════════════════════════
+
+from attendance.models import ClassTeacher
+
+
+@hod_required
+def class_teacher_set(request, class_id):
+    """HOD sets or updates the class teacher for a section."""
+    cls = db.get_class(class_id)
+    if not cls:
+        messages.error(request, 'Class not found.')
+        return redirect('timetable_sections')
+
+    year = request.GET.get('year', '2025-26')
+
+    # Get existing if any
+    existing = ClassTeacher.objects.filter(
+        class_id=class_id, academic_year=year).first()
+
+    if request.method == 'POST':
+        teacher_name  = request.POST.get('teacher_name', '').strip()
+        academic_year = request.POST.get('academic_year', '2025-26').strip()
+
+        if not teacher_name:
+            messages.error(request, 'Teacher name is required.')
+            return render(request, 'attendance/hod/class_teacher_form.html', {
+                'cls': cls, 'existing': existing, 'year': year,
+                'teachers': db.get_all_teachers(),
+            })
+
+        if existing:
+            existing.teacher_name  = teacher_name
+            existing.academic_year = academic_year
+            existing.class_name    = cls['name']
+            existing.save()
+            messages.success(request,
+                f'Class teacher updated to {teacher_name} for {cls["name"]}.')
+        else:
+            ClassTeacher.objects.create(
+                class_id=class_id,
+                class_name=cls['name'],
+                teacher_name=teacher_name,
+                academic_year=academic_year,
+            )
+            messages.success(request,
+                f'{teacher_name} set as class teacher for {cls["name"]}.')
+
+        return redirect('timetable_view', class_id=class_id)
+
+    return render(request, 'attendance/hod/class_teacher_form.html', {
+        'cls': cls,
+        'existing': existing,
+        'year': year,
+        'teachers': db.get_all_teachers(),
+    })

@@ -75,11 +75,8 @@
 <div class="row g-3">
   {% for doc in docs %}
   <div class="col-12 col-sm-6 col-lg-4">
-    <div class="card h-100" style="transition:transform .15s,box-shadow .15s;"
-         onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--shadow-md)'"
-         onmouseout="this.style.transform='';this.style.boxShadow=''">
-
-      <!-- Top colour strip based on category -->
+    <div class="card h-100">
+      <!-- Top colour strip -->
       <div style="height:4px;border-radius:4px 4px 0 0;
         {% if doc.category == 'circular' %}background:linear-gradient(90deg,#0284c7,#38bdf8);
         {% elif doc.category == 'notice' %}background:linear-gradient(90deg,#e11d48,#fda4af);
@@ -88,28 +85,24 @@
         {% elif doc.category == 'policy' %}background:linear-gradient(90deg,#d97706,#fcd34d);
         {% elif doc.category == 'syllabus' %}background:linear-gradient(90deg,#0891b2,#22d3ee);
         {% elif doc.category == 'result' %}background:linear-gradient(90deg,#dc2626,#fca5a5);
-        {% else %}background:linear-gradient(90deg,#64748b,#94a3b8);{% endif %}">
-      </div>
+        {% else %}background:linear-gradient(90deg,#64748b,#94a3b8);{% endif %}"></div>
 
       <div class="p-3 d-flex flex-column h-100">
-        <!-- File type icon + category badge -->
+        <!-- File icon + category + size -->
         <div class="d-flex align-items-center gap-2 mb-2">
-          <!-- File icon -->
           <div style="width:42px;height:42px;border-radius:var(--radius-sm);
                       display:grid;place-items:center;font-size:1.25rem;flex-shrink:0;
               {% if doc.file_ext == 'pdf' %}background:#fff1f2;color:#e11d48;
-              {% elif doc.file_ext in 'doc,docx' %}background:#e0f2fe;color:#0284c7;
-              {% elif doc.file_ext in 'xls,xlsx' %}background:#ecfdf5;color:#059669;
-              {% elif doc.file_ext in 'ppt,pptx' %}background:#fffbeb;color:#d97706;
+              {% elif doc.file_ext == 'doc' or doc.file_ext == 'docx' %}background:#e0f2fe;color:#0284c7;
+              {% elif doc.file_ext == 'xls' or doc.file_ext == 'xlsx' %}background:#ecfdf5;color:#059669;
+              {% elif doc.file_ext == 'ppt' or doc.file_ext == 'pptx' %}background:#fffbeb;color:#d97706;
               {% else %}background:#f1f5f9;color:#64748b;{% endif %}">
             {% if doc.file_ext == 'pdf' %}<i class="bi bi-file-earmark-pdf"></i>
-            {% elif doc.file_ext in 'doc,docx' %}<i class="bi bi-file-earmark-word"></i>
-            {% elif doc.file_ext in 'xls,xlsx' %}<i class="bi bi-file-earmark-excel"></i>
-            {% elif doc.file_ext in 'ppt,pptx' %}<i class="bi bi-file-earmark-ppt"></i>
+            {% elif doc.file_ext == 'doc' or doc.file_ext == 'docx' %}<i class="bi bi-file-earmark-word"></i>
+            {% elif doc.file_ext == 'xls' or doc.file_ext == 'xlsx' %}<i class="bi bi-file-earmark-excel"></i>
+            {% elif doc.file_ext == 'ppt' or doc.file_ext == 'pptx' %}<i class="bi bi-file-earmark-ppt"></i>
             {% else %}<i class="bi bi-file-earmark"></i>{% endif %}
           </div>
-
-          <!-- Category badge -->
           <span style="font-size:.7rem;font-weight:700;text-transform:uppercase;
                        letter-spacing:.05em;padding:.18rem .55rem;border-radius:999px;
               {% if doc.category == 'circular' %}background:#e0f2fe;color:#0369a1;
@@ -127,10 +120,12 @@
           </span>
         </div>
 
-        <!-- Title & description -->
+        <!-- Title -->
         <div class="fw-700 mb-1" style="font-size:.9rem;color:var(--text);line-height:1.3;">
           {{ doc.title }}
         </div>
+
+        <!-- Description -->
         {% if doc.description %}
         <div style="font-size:.78rem;color:var(--text-3);margin-bottom:.5rem;flex:1;">
           {{ doc.description|truncatechars:80 }}
@@ -149,7 +144,7 @@
           {% endif %}
         </div>
 
-        <!-- Action buttons -->
+        <!-- Buttons -->
         <div class="d-flex gap-2">
           <a href="{% url 'document_download' doc.pk %}"
              class="btn-primary-custom flex-fill justify-content-center"
@@ -181,7 +176,6 @@
   </div>
   {% endfor %}
 </div>
-
 {% else %}
 <div class="card p-5 text-center">
   <div style="width:80px;height:80px;background:var(--primary-100);border-radius:50%;
@@ -192,9 +186,9 @@
   <h5 class="fw-700 mb-2" style="color:var(--text);">No Documents Found</h5>
   <p style="color:var(--text-3);font-size:.875rem;margin-bottom:1rem;">
     {% if q or f_cat or f_yr %}
-    No documents match the current filters. <a href="{% url 'document_list' %}">Clear filters</a>.
+      No documents match the current filters. <a href="{% url 'document_list' %}">Clear filters</a>.
     {% else %}
-    Start by uploading your first official document.
+      Start by uploading your first official document.
     {% endif %}
   </p>
   <a href="{% url 'document_upload' %}" class="btn-primary-custom"
@@ -202,6 +196,8 @@
     <i class="bi bi-cloud-upload"></i> Upload Document
   </a>
 </div>
+{% endif %}
+
 {% include "attendance/hod/_view_modal.html" %}
 {% endblock %}
 

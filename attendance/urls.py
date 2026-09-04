@@ -68,6 +68,7 @@ urlpatterns = [
     path('hod/timetable/<str:class_id>/',               views_extra.timetable_view,        name='timetable_view'),
     path('hod/timetable/<str:class_id>/pdf/',           views_extra.timetable_pdf,         name='timetable_pdf'),
     path('hod/timetable/<str:class_id>/add/',           views_extra.timetable_slot_add,    name='timetable_slot_add'),
+    path('hod/timetable/<str:class_id>/class-teacher/', views_extra.class_teacher_set,     name='class_teacher_set'),
 
     # ── Official Documents ────────────────────────────────
     path('hod/documents/',                    views_extra.document_list,     name='document_list'),
