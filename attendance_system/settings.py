@@ -92,6 +92,11 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DATA_DIR = BASE_DIR / 'data'
 DATA_DIR.mkdir(exist_ok=True)
 
+# ── Media files (uploaded documents) ──────────────────
+MEDIA_URL  = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT.mkdir(exist_ok=True)
+
 # ── Messages (cookie-based, no DB) ────────────────────
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
 

@@ -69,6 +69,12 @@ urlpatterns = [
     path('hod/timetable/<str:class_id>/pdf/',           views_extra.timetable_pdf,         name='timetable_pdf'),
     path('hod/timetable/<str:class_id>/add/',           views_extra.timetable_slot_add,    name='timetable_slot_add'),
 
+    # ── Official Documents ────────────────────────────────
+    path('hod/documents/',                    views_extra.document_list,     name='document_list'),
+    path('hod/documents/upload/',             views_extra.document_upload,   name='document_upload'),
+    path('hod/documents/<int:pk>/download/',  views_extra.document_download, name='document_download'),
+    path('hod/documents/<int:pk>/delete/',    views_extra.document_delete,   name='document_delete'),
+
     # ── Teacher ───────────────────────────────────────────
     path('teacher/dashboard/',  views_teacher.teacher_dashboard, name='teacher_dashboard'),
 

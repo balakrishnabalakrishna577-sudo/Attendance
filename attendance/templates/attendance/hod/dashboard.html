@@ -266,6 +266,45 @@
   </div>
 </div>
 
+<!-- Documents quick stat -->
+<div class="row g-3 mb-4">
+  <div class="col-12 col-sm-4">
+    <a href="{% url 'document_list' %}" style="text-decoration:none;">
+      <div class="metric-card h-100" style="border-top:4px solid #0369a1;">
+        <div class="metric-icon" style="background:#e0f2fe;color:#0369a1;">
+          <i class="bi bi-folder2-open"></i>
+        </div>
+        <div class="metric-val" style="color:#0369a1;">{{ total_docs }}</div>
+        <div class="metric-lbl">Official Docs</div>
+        <i class="bi bi-arrow-right-short ms-auto" style="color:var(--text-4);font-size:1.2rem;"></i>
+      </div>
+    </a>
+  </div>
+  <div class="col-12 col-sm-4">
+    <a href="{% url 'event_list' %}" style="text-decoration:none;">
+      <div class="metric-card h-100" style="border-top:4px solid #059669;">
+        <div class="metric-icon" style="background:#ecfdf5;color:#059669;">
+          <i class="bi bi-calendar-event"></i>
+        </div>
+        <div class="metric-val" style="color:#059669;">{{ upcoming_events }}</div>
+        <div class="metric-lbl">Upcoming Events</div>
+        <i class="bi bi-arrow-right-short ms-auto" style="color:var(--text-4);font-size:1.2rem;"></i>
+      </div>
+    </a>
+  </div>
+  <div class="col-12 col-sm-4">
+    <a href="{% url 'meeting_list' %}" style="text-decoration:none;">
+      <div class="metric-card h-100" style="border-top:4px solid #e11d48;">
+        <div class="metric-icon" style="background:#fff1f2;color:#e11d48;">
+          <i class="bi bi-people-fill"></i>
+        </div>
+        <div class="metric-val" style="color:#e11d48;">{{ upcoming_meetings }}</div>
+        <div class="metric-lbl">Upcoming Meetings</div>
+        <i class="bi bi-arrow-right-short ms-auto" style="color:var(--text-4);font-size:1.2rem;"></i>
+      </div>
+    </a>
+  </div>
+</div>
 <!-- Quick Actions + Summary -->
 <div class="row g-3">
 
@@ -300,6 +339,10 @@
           </a>
           <a href="{% url 'timetable_sections' %}" class="action-btn ab7">
             <i class="bi bi-grid-3x3-gap"></i> Manage Timetable
+          </a>
+          <a href="{% url 'document_upload' %}" class="action-btn"
+             style="background:linear-gradient(135deg,#0369a1,#0c4a6e);grid-column:span 2;justify-content:center;">
+            <i class="bi bi-cloud-upload"></i> Upload Document
           </a>
         </div>
       </div>
@@ -351,6 +394,12 @@
             <div class="summary-tile st6">
               <div class="s-val">{{ pending_work }}</div>
               <div class="s-lbl">Pending Tasks</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-4">
+            <div class="summary-tile" style="background:linear-gradient(135deg,#e0f2fe,#bae6fd);color:#0c4a6e;">
+              <div class="s-val">{{ total_docs }}</div>
+              <div class="s-lbl">Official Docs</div>
             </div>
           </div>
         </div>

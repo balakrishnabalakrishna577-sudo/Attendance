@@ -16,6 +16,7 @@ local_settings.py
 staticfiles/
 media/
 
+
 # SQLite DB — created fresh on each deploy via migrations
 db.sqlite3
 

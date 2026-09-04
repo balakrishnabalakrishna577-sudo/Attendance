@@ -11,7 +11,7 @@ from django.contrib import messages
 
 from attendance.decorators import hod_required
 from attendance.services import json_storage as db
-from attendance.models import AcademicEvent, Meeting, TeacherWorkAssignment
+from attendance.models import AcademicEvent, Meeting, TeacherWorkAssignment, OfficialDocument
 
 
 # ─────────────────────────────────────────────
@@ -29,6 +29,7 @@ def hod_dashboard(request):
         'upcoming_events':   AcademicEvent.objects.filter(start_date__gte=today).count(),
         'upcoming_meetings': Meeting.objects.filter(meeting_date__gte=today).count(),
         'pending_work':      TeacherWorkAssignment.objects.filter(status='pending').count(),
+        'total_docs':        OfficialDocument.objects.count(),
     }
     return render(request, 'attendance/hod/dashboard.html', ctx)
 

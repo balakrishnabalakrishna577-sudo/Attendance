@@ -58,6 +58,18 @@ STATUS_CHOICES = [
     ('completed', 'Completed'),
 ]
 
+# ── Document categories ────────────────────────────────
+DOC_CATEGORY_CHOICES = [
+    ('circular',     'Circular'),
+    ('notice',       'Notice'),
+    ('minutes',      'Meeting Minutes'),
+    ('report',       'Report'),
+    ('policy',       'Policy'),
+    ('syllabus',     'Syllabus'),
+    ('result',       'Result'),
+    ('other',        'Other'),
+]
+
 
 class AcademicEvent(models.Model):
     """Academic calendar events — HOD adds, visible to all teachers."""
@@ -158,3 +170,44 @@ class TimetableSlot(models.Model):
 
     def __str__(self):
         return f"{self.class_name} | {self.day} | {self.hour}hr | {self.subject_name}"
+
+
+class OfficialDocument(models.Model):
+    """Official documents uploaded by the HOD."""
+    title       = models.CharField(max_length=300)
+    description = models.TextField(blank=True)
+    category    = models.CharField(max_length=20,
+                                   choices=DOC_CATEGORY_CHOICES,
+                                   default='other')
+    file        = models.FileField(upload_to='official_docs/')
+    file_name   = models.CharField(max_length=300, blank=True)
+    file_size   = models.PositiveIntegerField(default=0,
+                                              help_text='Size in bytes')
+    uploaded_by = models.CharField(max_length=200, default='HOD')
+    academic_year = models.CharField(max_length=20, blank=True,
+                                     default='2025-26')
+    created_at  = models.DateTimeField(auto_now_add=True)
+    updated_at  = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.title} ({self.get_category_display()})"
+
+    @property
+    def file_size_display(self):
+        """Human-readable file size."""
+        size = self.file_size
+        if size < 1024:
+            return f"{size} B"
+        elif size < 1024 * 1024:
+            return f"{size/1024:.1f} KB"
+        else:
+            return f"{size/(1024*1024):.1f} MB"
+
+    @property
+    def file_ext(self):
+        import os
+        _, ext = os.path.splitext(self.file_name or str(self.file))
+        return ext.lower().lstrip('.')

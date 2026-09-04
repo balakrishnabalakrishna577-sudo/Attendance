@@ -1,0 +1,232 @@
+{% extends "attendance/hod/base_hod.html" %}
+{% block title %}Official Documents{% endblock %}
+{% block page_title %}Official Documents{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1><i class="bi bi-folder2-open me-2" style="color:var(--primary);"></i>Official Documents</h1>
+  <a href="{% url 'document_upload' %}" class="btn-primary-custom">
+    <i class="bi bi-cloud-upload"></i>
+    <span class="d-none d-sm-inline">Upload Document</span>
+  </a>
+</div>
+
+<!-- Stats -->
+<div class="row g-3 mb-3">
+  <div class="col-6 col-md-3">
+    <div class="stat-card h-100">
+      <div class="stat-icon purple"><i class="bi bi-files"></i></div>
+      <div class="stat-info">
+        <div class="stat-value">{{ total }}</div>
+        <div class="stat-label">Total Docs</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card h-100">
+      <div class="stat-icon cyan"><i class="bi bi-funnel"></i></div>
+      <div class="stat-info">
+        <div class="stat-value">{{ docs|length }}</div>
+        <div class="stat-label">Showing</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Filters -->
+<div class="card mb-3">
+  <div class="p-3">
+    <form method="get" class="row g-2">
+      <div class="col-12 col-sm-4">
+        <label class="form-label-custom">Search</label>
+        <input type="text" name="q" value="{{ q }}" class="form-control-custom"
+               placeholder="Document title…">
+      </div>
+      <div class="col-12 col-sm-3">
+        <label class="form-label-custom">Category</label>
+        <select name="category" class="form-control-custom form-select-custom">
+          <option value="">All Categories</option>
+          {% for val,label in categories %}
+          <option value="{{ val }}" {% if f_cat == val %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-12 col-sm-3">
+        <label class="form-label-custom">Academic Year</label>
+        <select name="year" class="form-control-custom form-select-custom">
+          <option value="">All Years</option>
+          {% for y in years %}
+          <option value="{{ y }}" {% if f_yr == y %}selected{% endif %}>{{ y }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-12 col-sm-2 d-flex align-items-end gap-2">
+        <button type="submit" class="btn-primary-custom flex-fill justify-content-center">
+          <i class="bi bi-search"></i>
+        </button>
+        <a href="{% url 'document_list' %}" class="btn btn-light border px-3">✕</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Document cards -->
+{% if docs %}
+<div class="row g-3">
+  {% for doc in docs %}
+  <div class="col-12 col-sm-6 col-lg-4">
+    <div class="card h-100" style="transition:transform .15s,box-shadow .15s;"
+         onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--shadow-md)'"
+         onmouseout="this.style.transform='';this.style.boxShadow=''">
+
+      <!-- Top colour strip based on category -->
+      <div style="height:4px;border-radius:4px 4px 0 0;
+        {% if doc.category == 'circular' %}background:linear-gradient(90deg,#0284c7,#38bdf8);
+        {% elif doc.category == 'notice' %}background:linear-gradient(90deg,#e11d48,#fda4af);
+        {% elif doc.category == 'minutes' %}background:linear-gradient(90deg,#7c3aed,#c4b5fd);
+        {% elif doc.category == 'report' %}background:linear-gradient(90deg,#059669,#34d399);
+        {% elif doc.category == 'policy' %}background:linear-gradient(90deg,#d97706,#fcd34d);
+        {% elif doc.category == 'syllabus' %}background:linear-gradient(90deg,#0891b2,#22d3ee);
+        {% elif doc.category == 'result' %}background:linear-gradient(90deg,#dc2626,#fca5a5);
+        {% else %}background:linear-gradient(90deg,#64748b,#94a3b8);{% endif %}">
+      </div>
+
+      <div class="p-3 d-flex flex-column h-100">
+        <!-- File type icon + category badge -->
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <!-- File icon -->
+          <div style="width:42px;height:42px;border-radius:var(--radius-sm);
+                      display:grid;place-items:center;font-size:1.25rem;flex-shrink:0;
+              {% if doc.file_ext == 'pdf' %}background:#fff1f2;color:#e11d48;
+              {% elif doc.file_ext in 'doc,docx' %}background:#e0f2fe;color:#0284c7;
+              {% elif doc.file_ext in 'xls,xlsx' %}background:#ecfdf5;color:#059669;
+              {% elif doc.file_ext in 'ppt,pptx' %}background:#fffbeb;color:#d97706;
+              {% else %}background:#f1f5f9;color:#64748b;{% endif %}">
+            {% if doc.file_ext == 'pdf' %}<i class="bi bi-file-earmark-pdf"></i>
+            {% elif doc.file_ext in 'doc,docx' %}<i class="bi bi-file-earmark-word"></i>
+            {% elif doc.file_ext in 'xls,xlsx' %}<i class="bi bi-file-earmark-excel"></i>
+            {% elif doc.file_ext in 'ppt,pptx' %}<i class="bi bi-file-earmark-ppt"></i>
+            {% else %}<i class="bi bi-file-earmark"></i>{% endif %}
+          </div>
+
+          <!-- Category badge -->
+          <span style="font-size:.7rem;font-weight:700;text-transform:uppercase;
+                       letter-spacing:.05em;padding:.18rem .55rem;border-radius:999px;
+              {% if doc.category == 'circular' %}background:#e0f2fe;color:#0369a1;
+              {% elif doc.category == 'notice' %}background:#fff1f2;color:#9f1239;
+              {% elif doc.category == 'minutes' %}background:#f5f3ff;color:#5b21b6;
+              {% elif doc.category == 'report' %}background:#ecfdf5;color:#065f46;
+              {% elif doc.category == 'policy' %}background:#fffbeb;color:#92400e;
+              {% elif doc.category == 'syllabus' %}background:#ecfeff;color:#0e7490;
+              {% elif doc.category == 'result' %}background:#fff1f2;color:#991b1b;
+              {% else %}background:#f1f5f9;color:#475569;{% endif %}">
+            {{ doc.get_category_display }}
+          </span>
+          <span style="margin-left:auto;font-size:.72rem;color:var(--text-4);">
+            {{ doc.file_size_display }}
+          </span>
+        </div>
+
+        <!-- Title & description -->
+        <div class="fw-700 mb-1" style="font-size:.9rem;color:var(--text);line-height:1.3;">
+          {{ doc.title }}
+        </div>
+        {% if doc.description %}
+        <div style="font-size:.78rem;color:var(--text-3);margin-bottom:.5rem;flex:1;">
+          {{ doc.description|truncatechars:80 }}
+        </div>
+        {% else %}
+        <div style="flex:1;"></div>
+        {% endif %}
+
+        <!-- Meta -->
+        <div style="font-size:.72rem;color:var(--text-4);margin-bottom:.75rem;
+                    border-top:1px solid var(--border);padding-top:.5rem;">
+          <div><i class="bi bi-calendar3 me-1"></i>{{ doc.created_at|date:"d M Y" }}</div>
+          <div><i class="bi bi-person me-1"></i>{{ doc.uploaded_by }}</div>
+          {% if doc.academic_year %}
+          <div><i class="bi bi-mortarboard me-1"></i>AY: {{ doc.academic_year }}</div>
+          {% endif %}
+        </div>
+
+        <!-- Action buttons -->
+        <div class="d-flex gap-2">
+          <a href="{% url 'document_download' doc.pk %}"
+             class="btn-primary-custom flex-fill justify-content-center"
+             style="font-size:.78rem;padding:.4rem;">
+            <i class="bi bi-download"></i> Download
+          </a>
+          <button class="btn-sm-icon btn-view" title="View Details"
+                  style="width:36px;height:36px;"
+                  data-bs-toggle="modal" data-bs-target="#viewModal"
+                  data-title="{{ doc.title }}"
+                  data-r0="{{ doc.title }}"
+                  data-r1="{{ doc.get_category_display }}"
+                  data-r2="{{ doc.description }}"
+                  data-r3="{{ doc.file_name }}"
+                  data-r4="{{ doc.file_size_display }}"
+                  data-r5="{{ doc.academic_year }}"
+                  data-r6="{{ doc.uploaded_by }}"
+                  data-r7="{{ doc.created_at|date:'d M Y, h:i A' }}">
+            <i class="bi bi-eye"></i>
+          </button>
+          <a href="{% url 'document_delete' doc.pk %}"
+             class="btn-sm-icon btn-delete" title="Delete"
+             style="width:36px;height:36px;">
+            <i class="bi bi-trash"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% else %}
+<div class="card p-5 text-center">
+  <div style="width:80px;height:80px;background:var(--primary-100);border-radius:50%;
+              display:grid;place-items:center;margin:0 auto 1rem;
+              font-size:2rem;color:var(--primary);">
+    <i class="bi bi-folder2-open"></i>
+  </div>
+  <h5 class="fw-700 mb-2" style="color:var(--text);">No Documents Found</h5>
+  <p style="color:var(--text-3);font-size:.875rem;margin-bottom:1rem;">
+    {% if q or f_cat or f_yr %}
+    No documents match the current filters. <a href="{% url 'document_list' %}">Clear filters</a>.
+    {% else %}
+    Start by uploading your first official document.
+    {% endif %}
+  </p>
+  <a href="{% url 'document_upload' %}" class="btn-primary-custom"
+     style="display:inline-flex;margin:0 auto;">
+    <i class="bi bi-cloud-upload"></i> Upload Document
+  </a>
+</div>
+{% include "attendance/hod/_view_modal.html" %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+var docLabels = ['Title','Category','Description','File Name','File Size','Academic Year','Uploaded By','Date'];
+document.querySelectorAll('[data-bs-target="#viewModal"]').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var title = this.getAttribute('data-title');
+    var vals  = [this.dataset.r0, this.dataset.r1, this.dataset.r2,
+                 this.dataset.r3, this.dataset.r4, this.dataset.r5,
+                 this.dataset.r6, this.dataset.r7];
+    document.getElementById('view-modal-title').textContent = title;
+    var html = '';
+    docLabels.forEach(function(l, i) {
+      if (vals[i]) {
+        html += '<div class="view-row">'
+              + '<span class="view-label">' + l + '</span>'
+              + '<span class="view-val">' + vals[i] + '</span>'
+              + '</div>';
+      }
+    });
+    document.getElementById('view-modal-body').innerHTML =
+      html || '<div class="p-4 text-center" style="color:var(--text-3);">No details.</div>';
+  });
+});
+</script>
+{% endblock %}

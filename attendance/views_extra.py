@@ -714,3 +714,130 @@ def timetable_pdf(request, class_id):
         'summary':    summary,
     }
     return render(request, 'attendance/hod/timetable_pdf.html', ctx)
+
+
+# ══════════════════════════════════════════════════════════
+# ── OFFICIAL DOCUMENTS ─────────────────────────────────────
+# ══════════════════════════════════════════════════════════
+
+from attendance.models import OfficialDocument
+import os
+from django.http import FileResponse, Http404
+from django.conf import settings
+
+
+@hod_required
+def document_list(request):
+    """List all official documents with search/filter."""
+    docs  = OfficialDocument.objects.all()
+    f_cat = request.GET.get('category', '')
+    f_yr  = request.GET.get('year', '')
+    q     = request.GET.get('q', '').strip()
+
+    if f_cat:
+        docs = docs.filter(category=f_cat)
+    if f_yr:
+        docs = docs.filter(academic_year=f_yr)
+    if q:
+        docs = docs.filter(title__icontains=q)
+
+    years = OfficialDocument.objects.values_list(
+        'academic_year', flat=True).distinct().order_by('academic_year')
+
+    ctx = {
+        'docs':       docs,
+        'f_cat':      f_cat,
+        'f_yr':       f_yr,
+        'q':          q,
+        'years':      years,
+        'categories': OfficialDocument._meta.get_field('category').choices,
+        'total':      OfficialDocument.objects.count(),
+    }
+    return render(request, 'attendance/hod/document_list.html', ctx)
+
+
+@hod_required
+def document_upload(request):
+    """Upload a new official document."""
+    if request.method == 'POST':
+        title         = request.POST.get('title', '').strip()
+        description   = request.POST.get('description', '').strip()
+        category      = request.POST.get('category', 'other')
+        academic_year = request.POST.get('academic_year', '2025-26').strip()
+        uploaded_file = request.FILES.get('file')
+
+        if not title:
+            messages.error(request, 'Document title is required.')
+            return render(request, 'attendance/hod/document_upload.html',
+                          _doc_ctx())
+        if not uploaded_file:
+            messages.error(request, 'Please select a file to upload.')
+            return render(request, 'attendance/hod/document_upload.html',
+                          _doc_ctx())
+
+        # 10 MB limit
+        if uploaded_file.size > 10 * 1024 * 1024:
+            messages.error(request, 'File size must be under 10 MB.')
+            return render(request, 'attendance/hod/document_upload.html',
+                          _doc_ctx())
+
+        doc = OfficialDocument(
+            title=title,
+            description=description,
+            category=category,
+            academic_year=academic_year,
+            file=uploaded_file,
+            file_name=uploaded_file.name,
+            file_size=uploaded_file.size,
+            uploaded_by=request.session.get('name', 'HOD'),
+        )
+        doc.save()
+        messages.success(request, f'Document "{title}" uploaded successfully.')
+        return redirect('document_list')
+
+    return render(request, 'attendance/hod/document_upload.html', _doc_ctx())
+
+
+@hod_required
+def document_download(request, pk):
+    """Serve a document file for download."""
+    doc = get_object_or_404(OfficialDocument, pk=pk)
+    try:
+        file_path = doc.file.path
+        if not os.path.exists(file_path):
+            raise Http404('File not found on server.')
+        response = FileResponse(
+            open(file_path, 'rb'),
+            as_attachment=True,
+            filename=doc.file_name or os.path.basename(file_path),
+        )
+        return response
+    except Exception:
+        messages.error(request, 'File could not be downloaded.')
+        return redirect('document_list')
+
+
+@hod_required
+def document_delete(request, pk):
+    """Delete a document and its file."""
+    doc = get_object_or_404(OfficialDocument, pk=pk)
+    if request.method == 'POST':
+        title = doc.title
+        # Delete the actual file
+        try:
+            if doc.file and os.path.exists(doc.file.path):
+                os.remove(doc.file.path)
+        except Exception:
+            pass
+        doc.delete()
+        messages.success(request, f'Document "{title}" deleted.')
+        return redirect('document_list')
+    return render(request, 'attendance/hod/confirm_delete.html',
+                  {'item': doc.title, 'cancel_url': 'document_list'})
+
+
+def _doc_ctx():
+    return {
+        'categories':  OfficialDocument._meta.get_field('category').choices,
+        'today':       __import__('datetime').date.today().isoformat(),
+    }
